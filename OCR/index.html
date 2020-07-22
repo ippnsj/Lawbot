@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+    <head>
+    <meta charset="utf-8"/>
+    <title>고소장 분석</title>
+    </head>
+    <body>
+        <form>
+            <input type="file">
+            <input type="submit">
+        </form>
+        <div id="container">
+            <p style="width: 800px;" id="template"></p>
+        </div>
+    </body>
+    <script type="text/javascript">
+        let p = document.getElementById('template');
+        //let div = document.getElementById('container');
+        let form = document.forms[0];
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            let data = new FormData();
+            data.append('temp', document.forms[0].elements[0].files[0]);
+            fetch('/apicall', {
+                method: 'POST',
+                body: data,
+                headers: {
+                    //'Content-Type': 'multipart/form-data',
+                },
+            }).then((result) => {
+                return result.json();
+            }).then((result) => {
+                var txt = "";
+                for(const elem of result.images[0].fields) {
+                    txt += elem.inferText + " ";
+                }
+                p.innerHTML = txt;
+            });
+        });
+    </script>
+</html>
