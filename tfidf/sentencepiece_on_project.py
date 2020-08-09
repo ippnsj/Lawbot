@@ -1,3 +1,6 @@
+import os
+import sentencepiece as spm
+
 def train_sp(vocab_size, is_src=True):
     template = "--input={} \
                 --pad_id={} \
@@ -22,3 +25,7 @@ def train_sp(vocab_size, is_src=True):
 
     spm.SentencePieceTrainer.Train(config)
     
+def get_sentencepiece():
+    src_sp = spm.SentencePieceProcessor()
+    src_sp.Load("output.model")
+    return src_sp

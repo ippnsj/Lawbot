@@ -7,19 +7,7 @@ from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import manhattan_distances
 import numpy as np
 
-def open_file(name, Print=False):
-
-    data_output=[]
-    f=open(name, 'r', encoding='euc-kr')
-
-    lines=f.readlines()
-
-    for line in lines :
-        data_output.append(line)
-
-    if (Print):
-        print(data_output)
-    return data_output
+import pickle
 
 def preprocessing(sentencepiece_model, data, stopwords, Print=False):
     data_no_stopwords=[]
@@ -49,6 +37,18 @@ def train(data):
     tfidfv = TfidfVectorizer().fit(data)
     return tfidfv
 
+def do(modoel, data):
+    result = model.transform(data).toarray()
+    return result
+    
+def save(model, name):
+    with open(name, 'wb') as file:
+        pickle.dump(model, file)
+        
+def load(name):
+    with open(name, 'wb') as file:
+        return pickle.load(file)
+
 def cos_similarity(data1, data2, Print=False):
     # 코사인 유사도를 구합니다.
     similarity = cosine_similarity(data1, data2)
@@ -65,14 +65,14 @@ def set_similarity(data1, data2, Print=False):
         print(similarity)
     return similarity
 
-def ucli_similarity(data1, data2, Print=False):
+def eucli_similarity(data1, data2, Print=False):
     # 유클리디언 유사도를 구합니다.
     similarity = euclidean_distances(data1, data2)
     if (Print):
         print('data 1, data 2 Euclidean 유사도: {0:.3f}'.format(similarity))
     return similarity
 
-def manhatan_similarity(data1, data2, Print=False):
+def manhattan_similarity(data1, data2, Print=False):
     # 맨해튼 유사도를 구합니다.
     norm_data1 = __normalize(data1)
     norm_data2 = __normalize(data2)
@@ -83,4 +83,18 @@ def manhatan_similarity(data1, data2, Print=False):
 def __normalize(v):
 	norm = np.sum(v)
     return v / norm 
-  
+
+def top10(data, method, Print=False):
+    # DB에서 받아와야됨
+    case_data_metrics
+    # case_data_metrics = 
+
+    similarity = 0
+    if (method == 'set'):
+        similarity = set_similarity(case_data_metrics, data, Print)
+    elif (methoc == 'eucli'):
+        similarity = eucli_similarity(case_data_metrics, data, Print)
+    elif (methoc == 'manhattan'):
+        similarity = manhattan_similarity(case_data_metrics, data, Print)
+    elif (methoc == 'cos'):
+        similarity = cos_similarity(case_data_metrics, data, Print)

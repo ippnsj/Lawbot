@@ -68,7 +68,6 @@ def txt_concat(path, output_name):
         f.close()
     print(path + '\\' + output_name)
     output.close()
-    print('txt concat sucess ' + output_name)
 
 # 모든 동작을 하나로 묶어주는 함수로 실제로 사용하게 될 함수입니다.
 def all_in_one(keyword, case_num):
