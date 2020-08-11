@@ -6,12 +6,14 @@ from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import manhattan_distances
 import numpy as np
 
+import re
+
 # tfidf 모델을 로컬에 저장하기 위한 패키지
 import pickle
 
 
 # 학습된 sentencepiece model을 이용하여 data를 tfidf에 이용할 수 있도록 전처리 합니다.
-def preprocessing(sentencepiece_model, files : str[], stopwords, Print=False):
+def preprocessing(sentencepiece_model, files, stopwords, Print=False):
     """
     sentencepiece_model : 이미 학습된 sentencepiece_model 객체를 받는 parameter입니다.
     
@@ -29,12 +31,14 @@ def preprocessing(sentencepiece_model, files : str[], stopwords, Print=False):
         temp_X = sentencepiece_model.EncodeAsPieces(file)
         
         temp_X = [word for word in temp_X if not word in stopwords]
-        file_data=''
-        
-        for word in temp_X:
-            file_data.join(word)
+        if (Print):
+            print('temp입니다')
+            print(temp_X)
             
-        realdata.append(file_data.replace('_', ''))
+        file_data=''.join(temp_X)
+        file_data = re.sub('▁', '', file_data)
+        
+        realdata.append(file_data)
         
     if (Print):
         print('실제 사용될 data는 다음과 같습니다')
@@ -52,7 +56,7 @@ def train(data):
     return tfidfv
 
 # tfidf 분석을 실시합니다.
-def do(modoel, data):
+def do(model, data):
     """
     model : tfidf 분석을 실행할 모델
     
@@ -64,13 +68,13 @@ def do(modoel, data):
     
 # pickle 패키지를 이용하여 tfidf모델을 현재 로컬폴더에 저장합니다.
 def save(model, name):
-    with open(name, 'wb') as file:
+    with open(name + '.pk', 'wb') as file:
         pickle.dump(model, file)
         
 # pickle 패키지를 이용하여 tfidf모델을 현재 로컬폴더에서 가져옵니다.
 # 이름이 같다면 무조건 물러오기 때문에 이 함수는 불러오는 모듈이 tfidf모델인지 체크하지 않습니다.
 def load(name):
-    with open(name, 'wb') as file:
+    with open(name, 'rb') as file:
         return pickle.load(file)
 
     
@@ -111,14 +115,14 @@ def manhattan_similarity(data1, data2, Print=False):
 # 특정 벡터를 정규화합니다.
 # 본 프로젝트에서는 유사도 분석시의 결과를 0~1의 범위로 제한시키기 위해 tfidf결과값에 정규화를 취해준뒤 유사도를 분석합니다.
 def __normalize(v):
-	norm = np.sum(v)
+    norm = np.sum(v)
     return v / norm 
 
 # tfidf를 이용하여 본프로젝트의 DB속 판례 데이터와 input으로 받은 data의 유사도를 전체적으로 분석하여 가장 높은 유사도를 보이는 top10을 골라줍니다.
 def top10(data, method, Print=False):
     # DB에서 받아와야됨
     # 각각 판례의 tfidf분석결과의 리스트가 각각의 인덱스에 들어가므로 결론적으로 2차원 배열이 된다.
-    case_data_metrics[]
+    case_data_metrics = []
     # case_data_metrics.append(DB_data) 
 
     similarity = 0
