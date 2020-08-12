@@ -17,7 +17,7 @@ from lxml import etree as et
 from io import StringIO
 
 # 특정 판례일련번호의 lxml element를 가져오는 함수입니다.
-def myfunction(case_number):
+def get_case(case_number):
     main = {'OC':'ICTPoolC',
            'target':'prec',
            'ID': case_number, #가져오고 싶은 최대 판례 수
@@ -33,9 +33,17 @@ def findtext(tree, tag):
             return re.sub('<.*?>','', el.text)
 
 # 원하는 정보들만을 txt파일로 저장하는 함수입니다.
-def save_local(list_xml, output_path):
+def save_local(xml_data, output_path, contents):
+    """
+    xml_data : 대상 xml파일입니다.
+    
+    output_path : 결과 txt파일을 저장할 경로입니다. 현재 디렉토리를 기준으로 상대경로로 찾아갑니다.
+    
+    contents : 받아올 정보를 str로 담고있는 리스트 입니다.
+    ex) 사건명, 판시사항, 판결요지, 판례내용
+    """
     # 받아온 판례목록 전처리
-    data = re.sub(' encoding="UTF-8"', '', list_xml.text)
+    data = re.sub(' encoding="UTF-8"', '', xml_data.text)
     data = et.XML(data)
     
     #원하는 정보만을 뽑아내는 과정
@@ -43,12 +51,17 @@ def save_local(list_xml, output_path):
         if (el.tag == "판례일련번호"):
             THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
             my_file = os.path.join(THIS_FOLDER, output_path, el.text + ".txt")
+            if not os.path.exists(os.path.dirname(my_file)):
+                os.mkdir(os.path.join(THIS_FOLDER, output_path))
             f = open(my_file, 'w')
-            f.write(findtext(myfunction(el.text), '판례정보일련번호') + '\n')
-            f.write(findtext(myfunction(el.text), '사건명') + '\n')
-            f.write(findtext(myfunction(el.text), '판시사항') + '\n')
-            f.write(findtext(myfunction(el.text), '판결요지') + '\n')
-            f.write(findtext(myfunction(el.text), '판례내용') + '\n')
+#             f.write(findtext(get_case(el.text), '판례정보일련번호') + '\n')
+            if (type(contents) == list):
+                for content in content:
+                    if (type(content) == str):
+                        f.wirte(findtext(get_case(el.text), content) + '\n')
+            else :
+                f.write(findtext(get_case(el.text), contents) + '\n')
+                
             f.close()
             print(el.text + ' : saved')
 
@@ -70,7 +83,7 @@ def txt_concat(path, output_name):
     output.close()
 
 # 모든 동작을 하나로 묶어주는 함수로 실제로 사용하게 될 함수입니다.
-def all_in_one(keyword, case_num):
+def all_in_one(keyword, case_num, output_path, contents):
     ## 목록 request templat
     chart= {'OC':'ICTPoolC'
             ,'target':'prec'
@@ -84,5 +97,5 @@ def all_in_one(keyword, case_num):
     ## 목록 받아오기
     res_chart=rq.get('http://www.law.go.kr/DRF/lawSearch.do?',params=chart)
     
-    save_local(res_chart, 'Case_Main')
-    txt_concat(os.path.join(os.getcwd(), 'Case_Main'), 'total_case.txt')
+    save_local(res_chart, output_path, contents)
+    txt_concat(os.path.join(os.getcwd(), output_path), 'total_case.txt')
