@@ -5,6 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import manhattan_distances
 import numpy as np
+import pymysql
 
 import re
 import io
@@ -137,21 +138,37 @@ def __normalize(v):
     norm = np.sum(v)
     return v / norm 
 
+
 # tfidf를 이용하여 본프로젝트의 DB속 판례 데이터와 input으로 받은 data의 유사도를 전체적으로 분석하여 가장 높은 유사도를 보이는 top10을 골라줍니다.
-def top10(data, method, Print=False):
+def top10(data, method, table, keyWeightnum, Print=False):
     # DB에서 받아와야됨
+    
+    # Todo
+    # AWS 연결되면 conn을 새로 정의해야 합니다.
+    # conn = pms.connect(host="", port=, user="", password="", db="", charset="")
+    
     # 각각 판례의 tfidf분석결과의 리스트가 각각의 인덱스에 들어가므로 결론적으로 2차원 배열이 된다.
-    case_data_metrics = []
-    # case_data_metrics.append(DB_data) 
+    cur = conn.cursor()
+    
+    sql = 'select count(distinct ID) from ' + table
+    cur.execute(sql)
+    id_num = 
+    
+    sql = 'select keyweight from ' + table + ' order by id asc order by keyindex asc'
+    cur.execute(sql)
+    
+    data_metrics = []
+    result = cursor.fetchall()
+    result = result.reshape(????, keyweightnum)
 
     similarity = 0
     if (method == 'set'):
-        similarity = set_similarity(case_data_metrics, data, Print)
+        similarity = set_similarity(result, data, Print)
     elif (methoc == 'eucli'):
-        similarity = eucli_similarity(case_data_metrics, data, Print)
+        similarity = eucli_similarity(result, data, Print)
     elif (methoc == 'manhattan'):
-        similarity = manhattan_similarity(case_data_metrics, data, Print)
+        similarity = manhattan_similarity(result, data, Print)
     elif (methoc == 'cos'):
-        similarity = cos_similarity(case_data_metrics, data, Print)
-
-    # Todo
+        similarity = cos_similarity(result, data, Print)
+        
+        
