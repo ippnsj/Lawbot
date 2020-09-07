@@ -7,7 +7,7 @@ from sklearn.metrics.pairwise import manhattan_distances
 import numpy as np
 
 import re
-
+import io
 # tfidf 모델을 로컬에 저장하기 위한 패키지
 import pickle
 
@@ -56,14 +56,33 @@ def train(data):
     return tfidfv
 
 # tfidf 분석을 실시합니다.
-def do(model, data):
+def do(model, data_input):
     """
     model : tfidf 분석을 실행할 모델
     
     data : tfidf 분석을 실행할 데이터
     type은 str, str[]입니다.
+    만약 open()함수를 이용하여 읽은 파일을 그대로 넘길경우 전체 텍스트를 읽어서 사용합니다.
     """
-    result = model.transform(data).toarray()
+    # data가 하나의 file인지 검사합니다.
+    if (type(data_input) == io.TextIOWrapper):
+        data = data_input.read()
+
+    # data가 리스트형식인지 검사합니다.
+    if (isinstance(f, list)):
+        data = []
+        for d in data_input:
+            if (isinstance(d, io.TextIOWrapper)):
+                temp = d.read()
+                data.append(temp)
+            elif(isinstance(d, str)):
+                data.append(d)
+
+    if (data is None):
+        print('data_input is invalid')
+        result = None
+    else:
+        result = model.transform(data).toarray()
     return result
     
 # pickle 패키지를 이용하여 tfidf모델을 현재 로컬폴더에 저장합니다.
