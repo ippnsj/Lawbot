@@ -79,15 +79,21 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `ict`.`Reply` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `content` VARCHAR(45) NOT NULL,
-  `userID` INT NOT NULL,
   `writtenDate` DATETIME NOT NULL,
   `reports` INT NOT NULL,
   `Post_ID` INT NOT NULL,
+  `User_ID` INT NOT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_Reply_Post1_idx` (`Post_ID` ASC) VISIBLE,
+  INDEX `fk_Reply_User1_idx` (`User_ID` ASC) VISIBLE,
   CONSTRAINT `fk_Reply_Post1`
     FOREIGN KEY (`Post_ID`)
     REFERENCES `ict`.`Post` (`ID`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Reply_User1`
+    FOREIGN KEY (`User_ID`)
+    REFERENCES `ict`.`User` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -209,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `ict`.`Career` (
   `detail` VARCHAR(45) NOT NULL,
   `Lawyer_ID` INT NOT NULL,
   `startYear` INT NOT NULL,
-  `endYear` VARCHAR(45) NULL,
+  `endYear` INT NULL,
   PRIMARY KEY (`detail`, `Lawyer_ID`),
   INDEX `fk_Career_Lawyer1_idx` (`Lawyer_ID` ASC) VISIBLE,
   CONSTRAINT `fk_Career_Lawyer1`
@@ -270,6 +276,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `ict`.`Activity` (
   `detail` VARCHAR(45) NOT NULL,
   `Lawyer_ID` INT NOT NULL,
+  `url` TEXT NULL,
   PRIMARY KEY (`detail`, `Lawyer_ID`),
   INDEX `fk_Activity_Lawyer1_idx` (`Lawyer_ID` ASC) VISIBLE,
   CONSTRAINT `fk_Activity_Lawyer1`
