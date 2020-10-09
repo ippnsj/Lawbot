@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   Text,
   View,
@@ -7,72 +7,156 @@ import {
   TextInput,
   KeyboardAvoidingView,
   TouchableOpacity,
-  SafeAreaView,
+  ScrollView,
 } from "react-native";
+import * as Font from "expo-font";
 
-//import * as Font from "expo-font";
-import { Font } from "../src/Fonts";
 import colors from "../config/colors";
 
-function WelcomeScreen(props) {
-  /*
-  Font.loadAsync({
-    SCDream8: require("../assets/fonts/SCDream8.otf"),
-    KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
-    KPBRegular: require("../assets/fonts/KoPubBatang-Regular.ttf"),
-  });
-  */
+const purposePlaceholder = `청구취지를 자세히 입력해주세요.
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require("../assets/menu.png")} style={styles.menu} />
-        <Text style={styles.logoTitle}>LAWBOT</Text>
-        <Image
-          source={require("../assets/profile.png")}
-          style={styles.profile}
-        />
-      </View>
-      <KeyboardAvoidingView style={styles.body}>
-        <View style={styles.fieldContatiner}>
-          <Text style={styles.field}>손해배상(자)</Text>
-          <TouchableOpacity style={styles.selectField}>
-            <Text style={styles.selectFieldText}>다른 분야 선택</Text>
-          </TouchableOpacity>
-          <View style={styles.underbar} />
+청구취지 작성 예시
+1. 원고와 피고는 이혼한다.
+2. 피고는 원고에게 위자료로 금 3,000만원을 
+이혼성립과 동시에 지급하되, 그 익일부터 
+다 지급하는 날까지 년15%의 지연이자를 더하여 지급하라.`;
+
+const causePlaceholder = `청구원인을 자세히 입력해주세요.
+
+1. 당사자들의 관계
+2. 금전거래 또는 대여사실
+3. 결론`;
+
+export default class WritePettition extends Component {
+  state = {
+    fontsLoaded: false,
+    complainant: "",
+    defendant: "",
+    purpost: "",
+    cause: "",
+  };
+
+  async _loadFonts() {
+    await Font.loadAsync({
+      SCDream8: require("../assets/fonts/SCDream8.otf"),
+      KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
+      KPBRegular: require("../assets/fonts/KoPubBatang-Regular.ttf"),
+    });
+    this.setState({ fontsLoaded: true });
+  }
+
+  componentDidMount() {
+    this._loadFonts();
+  }
+
+  render() {
+    if (!this.state.fontsLoaded) {
+      return <View />;
+    }
+
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image source={require("../assets/menu.png")} style={styles.menu} />
+          <Text style={styles.logoTitle}>LAWBOT</Text>
+          <Image
+            source={require("../assets/profile.png")}
+            style={styles.profile}
+          />
         </View>
-        <View style={styles.pettitionContent}>
-          <Text style={styles.subTitle}>소장 양식 입력</Text>
-          <View style={styles.fileUploadContainer}>
-            <Text style={styles.fileUploadGuide}>
-              소장을 스캔해서 올리시려면?
-            </Text>
-            <TouchableOpacity style={styles.fileUpload}>
-              <Text style={styles.fileUploadText}>PDF 파일 업로드</Text>
+        <KeyboardAvoidingView style={styles.body}>
+          <View style={styles.fieldContatiner}>
+            <Text style={styles.field}>손해배상(자)</Text>
+            <TouchableOpacity style={styles.selectField}>
+              <Text style={styles.selectFieldText}>다른 분야 선택</Text>
+            </TouchableOpacity>
+            <View style={styles.underbar} />
+          </View>
+          <View style={styles.pettitionContent}>
+            <Text style={styles.subTitle}>소장 양식 입력</Text>
+            <View style={styles.fileUploadContainer}>
+              <Text style={styles.fileUploadGuide}>
+                소장을 스캔해서 올리시려면?
+              </Text>
+              <TouchableOpacity style={styles.fileUpload}>
+                <Text style={styles.fileUploadText}>PDF 파일 업로드</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.pettition}>
+              <ScrollView style={styles.pettitionScroll}>
+                <Text style={styles.petitionTitle}>소 장</Text>
+                <View style={styles.personal}>
+                  <Text style={styles.person}>원{"   "}고</Text>
+                  <TextInput
+                    style={styles.personalInput}
+                    placeholder="이름을 입력해주세요."
+                    onChangeText={(constraint) => this.setState({ constraint })}
+                    value={this.state.constraint}
+                  ></TextInput>
+                </View>
+                <View style={styles.personal}>
+                  <Text style={styles.person}>피{"   "}고</Text>
+                  <TextInput
+                    style={styles.personalInput}
+                    placeholder="이름을 입력해주세요."
+                    onChangeText={(defendant) => this.setState({ defendant })}
+                    value={this.state.defendant}
+                  ></TextInput>
+                </View>
+                <Text style={styles.contentSubTitle}>청 구 취 지</Text>
+                <TextInput
+                  multiline
+                  style={styles.purpose}
+                  placeholder={purposePlaceholder}
+                  onChangeText={(purpose) => this.setState({ purpose })}
+                  value={this.state.purpose}
+                ></TextInput>
+                <Text style={styles.contentSubTitle}>청 구 원 인</Text>
+                <TextInput
+                  multiline
+                  style={styles.cause}
+                  placeholder={causePlaceholder}
+                  onChangeText={(cause) => this.setState({ cause })}
+                  value={this.state.cause}
+                ></TextInput>
+              </ScrollView>
+            </View>
+            <TouchableOpacity style={styles.submit}>
+              <Text style={styles.submitText}>유사 판례 분석</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.pettition}>
-            <Text style={styles.petitionTitle}>소장</Text>
-          </View>
-          <TouchableOpacity style={styles.submit}>
-            <Text style={styles.submitText}>유사 판례 분석</Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </View>
-  );
+        </KeyboardAvoidingView>
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   body: {
-    flex: 10,
+    flex: 12,
     overflow: "scroll",
+  },
+  cause: {
+    backgroundColor: "#F6F6F6",
+    borderRadius: 8,
+    maxHeight: 150,
+    padding: "5%",
+    marginTop: "5%",
+    overflow: "scroll",
+    textAlignVertical: "top",
   },
   container: {
     flex: 1,
+    marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
+  },
+  contentSubTitle: {
+    fontSize: 18,
+    fontFamily: "KPBRegular",
+    marginTop: "10%",
+    alignSelf: "center",
   },
   field: {
-    fontFamily: Font.KPWDBold,
+    fontFamily: "KPWDBold",
     fontSize: 18,
     marginLeft: "5%",
   },
@@ -105,28 +189,47 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   header: {
-    flex: 1,
-    marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
-    backgroundColor: "#aaa",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingLeft: "5%",
     paddingRight: "5%",
+    minHeight: 50,
   },
   logoTitle: {
-    fontSize: 30,
-    fontFamily: Font.SCDream8,
+    fontSize: 20,
+    fontFamily: "SCDream8",
   },
   menu: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
+  },
+  person: {
+    fontSize: 15,
+    fontFamily: "KPBRegular",
+    marginTop: "2%",
+  },
+  personal: {
+    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  personalInput: {
+    backgroundColor: "#F6F6F6",
+    borderRadius: 8,
+    width: "80%",
+    paddingLeft: "5%",
+    margin: 0,
   },
   pettition: {
     flex: 8,
     borderWidth: 1,
     width: "90%",
-    height: "100%",
+    maxHeight: "100%",
+    paddingVertical: "5%",
+  },
+  pettitionScroll: {
+    paddingHorizontal: "5%",
   },
   pettitionContent: {
     flex: 8,
@@ -135,11 +238,21 @@ const styles = StyleSheet.create({
   },
   petitionTitle: {
     fontSize: 22,
-    fontFamily: Font.KPBRegular,
+    fontFamily: "KPBRegular",
+    alignSelf: "center",
   },
   profile: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
+  },
+  purpose: {
+    backgroundColor: "#F6F6F6",
+    borderRadius: 8,
+    maxHeight: 200,
+    padding: "5%",
+    marginTop: "5%",
+    overflow: "scroll",
+    textAlignVertical: "top",
   },
   selectField: {
     backgroundColor: "#8C8C8C",
@@ -164,11 +277,11 @@ const styles = StyleSheet.create({
   submitText: {
     fontSize: 18,
     color: colors.primary,
-    fontFamily: Font.KPWDBold,
+    fontFamily: "KPWDBold",
   },
   subTitle: {
     fontSize: 16,
-    fontFamily: Font.KPWDBold,
+    fontFamily: "KPWDBold",
     alignSelf: "flex-start",
     marginLeft: "5%",
   },
@@ -180,5 +293,3 @@ const styles = StyleSheet.create({
     marginLeft: "10%",
   },
 });
-
-export default WelcomeScreen;

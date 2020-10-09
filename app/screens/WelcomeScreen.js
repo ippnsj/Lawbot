@@ -9,21 +9,28 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-
 import * as Font from "expo-font";
+
 import colors from "../config/colors";
 
 export default class WelcomeScreen extends Component {
-  /*
-  Font.loadAsync({
-    SCDream8: require("../assets/fonts/SCDream8.otf"),
-    KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
-  });
-  */
   state = {
+    fontsLoaded: false,
     id: "",
     password: "",
   };
+
+  async _loadFonts() {
+    await Font.loadAsync({
+      SCDream8: require("../assets/fonts/SCDream8.otf"),
+      KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
+    });
+    this.setState({ fontsLoaded: true });
+  }
+
+  componentDidMount() {
+    this._loadFonts();
+  }
 
   loginEvent() {
     console.log("here");
@@ -32,6 +39,10 @@ export default class WelcomeScreen extends Component {
   }
 
   render() {
+    if (!this.state.fontsLoaded) {
+      return <View />;
+    }
+
     return (
       <KeyboardAvoidingView
         style={styles.container}
@@ -88,7 +99,7 @@ const styles = StyleSheet.create({
   },
   enrollButtonText: {
     color: "#868686",
-    //fontFamily: Font.KPWDBold,
+    fontFamily: "KPWDBold",
   },
   innerContainer: {
     justifyContent: "flex-end",
@@ -99,7 +110,7 @@ const styles = StyleSheet.create({
   logoTitle: {
     fontSize: 40,
     fontWeight: "bold",
-    //fontFamily: Font.SCDream8,
+    fontFamily: "SCDream8",
   },
   logoImage: {
     height: 250,
@@ -115,7 +126,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "#fff",
-    //fontFamily: Font.KPWDBold,
+    fontFamily: "KPWDBold",
   },
   textInput: {
     alignItems: "center",
