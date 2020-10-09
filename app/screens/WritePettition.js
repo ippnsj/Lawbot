@@ -10,15 +10,18 @@ import {
   SafeAreaView,
 } from "react-native";
 
-import * as Font from "expo-font";
+//import * as Font from "expo-font";
+import { Font } from "../src/Fonts";
 import colors from "../config/colors";
 
 function WelcomeScreen(props) {
+  /*
   Font.loadAsync({
     SCDream8: require("../assets/fonts/SCDream8.otf"),
     KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
     KPBRegular: require("../assets/fonts/KoPubBatang-Regular.ttf"),
   });
+  */
 
   return (
     <View style={styles.container}>
@@ -70,7 +73,6 @@ const styles = StyleSheet.create({
   },
   field: {
     fontFamily: Font.KPWDBold,
-    fontWeight: "bold",
     fontSize: 18,
     marginLeft: "5%",
   },
@@ -114,7 +116,6 @@ const styles = StyleSheet.create({
   },
   logoTitle: {
     fontSize: 30,
-    fontWeight: "bold",
     fontFamily: Font.SCDream8,
   },
   menu: {
@@ -135,7 +136,6 @@ const styles = StyleSheet.create({
   petitionTitle: {
     fontSize: 22,
     fontFamily: Font.KPBRegular,
-    fontWeight: "bold",
   },
   profile: {
     width: 30,
@@ -165,12 +165,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.primary,
     fontFamily: Font.KPWDBold,
-    fontWeight: "bold",
   },
   subTitle: {
     fontSize: 16,
     fontFamily: Font.KPWDBold,
-    fontWeight: "bold",
     alignSelf: "flex-start",
     marginLeft: "5%",
   },

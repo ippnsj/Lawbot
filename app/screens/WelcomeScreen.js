@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   Text,
   View,
@@ -13,36 +13,63 @@ import {
 import * as Font from "expo-font";
 import colors from "../config/colors";
 
-function WelcomeScreen(props) {
+export default class WelcomeScreen extends Component {
+  /*
   Font.loadAsync({
     SCDream8: require("../assets/fonts/SCDream8.otf"),
     KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
   });
+  */
+  state = {
+    id: "",
+    password: "",
+  };
 
-  return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : null}
-    >
-      <View style={{ flex: 1 }} />
-      <SafeAreaView style={styles.innerContainer}>
-        <Text style={styles.logoTitle}>LAWBOT</Text>
-        <Image
-          style={styles.logoImage}
-          source={require("../assets/logo.png")}
-        />
-        <TextInput placeholder="아이디" style={styles.textInput} />
-        <TextInput placeholder="비밀번호" style={styles.textInput} />
-        <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>로그인</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.enrollButton}>
-          <Text style={styles.enrollButtonText}>회원가입</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-      <View style={{ flex: 1 }} />
-    </KeyboardAvoidingView>
-  );
+  loginEvent() {
+    console.log("here");
+    console.log(this.state.id);
+    console.log(this.state.password);
+  }
+
+  render() {
+    return (
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : null}
+      >
+        <View style={{ flex: 1 }} />
+        <SafeAreaView style={styles.innerContainer}>
+          <Text style={styles.logoTitle}>LAWBOT</Text>
+          <Image
+            style={styles.logoImage}
+            source={require("../assets/logo.png")}
+          />
+          <TextInput
+            placeholder="아이디"
+            style={styles.textInput}
+            onChangeText={(id) => this.setState({ id })}
+            value={this.state.id}
+          />
+          <TextInput
+            placeholder="비밀번호"
+            style={styles.textInput}
+            onChangeText={(password) => this.setState({ password })}
+            value={this.state.password}
+          />
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={() => this.loginEvent()}
+          >
+            <Text style={styles.loginButtonText}>로그인</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.enrollButton}>
+            <Text style={styles.enrollButtonText}>회원가입</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+        <View style={{ flex: 1 }} />
+      </KeyboardAvoidingView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
@@ -61,8 +88,7 @@ const styles = StyleSheet.create({
   },
   enrollButtonText: {
     color: "#868686",
-    fontFamily: Font.KPWDBold,
-    fontWeight: "bold",
+    //fontFamily: Font.KPWDBold,
   },
   innerContainer: {
     justifyContent: "flex-end",
@@ -73,7 +99,7 @@ const styles = StyleSheet.create({
   logoTitle: {
     fontSize: 40,
     fontWeight: "bold",
-    fontFamily: Font.SCDream8,
+    //fontFamily: Font.SCDream8,
   },
   logoImage: {
     height: 250,
@@ -89,8 +115,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: "#fff",
-    fontFamily: Font.KPWDBold,
-    fontWeight: "bold",
+    //fontFamily: Font.KPWDBold,
   },
   textInput: {
     alignItems: "center",
@@ -103,5 +128,3 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
-
-export default WelcomeScreen;
