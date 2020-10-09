@@ -24,6 +24,7 @@ function WelcomeScreen(props) {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : null}
     >
+      <View style={{ flex: 1 }} />
       <SafeAreaView style={styles.innerContainer}>
         <Text style={styles.logoTitle}>LAWBOT</Text>
         <Image
@@ -68,7 +69,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flex: 4,
     width: "100%",
-    padding: 24,
   },
   logoTitle: {
     fontSize: 40,
