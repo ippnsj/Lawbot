@@ -40,6 +40,7 @@ export default class WritePettition extends Component {
     cause: "",
     cameraPermission: false,
     cameraRollPermission: false,
+    pictureURI: "",
   };
 
   async _loadFonts() {
@@ -89,14 +90,12 @@ export default class WritePettition extends Component {
   }
 
   async takePictureAndCreateAlbum() {
-    console.log("tpaca");
     const { uri } = await this.camera.takePictureAsync();
-    console.log("uri", uri);
     const asset = await MediaLibrary.createAssetAsync(uri);
-    console.log("asset", asset);
     MediaLibrary.createAlbumAsync("Expo", asset)
       .then(() => {
-        Alert.alert("Album created!");
+        this.setState({ pictureURI: asset.uri });
+        console.log(this.state.pictureURI);
       })
       .catch((error) => {
         Alert.alert("An Error Occurred!");
@@ -106,6 +105,22 @@ export default class WritePettition extends Component {
   render() {
     if (!this.state.fontsLoaded) {
       return <View />;
+    }
+
+    if (this.state.pictureURI !== "") {
+      return (
+        <View style={styles.picturePreviewContainer}>
+          <Image
+            source={{ uri: this.state.pictureURI }}
+            style={styles.picturePreview}
+          />
+          <View style={styles.picturePreviewUnderbar}>
+            <TouchableOpacity style={styles.pictureSubmit} onPress={() => {}}>
+              <Text style={styles.submitText}>확인</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
     }
 
     if (this.state.cameraPermission && this.state.cameraRollPermission) {
@@ -333,6 +348,25 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: "KPBRegular",
     alignSelf: "center",
+  },
+  picturePreviewContainer: {
+    flex: 1,
+  },
+  picturePreview: {
+    flex: 8,
+  },
+  picturePreviewUnderbar: {
+    flex: 1,
+    alignItems: "center",
+  },
+  pictureSubmit: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderRadius: 5,
+    width: "20%",
+    marginVertical: "5%",
+    alignItems: "center",
+    paddingVertical: "0.5%",
   },
   profile: {
     width: 20,
