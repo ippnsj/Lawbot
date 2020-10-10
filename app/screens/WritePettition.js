@@ -8,8 +8,12 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import * as Font from "expo-font";
+import * as Permissions from "expo-permissions";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
 
 import colors from "../config/colors";
 
@@ -34,6 +38,8 @@ export default class WritePettition extends Component {
     defendant: "",
     purpost: "",
     cause: "",
+    cameraPermission: false,
+    cameraRollPermission: false,
   };
 
   async _loadFonts() {
@@ -49,9 +55,85 @@ export default class WritePettition extends Component {
     this._loadFonts();
   }
 
+  //   uploadFile() {
+  //     const options = {
+  //       title: "Select Picker",
+  //       takePhotoButtonTitle: "카메라",
+  //       chooseFromLibraryButtonTitle: "갤러리",
+  //       cancelButtonTitle: "취소",
+  //     };
+
+  // ImagePicker.showImagePicker(options, () => {});
+  //   }
+
+  async getCameraPermission() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status === "granted") {
+      this.setState({ cameraPermission: true });
+      this.getCameraRollPermission();
+    } else {
+      this.setState({ cameraPermission: false });
+      alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
+    }
+  }
+
+  async getCameraRollPermission() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status === "granted") {
+      this.setState({ cameraRollPermission: true });
+      console.log("okay!!!");
+    } else {
+      this.setState({ cameraRollPermission: false });
+      alert("사진첩 접근권한을 주어야 사진업로드가 가능합니다.");
+    }
+  }
+
+  async takePictureAndCreateAlbum() {
+    console.log("tpaca");
+    const { uri } = await this.camera.takePictureAsync();
+    console.log("uri", uri);
+    const asset = await MediaLibrary.createAssetAsync(uri);
+    console.log("asset", asset);
+    MediaLibrary.createAlbumAsync("Expo", asset)
+      .then(() => {
+        Alert.alert("Album created!");
+      })
+      .catch((error) => {
+        Alert.alert("An Error Occurred!");
+      });
+  }
+
   render() {
     if (!this.state.fontsLoaded) {
       return <View />;
+    }
+
+    if (this.state.cameraPermission && this.state.cameraRollPermission) {
+      return (
+        <View style={{ flex: 1 }}>
+          <Camera
+            style={{ flex: 1 }}
+            type={Camera.Constants.Type.back}
+            ref={(ref) => {
+              this.camera = ref;
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "transparent",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={styles.cameraTake}
+                onPress={() => this.takePictureAndCreateAlbum()}
+              ></TouchableOpacity>
+            </View>
+          </Camera>
+        </View>
+      );
     }
 
     return (
@@ -78,7 +160,10 @@ export default class WritePettition extends Component {
               <Text style={styles.fileUploadGuide}>
                 소장을 스캔해서 올리시려면?
               </Text>
-              <TouchableOpacity style={styles.fileUpload}>
+              <TouchableOpacity
+                style={styles.fileUpload}
+                onPress={() => this.getCameraPermission()}
+              >
                 <Text style={styles.fileUploadText}>PDF 파일 업로드</Text>
               </TouchableOpacity>
             </View>
@@ -135,6 +220,14 @@ const styles = StyleSheet.create({
   body: {
     flex: 12,
     overflow: "scroll",
+  },
+  cameraTake: {
+    alignSelf: "flex-end",
+    height: 80,
+    width: 80,
+    backgroundColor: "#fff",
+    borderRadius: 40,
+    marginBottom: "10%",
   },
   cause: {
     backgroundColor: "#F6F6F6",
