@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   ScrollView,
-  Alert,
   Modal
 } from "react-native";
 import * as Font from "expo-font";
@@ -41,7 +40,7 @@ export default class WritePettition extends Component {
     cause: "",
     cameraPermission: false,
     cameraRollPermission: false,
-    pdfURI: "",
+    file: null,
     fieldSelectVisible: false,
   };
 
@@ -69,10 +68,38 @@ export default class WritePettition extends Component {
     // }
   // }
 
+  async fetchOCR() {
+    let data = new FormData();
+    data.append("data", this.state.file);
+
+    new Promise((resolve, reject)=> {
+      fetch("http://52.78.171.102:8080/apicall", {
+        method: "POST",
+        body: data,
+        headers: {
+            // 'Content-Type': 'multipart/form-data',
+            // 'Accept': 'application/json',
+        },
+      // }).then((result) => {
+      //   return result.json();
+      // }).then((result) => {
+      //   console.log(result);
+      //   var txt = "";
+      //   for(const elem of result.images[0].fields) {
+      //       txt += elem.inferText + " ";
+      //   }
+      //   console.log(txt);
+      });
+    });
+  }
+
   async uploadPDF() {
-    let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
-    this.setState({ pdfURI: result.uri });
-    console.log(this.state.pdfURI);
+    // let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
+    let result = await DocumentPicker.getDocumentAsync({ });
+    this.setState({ file: result });
+    this.state.file.type = "image/jpg";
+    console.log(this.state.file.type);
+    this.fetchOCR();
   }
 
   // async getCameraRollPermission() {
