@@ -9,11 +9,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Modal
 } from "react-native";
 import * as Font from "expo-font";
-import * as Permissions from "expo-permissions";
-import { Camera } from "expo-camera";
-import * as MediaLibrary from "expo-media-library";
+// import * as Permissions from "expo-permissions";
+// import { Camera } from "expo-camera";
+// import * as MediaLibrary from "expo-media-library";
+import * as DocumentPicker from 'expo-document-picker';
 
 import colors from "../config/colors";
 
@@ -34,13 +36,13 @@ const causePlaceholder = `청구원인을 자세히 입력해주세요.
 export default class WritePettition extends Component {
   state = {
     fontsLoaded: false,
-    complainant: "",
-    defendant: "",
-    purpost: "",
+    field: "손해배상(자)",
+    purpose: "",
     cause: "",
     cameraPermission: false,
     cameraRollPermission: false,
     pictureURI: "",
+    fieldSelectVisible: false,
   };
 
   async _loadFonts() {
@@ -56,50 +58,47 @@ export default class WritePettition extends Component {
     this._loadFonts();
   }
 
-  //   uploadFile() {
-  //     const options = {
-  //       title: "Select Picker",
-  //       takePhotoButtonTitle: "카메라",
-  //       chooseFromLibraryButtonTitle: "갤러리",
-  //       cancelButtonTitle: "취소",
-  //     };
+  // async getCameraPermission() {
+    // const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    // if (status === "granted") {
+    //   this.setState({ cameraPermission: true });
+    //   this.getCameraRollPermission();
+    // } else {
+    //   this.setState({ cameraPermission: false });
+    //   alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
+    // }
+  // }
 
-  // ImagePicker.showImagePicker(options, () => {});
+  async uploadPDF() {
+    let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
+    console.log(result.uri);
+  }
+
+  // async getCameraRollPermission() {
+  //   const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  //   if (status === "granted") {
+  //     this.setState({ cameraRollPermission: true });
+  //     console.log("okay!!!");
+  //   } else {
+  //     this.setState({ cameraRollPermission: false });
+  //     alert("사진첩 접근권한을 주어야 사진업로드가 가능합니다.");
   //   }
+  // }
 
-  async getCameraPermission() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    if (status === "granted") {
-      this.setState({ cameraPermission: true });
-      this.getCameraRollPermission();
-    } else {
-      this.setState({ cameraPermission: false });
-      alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
-    }
-  }
+  // async takePictureAndCreateAlbum() {
+  //   const { uri } = await this.camera.takePictureAsync();
+  //   const asset = await MediaLibrary.createAssetAsync(uri);
+  //   MediaLibrary.createAlbumAsync("Expo", asset)
+  //     .then(() => {
+  //       this.setState({ pictureURI: asset.uri });
+  //     })
+  //     .catch((error) => {
+  //       Alert.alert("An Error Occurred!");
+  //     });
+  // }
 
-  async getCameraRollPermission() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-    if (status === "granted") {
-      this.setState({ cameraRollPermission: true });
-      console.log("okay!!!");
-    } else {
-      this.setState({ cameraRollPermission: false });
-      alert("사진첩 접근권한을 주어야 사진업로드가 가능합니다.");
-    }
-  }
-
-  async takePictureAndCreateAlbum() {
-    const { uri } = await this.camera.takePictureAsync();
-    const asset = await MediaLibrary.createAssetAsync(uri);
-    MediaLibrary.createAlbumAsync("Expo", asset)
-      .then(() => {
-        this.setState({ pictureURI: asset.uri });
-        console.log(this.state.pictureURI);
-      })
-      .catch((error) => {
-        Alert.alert("An Error Occurred!");
-      });
+  overlayClose() {
+    this.setState({fieldSelectVisible: false});
   }
 
   render() {
@@ -107,49 +106,50 @@ export default class WritePettition extends Component {
       return <View />;
     }
 
-    if (this.state.pictureURI !== "") {
-      return (
-        <View style={styles.picturePreviewContainer}>
-          <Image
-            source={{ uri: this.state.pictureURI }}
-            style={styles.picturePreview}
-          />
-          <View style={styles.picturePreviewUnderbar}>
-            <TouchableOpacity style={styles.pictureSubmit} onPress={() => {}}>
-              <Text style={styles.submitText}>확인</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    }
+    // if (this.state.pictureURI !== "") {
+    //   return (
+    //     <View style={styles.picturePreviewContainer}>
+    //       <View style={{ flex: 1 }}></View>
+    //       <Image
+    //         source={{ uri: this.state.pictureURI }}
+    //         style={styles.picturePreview}
+    //       />
+    //       <View style={styles.picturePreviewUnderbar}>
+    //         <TouchableOpacity style={styles.pictureSubmit} onPress={() => {}}>
+    //           <Text style={styles.submitText}>확인</Text>
+    //         </TouchableOpacity>
+    //       </View>
+    //     </View>
+    //   );
+    // }
 
-    if (this.state.cameraPermission && this.state.cameraRollPermission) {
-      return (
-        <View style={{ flex: 1 }}>
-          <Camera
-            style={{ flex: 1 }}
-            type={Camera.Constants.Type.back}
-            ref={(ref) => {
-              this.camera = ref;
-            }}
-          >
-            <View
-              style={{
-                flex: 1,
-                backgroundColor: "transparent",
-                flexDirection: "row",
-                justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                style={styles.cameraTake}
-                onPress={() => this.takePictureAndCreateAlbum()}
-              ></TouchableOpacity>
-            </View>
-          </Camera>
-        </View>
-      );
-    }
+    // if (this.state.cameraPermission && this.state.cameraRollPermission) {
+    //   return (
+    //     <View style={{ flex: 1 }}>
+    //       <Camera
+    //         style={{ flex: 1 }}
+    //         type={Camera.Constants.Type.back}
+    //         ref={(ref) => {
+    //           this.camera = ref;
+    //         }}
+    //       >
+    //         <View
+    //           style={{
+    //             flex: 1,
+    //             backgroundColor: "transparent",
+    //             flexDirection: "row",
+    //             justifyContent: "center",
+    //           }}
+    //         >
+    //           <TouchableOpacity
+    //             style={styles.cameraTake}
+    //             onPress={() => this.takePictureAndCreateAlbum()}
+    //           ></TouchableOpacity>
+    //         </View>
+    //       </Camera>
+    //     </View>
+    //   );
+    // }
 
     return (
       <View style={styles.container}>
@@ -163,8 +163,8 @@ export default class WritePettition extends Component {
         </View>
         <KeyboardAvoidingView style={styles.body}>
           <View style={styles.fieldContatiner}>
-            <Text style={styles.field}>손해배상(자)</Text>
-            <TouchableOpacity style={styles.selectField}>
+            <Text style={styles.field}>{this.state.field}</Text>
+            <TouchableOpacity style={styles.selectField} onPress={() => this.setState({fieldSelectVisible: true})}>
               <Text style={styles.selectFieldText}>다른 분야 선택</Text>
             </TouchableOpacity>
             <View style={styles.underbar} />
@@ -177,7 +177,7 @@ export default class WritePettition extends Component {
               </Text>
               <TouchableOpacity
                 style={styles.fileUpload}
-                onPress={() => this.getCameraPermission()}
+                onPress={() => this.uploadPDF()}
               >
                 <Text style={styles.fileUploadText}>PDF 파일 업로드</Text>
               </TouchableOpacity>
@@ -185,7 +185,7 @@ export default class WritePettition extends Component {
             <View style={styles.pettition}>
               <ScrollView style={styles.pettitionScroll}>
                 <Text style={styles.petitionTitle}>소 장</Text>
-                <View style={styles.personal}>
+                {/* <View style={styles.personal}>
                   <Text style={styles.person}>원{"   "}고</Text>
                   <TextInput
                     style={styles.personalInput}
@@ -202,7 +202,7 @@ export default class WritePettition extends Component {
                     onChangeText={(defendant) => this.setState({ defendant })}
                     value={this.state.defendant}
                   ></TextInput>
-                </View>
+                </View> */}
                 <Text style={styles.contentSubTitle}>청 구 취 지</Text>
                 <TextInput
                   multiline
@@ -226,6 +226,73 @@ export default class WritePettition extends Component {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
+        <Modal visible={this.state.fieldSelectVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
+          <View style={styles.fieldSelectModal}>
+            <View style={styles.fieldSelectContainer}>
+              <View style={styles.fieldSelectHeader}>
+                <Text style={styles.fieldModalText}>분야선택</Text>
+                <TouchableOpacity style={styles.fieldExcButton} onPress={() => {this.setState({field: "손해배상(기)"}); this.overlayClose();}}>
+                  <Text style={styles.fieldExcText}>기타 분야</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.fieldRow}>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(자)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/carAccident.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>자동차</Text>
+                </View>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(산)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/industrialAccident.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>산업재해</Text>
+                </View>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(환)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/environment.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>환경</Text>
+                </View>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(언)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/press.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>언론보도</Text>
+                </View>
+              </View>
+              <View style={styles.fieldRow}>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(지)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/intellectualProperty.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>지식재산권</Text>
+                </View>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(의)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/medical.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>의료</Text>
+                </View>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(건)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/construction.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>건설</Text>
+                </View>
+                <View style={styles.fieldButtonContainer}>
+                  <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "손해배상(국)"}); this.overlayClose();}}>
+                    <Image style={styles.fieldImage} source={require("../assets/government.png")} />
+                  </TouchableOpacity>
+                  <Text style={styles.fieldText}>국가</Text>
+                </View>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.fieldSelectCancel} onPress={() => this.overlayClose()}>
+              <Text style={styles.fieldSelectCancelText}>취소</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -249,7 +316,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     maxHeight: 150,
     padding: "5%",
-    marginTop: "5%",
+    marginVertical: "3%",
     overflow: "scroll",
     textAlignVertical: "top",
   },
@@ -260,7 +327,7 @@ const styles = StyleSheet.create({
   contentSubTitle: {
     fontSize: 18,
     fontFamily: "KPBRegular",
-    marginTop: "10%",
+    marginTop: "5%",
     alignSelf: "center",
   },
   field: {
@@ -268,12 +335,94 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginLeft: "5%",
   },
+  fieldButton: {
+    width: 60,
+    height: 60,
+    backgroundColor: "#E7E7E7",
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  fieldButtonContainer: {
+    justifyContent: "center",
+    alignItems: "center"
+  },
   fieldContatiner: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
     paddingBottom: "3%",
+  },
+  fieldExcButton: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    width: "25%",
+    height: "45%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.secondary
+  },
+  fieldExcText: {
+    color: "#fff",
+    fontSize: 15,
+    fontFamily: "KPWDBold"
+  },
+  fieldRow: {
+    flex: 5,
+    backgroundColor: "#fff",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center"
+  },
+  fieldImage: {
+    width: "60%",
+    height: "60%"
+  },
+  fieldSelectCancel: {
+    backgroundColor: colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "80%",
+    height: "6%",
+    alignSelf: "center"
+  },
+  fieldSelectCancelText: {
+    color: "#fff",
+    fontSize: 15,
+    fontFamily: "KPWDBold",
+  },
+  fieldSelectContainer: {
+    height: "35%",
+    width: "80%",
+    backgroundColor: "#fff",
+    alignItems: "center",
+    alignSelf: "center",
+    paddingHorizontal: "2%",
+    paddingVertical: "3%"
+  },
+  fieldSelectHeader:
+  {
+    flex: 2,
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "center"
+  },
+  fieldSelectModal: {
+    flex: 1,
+    backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    justifyContent: "center",
+  },
+  fieldModalText: {
+    fontSize: 20,
+    fontFamily: "KPWDBold",
+  },
+  fieldText: {
+    fontSize: 15,
+    fontFamily: "KPWDBold",
+    marginTop: 8
   },
   fileUpload: {
     backgroundColor: colors.primary,
@@ -312,23 +461,23 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
-  person: {
-    fontSize: 15,
-    fontFamily: "KPBRegular",
-    marginTop: "2%",
-  },
-  personal: {
-    marginTop: 20,
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  personalInput: {
-    backgroundColor: "#F6F6F6",
-    borderRadius: 8,
-    width: "80%",
-    paddingLeft: "5%",
-    margin: 0,
-  },
+  // person: {
+  //   fontSize: 15,
+  //   fontFamily: "KPBRegular",
+  //   marginTop: "2%",
+  // },
+  // personal: {
+  //   marginTop: 20,
+  //   flexDirection: "row",
+  //   justifyContent: "space-between",
+  // },
+  // personalInput: {
+  //   backgroundColor: "#F6F6F6",
+  //   borderRadius: 8,
+  //   width: "80%",
+  //   paddingLeft: "5%",
+  //   margin: 0,
+  // },
   pettition: {
     flex: 8,
     borderWidth: 1,
@@ -377,7 +526,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     maxHeight: 200,
     padding: "5%",
-    marginTop: "5%",
+    marginVertical: "3%",
     overflow: "scroll",
     textAlignVertical: "top",
   },
