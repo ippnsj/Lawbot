@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   SafeAreaView,
+  Alert,
 } from "react-native";
 import * as Font from "expo-font";
 
@@ -33,9 +34,30 @@ export default class WelcomeScreen extends Component {
   }
 
   loginEvent() {
-    console.log("here");
-    console.log(this.state.id);
-    console.log(this.state.password);
+    var a = {};
+    a.userID = this.state.id;
+    a.userPW = this.state.password;
+    fetch("http://52.78.171.102:8080/user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(a),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.success === true) {
+          Alert.alert("Login Success", "로그인 되었습니다.");
+        } else {
+          Alert.alert(
+            "Login Failure",
+            "아이디가 존재하지 않거나 패스워드가 일치하지 않습니다."
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   render() {

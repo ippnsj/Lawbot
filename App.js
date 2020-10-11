@@ -4,6 +4,6 @@ import WritePettition from "./app/screens/WritePettition";
 
 export default class App extends Component {
   render() {
-    return <WritePettition />;
+    return <WelcomeScreen />;
   }
 }
