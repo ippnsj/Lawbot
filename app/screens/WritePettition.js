@@ -8,13 +8,15 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   ScrollView,
-  Modal
+  Modal,
+  BackHandler
 } from "react-native";
 import * as Font from "expo-font";
-// import * as Permissions from "expo-permissions";
-// import { Camera } from "expo-camera";
-// import * as MediaLibrary from "expo-media-library";
-import * as DocumentPicker from 'expo-document-picker';
+import * as Permissions from "expo-permissions";
+import { Camera } from "expo-camera";
+import * as MediaLibrary from "expo-media-library";
+import * as ImageManipulator from "expo-image-manipulator";
+//import * as DocumentPicker from 'expo-document-picker';
 
 import colors from "../config/colors";
 
@@ -55,18 +57,27 @@ export default class WritePettition extends Component {
 
   componentDidMount() {
     this._loadFonts();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
   }
 
-  // async getCameraPermission() {
-    // const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    // if (status === "granted") {
-    //   this.setState({ cameraPermission: true });
-    //   this.getCameraRollPermission();
-    // } else {
-    //   this.setState({ cameraPermission: false });
-    //   alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
-    // }
-  // }
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton() {
+    BackHandler.exitApp();
+  }
+
+  async getCameraPermission() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status === "granted") {
+      this.setState({ cameraPermission: true });
+      this.getCameraRollPermission();
+    } else {
+      this.setState({ cameraPermission: false });
+      alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
+    }
+  }
 
   async fetchOCR() {
     let data = new FormData();
@@ -95,36 +106,42 @@ export default class WritePettition extends Component {
 
   async uploadPDF() {
     // let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
-    let result = await DocumentPicker.getDocumentAsync({ });
-    this.setState({ file: result });
+    // let result = await DocumentPicker.getDocumentAsync({ });
+    //   this.setState({ file: result });
     var lastIndex = this.state.file.uri.lastIndexOf(".");
     var mimetype = this.state.file.uri.substr(lastIndex+1);
+    this.state.file.name = this.state.file.filename;
     this.state.file.type = "application/" + mimetype;
     this.fetchOCR();
   }
 
-  // async getCameraRollPermission() {
-  //   const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-  //   if (status === "granted") {
-  //     this.setState({ cameraRollPermission: true });
-  //     console.log("okay!!!");
-  //   } else {
-  //     this.setState({ cameraRollPermission: false });
-  //     alert("사진첩 접근권한을 주어야 사진업로드가 가능합니다.");
-  //   }
-  // }
+  async getCameraRollPermission() {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    if (status === "granted") {
+      this.setState({ cameraRollPermission: true });
+      console.log("okay!!!");
+    } else {
+      this.setState({ cameraRollPermission: false });
+      alert("사진첩 접근권한을 주어야 사진업로드가 가능합니다.");
+    }
+  }
 
-  // async takePictureAndCreateAlbum() {
-  //   const { uri } = await this.camera.takePictureAsync();
-  //   const asset = await MediaLibrary.createAssetAsync(uri);
-  //   MediaLibrary.createAlbumAsync("Expo", asset)
-  //     .then(() => {
-  //       this.setState({ pictureURI: asset.uri });
-  //     })
-  //     .catch((error) => {
-  //       Alert.alert("An Error Occurred!");
-  //     });
-  // }
+  async takePictureAndCreateAlbum() {
+    const { uri } = await this.camera.takePictureAsync();
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [{ rotate: 90 }, { flip: ImageManipulator.FlipType.Vertical }]
+    );
+    const asset = await MediaLibrary.createAssetAsync(uri);
+    MediaLibrary.createAlbumAsync("Expo", asset)
+      .then(() => {
+        this.setState({ file: asset });
+        console.log(this.state.file);
+      })
+      .catch((error) => {
+        Alert.alert("An Error Occurred!");
+      });
+  }
 
   overlayClose() {
     this.setState({fieldSelectVisible: false});
@@ -135,50 +152,50 @@ export default class WritePettition extends Component {
       return <View />;
     }
 
-    // if (this.state.pictureURI !== "") {
-    //   return (
-    //     <View style={styles.picturePreviewContainer}>
-    //       <View style={{ flex: 1 }}></View>
-    //       <Image
-    //         source={{ uri: this.state.pictureURI }}
-    //         style={styles.picturePreview}
-    //       />
-    //       <View style={styles.picturePreviewUnderbar}>
-    //         <TouchableOpacity style={styles.pictureSubmit} onPress={() => {}}>
-    //           <Text style={styles.submitText}>확인</Text>
-    //         </TouchableOpacity>
-    //       </View>
-    //     </View>
-    //   );
-    // }
+    if (this.state.file !== null) {
+      return (
+        <View style={styles.picturePreviewContainer}>
+          <View style={{ flex: 1 }}></View>
+          <Image
+            source={{ uri: this.state.file.uri }}
+            style={styles.picturePreview}
+          />
+          <View style={styles.picturePreviewUnderbar}>
+            <TouchableOpacity style={styles.pictureSubmit} onPress={() => {this.uploadPDF();}}>
+              <Text style={styles.submitText}>확인</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
 
-    // if (this.state.cameraPermission && this.state.cameraRollPermission) {
-    //   return (
-    //     <View style={{ flex: 1 }}>
-    //       <Camera
-    //         style={{ flex: 1 }}
-    //         type={Camera.Constants.Type.back}
-    //         ref={(ref) => {
-    //           this.camera = ref;
-    //         }}
-    //       >
-    //         <View
-    //           style={{
-    //             flex: 1,
-    //             backgroundColor: "transparent",
-    //             flexDirection: "row",
-    //             justifyContent: "center",
-    //           }}
-    //         >
-    //           <TouchableOpacity
-    //             style={styles.cameraTake}
-    //             onPress={() => this.takePictureAndCreateAlbum()}
-    //           ></TouchableOpacity>
-    //         </View>
-    //       </Camera>
-    //     </View>
-    //   );
-    // }
+    if (this.state.cameraPermission && this.state.cameraRollPermission) {
+      return (
+        <View style={{ flex: 1 }}>
+          <Camera
+            style={{ flex: 1 }}
+            type={Camera.Constants.Type.back}
+            ref={(ref) => {
+              this.camera = ref;
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "transparent",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              <TouchableOpacity
+                style={styles.cameraTake}
+                onPress={() => this.takePictureAndCreateAlbum()}
+              ></TouchableOpacity>
+            </View>
+          </Camera>
+        </View>
+      );
+    }
 
     return (
       <View style={styles.container}>
@@ -202,13 +219,13 @@ export default class WritePettition extends Component {
             <Text style={styles.subTitle}>소장 양식 입력</Text>
             <View style={styles.fileUploadContainer}>
               <Text style={styles.fileUploadGuide}>
-                소장을 스캔해서 올리시려면?
+                소장을 찍어서 올리시려면?
               </Text>
               <TouchableOpacity
                 style={styles.fileUpload}
-                onPress={() => this.uploadPDF()}
+                onPress={() => this.getCameraPermission()}
               >
-                <Text style={styles.fileUploadText}>PDF 파일 업로드</Text>
+                <Text style={styles.fileUploadText}>사진 파일 업로드</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.pettition}>
