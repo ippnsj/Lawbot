@@ -70,7 +70,7 @@ export default class WritePettition extends Component {
 
   async fetchOCR() {
     let data = new FormData();
-    data.append("data", this.state.file);
+    data.append("temp", this.state.file);
 
     new Promise((resolve, reject)=> {
       fetch("http://52.78.171.102:8080/apicall", {
@@ -80,15 +80,15 @@ export default class WritePettition extends Component {
             // 'Content-Type': 'multipart/form-data',
             // 'Accept': 'application/json',
         },
-      // }).then((result) => {
-      //   return result.json();
-      // }).then((result) => {
-      //   console.log(result);
-      //   var txt = "";
-      //   for(const elem of result.images[0].fields) {
-      //       txt += elem.inferText + " ";
-      //   }
-      //   console.log(txt);
+      }).then((result) => {
+        return result.json();
+      }).then((result) => {
+        console.log(result);
+        var txt = "";
+        for(const elem of result.images[0].fields) {
+            txt += elem.inferText + " ";
+        }
+        console.log(txt);
       });
     });
   }
@@ -97,8 +97,9 @@ export default class WritePettition extends Component {
     // let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
     let result = await DocumentPicker.getDocumentAsync({ });
     this.setState({ file: result });
-    this.state.file.type = "image/jpg";
-    console.log(this.state.file.type);
+    var lastIndex = this.state.file.uri.lastIndexOf(".");
+    var mimetype = this.state.file.uri.substr(lastIndex+1);
+    this.state.file.type = "application/" + mimetype;
     this.fetchOCR();
   }
 
