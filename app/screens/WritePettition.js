@@ -41,7 +41,7 @@ export default class WritePettition extends Component {
     cause: "",
     cameraPermission: false,
     cameraRollPermission: false,
-    pictureURI: "",
+    pdfURI: "",
     fieldSelectVisible: false,
   };
 
@@ -71,7 +71,8 @@ export default class WritePettition extends Component {
 
   async uploadPDF() {
     let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
-    console.log(result.uri);
+    this.setState({ pdfURI: result.uri });
+    console.log(this.state.pdfURI);
   }
 
   // async getCameraRollPermission() {
