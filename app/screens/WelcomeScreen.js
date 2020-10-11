@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
+  ToastAndroid,
+  BackHandler
 } from "react-native";
 import * as Font from "expo-font";
 
@@ -31,6 +33,15 @@ export default class WelcomeScreen extends Component {
 
   componentDidMount() {
     this._loadFonts();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton() {
+    BackHandler.exitApp();
   }
 
   loginEvent() {
@@ -47,7 +58,8 @@ export default class WelcomeScreen extends Component {
       .then((response) => response.json())
       .then((json) => {
         if (json.success === true) {
-          Alert.alert("Login Success", "로그인 되었습니다.");
+          ToastAndroid.show("로그인 되었습니다.", ToastAndroid.SHORT);
+          this.props.navigation.navigate('WritePettition');
         } else {
           Alert.alert(
             "Login Failure",
@@ -110,6 +122,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
     overflow: "hidden",
+    backgroundColor: "#fff",
   },
   enrollButton: {
     alignItems: "center",

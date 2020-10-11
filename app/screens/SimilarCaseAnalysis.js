@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       marginTop: Platform.OS === `ios` ? 1 : Expo.Constants.statusBarHeight,
+      backgroundColor: "#fff",
     },
     header: {
       flexDirection: "row",
