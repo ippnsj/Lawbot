@@ -48,28 +48,29 @@ export default class WelcomeScreen extends Component {
     var a = {};
     a.userID = this.state.id;
     a.userPW = this.state.password;
-    fetch("http://52.78.171.102:8080/user/login", {
+    fetch("http://52.78.171.102:8080/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(a),
     })
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.success === true) {
-          ToastAndroid.show("로그인 되었습니다.", ToastAndroid.SHORT);
-          this.props.navigation.navigate('WritePettition');
-        } else {
-          Alert.alert(
-            "Login Failure",
-            "아이디가 존재하지 않거나 패스워드가 일치하지 않습니다."
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    .then((response) => {
+      return response.json();})
+    .then((json) => {
+      if (json.success === true) {
+        ToastAndroid.show("로그인 되었습니다.", ToastAndroid.SHORT);
+        this.props.navigation.navigate('WritePettition');
+      } else {
+        Alert.alert(
+          "Login Failure",
+          "아이디가 존재하지 않거나 패스워드가 일치하지 않습니다."
+        );
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
 
   render() {
