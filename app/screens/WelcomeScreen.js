@@ -56,11 +56,9 @@ export default class WelcomeScreen extends Component {
       body: JSON.stringify(a),
     })
     .then((response) => {
-      console.log(response);
       return response.json();
     }).then((json) => {
       if (json.success === true) {
-        console.log ("hi");
         ToastAndroid.show("로그인 되었습니다.", ToastAndroid.SHORT);
         this.props.navigation.navigate('WritePettition');
       } else {
