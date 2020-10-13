@@ -15,8 +15,10 @@ export default class App extends Component {
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="WritePettition" component={WritePettition} options={{ headerShown: false }} />
           <Stack.Screen name="SimilarCaseAnalysis" component={SimilarCaseAnalysis} options={{ headerShown: false }} />
+          <SimilarCaseAnalysis/>
         </Stack.Navigator>
       </NavigationContainer>
+      // <SimilarCaseAnalysis />
     )
   }
 }
