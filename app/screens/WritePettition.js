@@ -100,6 +100,8 @@ export default class WritePettition extends Component {
             txt += elem.inferText + " ";
         }
         console.log(txt);
+
+        
       });
     });
   }
