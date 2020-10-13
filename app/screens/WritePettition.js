@@ -44,6 +44,7 @@ export default class WritePettition extends Component {
     cameraRollPermission: false,
     file: null,
     fieldSelectVisible: false,
+
   };
 
   async _loadFonts() {
@@ -94,14 +95,16 @@ export default class WritePettition extends Component {
       }).then((result) => {
         return result.json();
       }).then((result) => {
-        console.log(result);
         var txt = "";
         for(const elem of result.images[0].fields) {
             txt += elem.inferText + " ";
         }
-        console.log(txt);
-
-        
+        var regEx = /청\s?구\s?취\s?지/gmu;
+        var regEx1 = /청\s?구\s?원\s?인/gmu;
+        var split = txt.split(regEx);
+        var split1 = split[1].split(regEx1);
+        this.state.purpose = split1[0];
+        this.state.cause = split1[1];
       });
     });
   }
@@ -121,7 +124,7 @@ export default class WritePettition extends Component {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     if (status === "granted") {
       this.setState({ cameraRollPermission: true });
-      console.log("okay!!!");
+      // console.log("okay!!!");
     } else {
       this.setState({ cameraRollPermission: false });
       alert("사진첩 접근권한을 주어야 사진업로드가 가능합니다.");
@@ -138,7 +141,7 @@ export default class WritePettition extends Component {
     MediaLibrary.createAlbumAsync("Expo", asset)
       .then(() => {
         this.setState({ file: asset });
-        console.log(this.state.file);
+        // console.log(this.state.file);
       })
       .catch((error) => {
         Alert.alert("An Error Occurred!");
