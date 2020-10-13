@@ -63,6 +63,7 @@ export default class WritePettition extends Component {
 
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    this.setState({fieldSelectVisible: false});
   }
 
   handleBackButton() {

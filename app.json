@@ -19,6 +19,9 @@
     },
     "web": {
       "favicon": "./app/assets/favicon.png"
+    },
+    "android":{
+      "permissions":["READ_EXTERNAL_STORAGE", "INTERNET"]
     }
   }
 }
