@@ -8,7 +8,8 @@ import {
   Text,
   Dimensions,
   ScrollView,
-  Keyboard
+  Keyboard,
+  Image
 } from "react-native";
 import * as Font from "expo-font";
 import PDFReader from 'rn-pdf-reader-js';
@@ -120,60 +121,65 @@ export default class TerminologyExplanation extends Component {
 
     return (
         <View style={styles.container}>
-            <KeyboardAvoidingView style={styles.body}>
-                <PDFReader source={{ uri: this.props.route.params.file.uri }} style={ styles.fileImage } />
-                <View style={styles.wordContainer}>
-                    <TextInput 
-                    style={styles.word}
-                    placeholder={"법률용어를 입력해주세요."}
-                    onChangeText={(word) => this.setState({ word })}
-                    value={this.state.word} />
-                    <TouchableOpacity
-                    style={styles.terminologyButton}
+          <View style={styles.header}>
+            <Image source={require("../assets/menu.png")} style={styles.menu} />
+            <Text style={styles.logoTitle}>LAWBOT</Text>
+            <Image
+              source={require("../assets/profile.png")}
+              style={styles.profile}
+            />
+          </View>
+          <KeyboardAvoidingView style={styles.body}>
+              <PDFReader source={{ uri: this.props.route.params.file.uri }} style={ styles.fileImage } />
+              <View style={styles.wordContainer}>
+                  <TextInput 
+                  style={styles.word}
+                  placeholder={"법률용어를 입력해주세요."}
+                  onChangeText={(word) => this.setState({ word })}
+                  value={this.state.word} />
+                  <TouchableOpacity
+                  style={styles.terminologyButton}
 
-                    onPress={() => this.NaverAPI()}
+                  onPress={() => this.NaverAPI()}
 
-                    >
-                    <Text style={styles.terminologyButtonText}>검색</Text>
-                    </TouchableOpacity>
-                </View>
-            </KeyboardAvoidingView>
-            <View style={styles.explanationContainer}>
-                <ScrollView style={styles.explanation}>
-                    <Text style={styles.explanationText}>{this.state.explanation}</Text>
-                </ScrollView>
-            </View> 
+                  >
+                  <Text style={styles.terminologyButtonText}>검색</Text>
+                  </TouchableOpacity>
+              </View>
+          </KeyboardAvoidingView>
+          <View style={styles.explanationContainer}>
+              <ScrollView style={styles.explanation}>
+                  <Text style={styles.explanationText}>{this.state.explanation}</Text>
+              </ScrollView>
+          </View> 
         </View>
     );
   }
 }
 
-
-
 const styles = StyleSheet.create({
   body: {
-    marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
+    flex: 1,
     overflow: "hidden",
-    height: "80%",
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: Dimensions.get("window").height * 0.58,
+    minHeight: Dimensions.get("window").height * 0.52,
   },
   container: {
     flex: 1,
+    marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
   },
   explanation: {
     backgroundColor: "#F6F6F6",
     width: "90%",
-    height: "70%",
     borderRadius: 8,
-    marginBottom: 30,
+    marginBottom: 20,
     maxHeight: "90%",
     padding: 10,
   },
   explanationContainer: {
-    height: "20%",
+    flex: 1,
     width: "100%",
     backgroundColor: "#fff",
     justifyContent: "flex-start",
@@ -184,9 +190,30 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   fileImage: {
-    flex: 8,
+    flex: 6,
     width: "100%",
     height: "100%",
+  },
+  header: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingLeft: "5%",
+    paddingRight: "5%",
+    minHeight: 50,
+  },
+  logoTitle: {
+    fontSize: 20,
+    fontFamily: "SCDream8",
+  },
+  menu: {
+    width: 20,
+    height: 20,
+  },
+  profile: {
+    width: 20,
+    height: 20,
   },
   terminologyButton: {
     alignItems: "center",
