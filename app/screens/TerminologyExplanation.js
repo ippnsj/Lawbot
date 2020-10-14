@@ -19,8 +19,9 @@ export default class TerminologyExplanation extends Component {
     fontsLoaded: false,
     file: null,
     word: "",
-    explanation: `용어의 의미를 알려드립니다.`,
+    explanation: `용어의 의미를 알려드립니다.`
   };
+}
 
   async _loadFonts() {
     await Font.loadAsync({
@@ -29,80 +30,82 @@ export default class TerminologyExplanation extends Component {
     });
     this.setState({ fontsLoaded: true });
   }
+  
+  async getCameraPermission(){
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status === "granted") {
+      this.setState({ cameraPermission: true });
+      this.getCameraRollPermission();
+    } else {
+      this.setState({ cameraPermission: false });
+      alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
+    }
+  }
 
-
-    async NaverAPI() {
-         let data = encodeURIComponent(this.state.word);
-          ;
-          //console.log(data);
-          new Promise((resolve, reject)=> {
-            let url = "https://openapi.naver.com/v1/search/encyc?query=" + data +"&display=3&sort=count";
-            //console.log(url);
-            fetch(url, {
-              method: "GET",
-              headers: {
-                "X-Naver-Client-Id" : "Akn5Y7uO9AQNtb21Xm6c",
-                "X-Naver-Client-Secret" : "JnMgYfLhJE"
+  async NaverAPI() {
+      let data = encodeURIComponent(this.state.word);
+      ;
+      //console.log(data);
+      new Promise((resolve, reject)=> {
+        let url = "https://openapi.naver.com/v1/search/encyc?query=" + data +"&display=3&sort=count";
+        //console.log(url);
+        fetch(url, {
+          method: "GET",
+          headers: {
+            "X-Naver-Client-Id" : "Akn5Y7uO9AQNtb21Xm6c",
+            "X-Naver-Client-Secret" : "JnMgYfLhJE"
+          }
+        })
+        .then(res=>{
+          if(res.status==200){
+            return res.json();
+         }}).then(json =>{
+            //console.log("json",json.items[0].description)
+            //this.setState({explanation : json.items[0].description})
+            var array = [1,2,3];
+            var target1 = "cid=42131&";
+            var target2 = "cid=40942&";
+            var found1 = false;
+            var found2 = false;
+            //var reg = "[^<]";
+            for (var i in array) {
+              if (json.items[i].link.indexOf(target1) != -1){ 
+                //this.setState({explanation : "법률용어사전\n\n" + json.items[i].description});
+                //var end = json.items[i].link.indexOf('.');
+                var sol1 = json.items[i].description.replaceAll("</b>", "");
+                var sol2 = sol1.replaceAll("<b>", "");
+                this.setState({explanation : "법률용어사전\n\n" + sol2});
+                found1 = true;
+                break;
+              }            
+              else if (json.items[i].link.indexOf(target2) != -1){
+                var sol1 = json.items[i].description.replaceAll("</b>", "");
+                var sol2 = sol1.replaceAll("<b>", "");
+                this.setState({explanation : "두산백과\n\n" + sol2});
+                found2 = true;
+                break;
               }
-            })
-            .then(res=>{
-              if(res.status==200){
-                return res.json();
-             }}).then(json =>{
-                //console.log("json",json.items[0].description)
-                //this.setState({explanation : json.items[0].description})
-                var array = [1,2,3];
-                var target1 = "cid=42131&";
-                var target2 = "cid=40942&";
-                var found1 = false;
-                var found2 = false;
-                //var reg = "[^<]";
-                for (var i in array) {
-                  if (json.items[i].link.indexOf(target1) != -1){ 
-                    //this.setState({explanation : "법률용어사전\n\n" + json.items[i].description});
-                    //var end = json.items[i].link.indexOf('.');
-                    var sol1 = json.items[i].description.replaceAll("</b>", "");
-                    var sol2 = sol1.replaceAll("<b>", "");
-                    this.setState({explanation : "법률용어사전\n\n" + sol2});
-                    found1 = true;
-                    break;
-                  }            
-                  else if (json.items[i].link.indexOf(target2) != -1){
-                    var sol1 = json.items[i].description.replaceAll("</b>", "");
-                    var sol2 = sol1.replaceAll("<b>", "");
-                    this.setState({explanation : "두산백과\n\n" + sol2});
-                    found2 = true;
-                    break;
-                  }
-                }
-    
-                // if(found1==false){
-                //   for (var t in array){
-                //     if (json.items[t].link.indexOf(target2) != -1){
-                //       //this.setState({explanation : json.items[i].description});
-                //       var sol1 = json.items[i].description.replaceAll("</b>", "");
-                //       var sol2 = sol1.replaceAll("<b>", "");
-                //       this.setState({explanation : "법률용어사전\n\n" + sol2});
-                //       found2 = true;
-                //       break;
-                //     }
-                //   }
-                // }
-    
-                if(found1==false && found2==false){
-                  this.setState({explanation : "Not found"});
-                }
-              });
+            }
+
+            // if(found1==false){
+            //   for (var t in array){
+            //     if (json.items[t].link.indexOf(target2) != -1){
+            //       //this.setState({explanation : json.items[i].description});
+            //       var sol1 = json.items[i].description.replaceAll("</b>", "");
+            //       var sol2 = sol1.replaceAll("<b>", "");
+            //       this.setState({explanation : "법률용어사전\n\n" + sol2});
+            //       found2 = true;
+            //       break;
+            //     }
+            //   }
+            // }
+
+            if(found1==false && found2==false){
+              this.setState({explanation : "Not found"});
+            }
           });
-        }
-
-
-
-
-
-
-
-
+      });
+    }
 
   componentDidMount() {
     // styles.body.minHeight = height * 0.8;
@@ -126,7 +129,9 @@ export default class TerminologyExplanation extends Component {
                     value={this.state.word} />
                     <TouchableOpacity
                     style={styles.terminologyButton}
+
                     onPress={() => this.NaverAPI()}
+
                     >
                     <Text style={styles.terminologyButtonText}>검색</Text>
                     </TouchableOpacity>
@@ -141,6 +146,8 @@ export default class TerminologyExplanation extends Component {
     );
   }
 }
+
+
 
 const styles = StyleSheet.create({
   body: {
