@@ -63,6 +63,7 @@ export default class WritePettition extends Component {
 
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    this.setState({fieldSelectVisible: false});
   }
 
   handleBackButton() {
@@ -99,13 +100,25 @@ export default class WritePettition extends Component {
         for(const elem of result.images[0].fields) {
             txt += elem.inferText + " ";
         }
-        
+
         var regEx = /청\s?구\s?취\s?지/gmu;
         var regEx1 = /청\s?구\s?원\s?인/gmu;
         var split = txt.split(regEx);
-        var split1 = split[1].split(regEx1);
-        this.state.purpose = split1[0];
-        this.state.cause = split1[1];
+        if(split.length != 1) {
+          var split1 = split[1].split(regEx1);
+          this.state.purpose = split1[0];
+          this.state.cause = split1[1];
+        }
+        else{
+          var split1 = txt.split(regEx1);
+          if(split1.length != 1) {
+            this.state.cause = split1[1];
+          }
+        }
+
+        this.setState({file: null});
+        this.setState({cameraPermission: false});
+        this.setState({cameraRollPermission: false});
       });
     });
   }
@@ -125,7 +138,6 @@ export default class WritePettition extends Component {
     const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
     if (status === "granted") {
       this.setState({ cameraRollPermission: true });
-      // console.log("okay!!!");
     } else {
       this.setState({ cameraRollPermission: false });
       alert("사진첩 접근권한을 주어야 사진업로드가 가능합니다.");
@@ -142,7 +154,6 @@ export default class WritePettition extends Component {
     MediaLibrary.createAlbumAsync("Expo", asset)
       .then(() => {
         this.setState({ file: asset });
-        // console.log(this.state.file);
       })
       .catch((error) => {
         Alert.alert("An Error Occurred!");

@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import WelcomeScreen from "./app/screens/WelcomeScreen";
 import WritePettition from "./app/screens/WritePettition";
 import SimilarCaseAnalysis from "./app/screens/SimilarCaseAnalysis";
+import TerminologyButton from "./app/screens/TerminologyButton";
+import TerminologyExplanation from "./app/screens/TerminologyExplanation";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -11,11 +13,12 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator initialRouteName="TerminologyButton">
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="WritePettition" component={WritePettition} options={{ headerShown: false }} />
           <Stack.Screen name="SimilarCaseAnalysis" component={SimilarCaseAnalysis} options={{ headerShown: false }} />
-          <SimilarCaseAnalysis/>
+          <Stack.Screen name="TerminologyButton" component={TerminologyButton} options={{ headerShown: false }} />
+          <Stack.Screen name="TerminologyExplanation" component={TerminologyExplanation} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
       // <SimilarCaseAnalysis />
