@@ -21,7 +21,6 @@ export default class TerminologyExplanation extends Component {
     word: "",
     explanation: `용어의 의미를 알려드립니다.`
   };
-}
 
   async _loadFonts() {
     await Font.loadAsync({
