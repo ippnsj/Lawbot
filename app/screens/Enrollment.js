@@ -3,15 +3,12 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
   TextInput,
   KeyboardAvoidingView,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
-  ToastAndroid,
-  BackHandler,
-  Platform
+  Platform,
+  Keyboard
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
@@ -43,6 +40,38 @@ export default class Enrollment extends Component {
     this._loadFonts();
   }
 
+  confirmID() {
+    var body = {};
+    body.userID = this.state.id;
+    fetch("http://52.78.171.102:8080/register/check", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+    .then((response) => {
+      return response.json();
+    }).then((json) => {
+      if (json.success === true) {
+        Keyboard.dismiss();
+        
+        Alert.alert(
+            "아이디 중복확인",
+            "사용가능한 아이디입니다."
+        );
+      } else {
+        Alert.alert(
+          "아이디 중복확인",
+          "이미 존재하는 아이디입니다."
+        );
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+
   render() {
     if (!this.state.fontsLoaded) {
       return <View />;
@@ -65,7 +94,7 @@ export default class Enrollment extends Component {
                             value={this.state.id}
                             maxLength={45}
                         />
-                        <TouchableOpacity style={styles.idconfirmButton}>
+                        <TouchableOpacity style={styles.idconfirmButton} onPress={() => this.confirmID()} >
                             <Text style={styles.idconfirmButtonText}>중복확인</Text>
                         </TouchableOpacity>
                     </View>
