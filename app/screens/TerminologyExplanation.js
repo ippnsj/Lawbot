@@ -9,9 +9,11 @@ import {
   Dimensions,
   ScrollView,
   Keyboard,
-  Image
+  Image,
+  Platform,
 } from "react-native";
 import * as Font from "expo-font";
+import Constants from "expo-constants";
 import PDFReader from 'rn-pdf-reader-js';
 
 import colors from "../config/colors";
@@ -168,7 +170,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
+    marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
   },
   explanation: {
     backgroundColor: "#F6F6F6",

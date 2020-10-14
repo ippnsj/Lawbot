@@ -10,9 +10,11 @@ import {
   SafeAreaView,
   Alert,
   ToastAndroid,
-  BackHandler
+  BackHandler,
+  Platform
 } from "react-native";
 import * as Font from "expo-font";
+import Constants from "expo-constants";
 
 import colors from "../config/colors";
 
@@ -108,7 +110,7 @@ export default class WelcomeScreen extends Component {
           >
             <Text style={styles.loginButtonText}>로그인</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.enrollButton}>
+          <TouchableOpacity style={styles.enrollButton} onPress={() => { this.props.navigation.navigate('Enrollment') }}>
             <Text style={styles.enrollButtonText}>회원가입</Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -121,7 +123,7 @@ export default class WelcomeScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
+    marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
     overflow: "hidden",
     backgroundColor: "#fff",
   },

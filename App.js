@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import WelcomeScreen from "./app/screens/WelcomeScreen";
+import Enrollment from "./app/screens/Enrollment";
 import WritePettition from "./app/screens/WritePettition";
 import SimilarCaseAnalysis from "./app/screens/SimilarCaseAnalysis";
 import TerminologyButton from "./app/screens/TerminologyButton";
@@ -13,8 +14,9 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="TerminologyButton">
+        <Stack.Navigator initialRouteName="WelcomeScreen">
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="Enrollment" component={Enrollment} options={{ headerShown: false }} />
           <Stack.Screen name="WritePettition" component={WritePettition} options={{ headerShown: false }} />
           <Stack.Screen name="SimilarCaseAnalysis" component={SimilarCaseAnalysis} options={{ headerShown: false }} />
           <Stack.Screen name="TerminologyButton" component={TerminologyButton} options={{ headerShown: false }} />
