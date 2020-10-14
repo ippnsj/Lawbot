@@ -9,9 +9,11 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  BackHandler
+  BackHandler,
+  Platform
 } from "react-native";
 import * as Font from "expo-font";
+import Constants from "expo-constants";
 import * as Permissions from "expo-permissions";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
@@ -385,7 +387,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginTop: Platform.OS === `ios` ? 0 : Expo.Constants.statusBarHeight,
+    marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
     backgroundColor: "#fff"
   },
   contentSubTitle: {
@@ -516,6 +518,7 @@ const styles = StyleSheet.create({
     paddingLeft: "5%",
     paddingRight: "5%",
     minHeight: 50,
+    backgroundColor: "#fff"
   },
   logoTitle: {
     fontSize: 20,

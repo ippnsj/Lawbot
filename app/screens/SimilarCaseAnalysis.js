@@ -5,9 +5,11 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 
 import * as Font from "expo-font";
+import Constants from "expo-constants";
 import colors from "../config/colors";
 
 export default class SimilarCaseAnalysis extends Component {
@@ -81,7 +83,7 @@ const styles = StyleSheet.create({
     },
     container: {
       flex: 1,
-      marginTop: Platform.OS === `ios` ? 1 : Expo.Constants.statusBarHeight,
+      marginTop: Platform.OS === `ios` ? 1 : Constants.statusBarHeight,
       backgroundColor: "#fff",
     },
     header: {
@@ -91,6 +93,7 @@ const styles = StyleSheet.create({
       paddingLeft: "5%",
       paddingRight: "5%",
       minHeight: 50,
+      backgroundColor: "#fff",
     },
     logoTitle: {
       fontSize: 20,
