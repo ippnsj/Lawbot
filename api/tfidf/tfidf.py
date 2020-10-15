@@ -4,7 +4,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import manhattan_distances
-from sentencepiece_on_project import id_to_word as decode
 import numpy as np
 import pymysql as pms
 import sys
@@ -110,7 +109,8 @@ def load(name):
     if ((name != 'content_tfidf_model.pk') and 
         (name != 'judgement_tfidf_model.pk') and
         (name != 'summary_tfidf_model.pk') and
-        (name != 'tfidf_model.pk')):
+        (name != 'tfidf_model.pk') and
+        (name != 'tfidf_vocab.pk')):
         print('Wrong tfidf model name')
         print('name must include .pk suffix')
         return
@@ -175,7 +175,7 @@ def __normalize(v):
 
 
 # tfidf를 이용하여 본프로젝트의 DB속 판례 데이터와 input으로 받은 data의 유사도를 전체적으로 분석하여 가장 높은 유사도를 보이는 top10을 골라줍니다.
-def similarity_with_db(data, case_name, method, table, include_weights=False, Print=False):
+def similarity_with_db(data, case_name, method, table, Print=False):
     # 사건명 parameter를 추가하고 해당 사건명에 해당하는 판례들만 비교하도록 변경
     """
     data : 판례 데이터 (각각 부분별)
@@ -283,13 +283,16 @@ def top10(purpose, cause, case_name, method, Print=False):
     print('judgement finish')
     content_simil = similarity_with_db(cause, case_name, method, 'Content', Print)
     print('content finish')
+    tfidf_data = do(load('tfidf_model.pk'), data)
 
     total_simil = summary_simil + judgement_simil + content_simil
     total_descent_simil = np.sort(total_simil)[:][::-1]
     total_descent_ids = np.array(ids)[np.argsort(total_simil)[:][::-1]]
 
     result = {}
-    result['keywords'] = decode(find_indexes())
+    result['keywords'] = []
+    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), purpose))))
+    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), cause))))
     result['ids'] = (total_descent_ids[:10], total_descent_simil*100)
     return result
         
@@ -321,5 +324,10 @@ def db_cursor():
 def find_indexes(key_weight):
     indexes = np.argsort(key_weight)[::-1]
     return indexes[:10]
+
+def tfidf_decode(indexes):
+    vocab_strings = load('tfidf_vocab.pk')
+    return np.array(vocab_strings)[indexes]
+
 
 # print(top10(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]))s--++
