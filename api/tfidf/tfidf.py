@@ -89,6 +89,7 @@ def do(model, data_input):
         result = None
     else:
         result = model.transform(data).toarray()
+        # result = model.inverse_transform(data)
     return result
     
 # pickle 패키지를 이용하여 tfidf모델을 현재 로컬폴더에 저장합니다.
@@ -252,10 +253,11 @@ def similarity_with_db(data, case_name, method, table, Print=False):
     # 유사도가 높은순서대로 해당 index를 뽑아서 해당 index에 해당하는 case id를 return합니다. 
     return similarity_arr
 
-def top10(data, case_name, method, Print=False):
+def top10(purpose, cause, case_name, method, Print=False):
     """
-    data : 판례 데이터 (각각 부분별)
-    str[] type입니다.
+    purpose : 소장 청구취지
+    cause : 소장 청구원인
+    str type입니다.
 
     case_name : 사건명을 string으로 넣어줍니다. 이때 case_name이 
 
@@ -268,9 +270,9 @@ def top10(data, case_name, method, Print=False):
     if (ids == None):
         return
 
-    summary_simil = similarity_with_db(data, case_name, method, 'Summary', Print)
-    judgement_simil = similarity_with_db(data, case_name, method, 'Judgement', Print)
-    content_simil = similarity_with_db(data, case_name, method, 'Content', Print)
+    summary_simil = similarity_with_db(purpose, case_name, method, 'Summary', Print)
+    judgement_simil = similarity_with_db(cause, case_name, method, 'Judgement', Print)
+    content_simil = similarity_with_db(cause, case_name, method, 'Content', Print)
 
     total_simil = summary_simil + judgement_simil + content_simil
     total_descent_ids = np.array(ids)[np.argsort(total_simil)[:][::-1]]
