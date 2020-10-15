@@ -66,17 +66,16 @@ def do(model, data_input):
     만약 open()함수를 이용하여 읽은 파일을 그대로 넘길경우 전체 텍스트를 읽어서 사용합니다.
     """
 
-    data = None
+    data = []
     # data가 하나의 file인지 검사합니다.
     if (type(data_input) == io.TextIOWrapper):
-        data = data_input.read()
+        data.append(data_input.read())
 
     if (type(data_input) == type('A')):
-        data = data_input
+        data.append(data_input)
 
     # data가 리스트형식인지 검사합니다.
     if (isinstance(data_input, list)):
-        data = []
         for d in data_input:
             if (isinstance(d, io.TextIOWrapper)):
                 temp = d.read()
@@ -84,8 +83,8 @@ def do(model, data_input):
             elif(isinstance(d, str)):
                 data.append(d)
 
-    if (data is None):
-        print('data_input is invalid')
+    if (len(data)==0):
+        print('data_input is empty or invalid')
         result = None
     else:
         result = model.transform(data).toarray()
@@ -208,6 +207,7 @@ def similarity_with_db(data, case_name, method, table, Print=False):
 
     weights = []
 
+    print('db loop start')
     for ids in same_case_name_ids:
         # summary 의 경우 key_weight의 개수가 5731개이다
         # judgement의 경우 key_weight의 개수가 16594개이다
@@ -222,7 +222,7 @@ def similarity_with_db(data, case_name, method, table, Print=False):
         
         # key_weight의 개수를 길이로 가지는 array를 선언
         weight=[0 for i in range(0, key_weight_num)]
-        
+
         # db에 존재하는 key index들을 가져옴
         index_sql = 'select keyindex from ' + table + ' where Precedent_ID=' + str(ids) + ' order by keyindex asc'
         cur.execute(index_sql)
@@ -243,6 +243,8 @@ def similarity_with_db(data, case_name, method, table, Print=False):
         # 여기서 weight는 하나의 판례에 대한 tfidf 결과값 벡터를 의미한다.
         # 각각 판례의 tfidf분석결과의 리스트가 각각의 인덱스에 들어가므로 결론적으로 2차원 배열이 된다.
         weights.append(weight)
+
+    print('db loop finish')
 
     # matrix연산을 위해 matrix로 type을 변경
     db_data_matrix = np.matrix(weights)
@@ -270,14 +272,17 @@ def top10(purpose, cause, case_name, method, Print=False):
     if (ids == None):
         return
 
+    print('start')
     summary_simil = similarity_with_db(purpose, case_name, method, 'Summary', Print)
+    print('summary finish')
     judgement_simil = similarity_with_db(cause, case_name, method, 'Judgement', Print)
+    print('judgement finish')
     content_simil = similarity_with_db(cause, case_name, method, 'Content', Print)
+    print('content finish')
 
     total_simil = summary_simil + judgement_simil + content_simil
     total_descent_ids = np.array(ids)[np.argsort(total_simil)[:][::-1]]
-    total_descent_ids = [total_descent_ids[i][0] for i in range(len(total_descent_ids))]
-    return total_descent_ids
+    return total_descent_ids[0:10]
         
 def find_ids(case_name):
     cursor = db_cursor()
