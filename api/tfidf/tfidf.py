@@ -308,3 +308,9 @@ def db_cursor():
         return
 
     return cursor
+
+def find_indexes(key_weight):
+    indexes = np.argsort(key_weight)[::-1]
+    return indexes[:10]
+
+print(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
