@@ -1,12 +1,3 @@
-"""
-자 해봅시다.
-변호사 추천 알고리즘을 짜야합니다.
-일단 .py를 나눠서 작업하고 정리는 나중에합시다.
-Class를 쓰나요? 아니면 바로 function 때리나요
-ㅇㅋㅇㅋ function때릴게요
-비슷? 한거같던데
-function때리자
-"""
 
 import pymysql as pms
 
