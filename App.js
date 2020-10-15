@@ -16,7 +16,7 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="CaseBefore">
+        <Stack.Navigator initialRouteName="SimilarCaseAnalysis">
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="Enrollment" component={Enrollment} options={{ headerShown: false }} />
           <Stack.Screen name="WritePettition" component={WritePettition} options={{ headerShown: false }} />
