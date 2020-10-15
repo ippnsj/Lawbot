@@ -43,8 +43,18 @@ def significant_words(file, stop_words = None):
    
     temp = sentencepiece.EncodeAsPieces(file) # 학습된 sentenpiece 모델을 이용합니다.
     
-       if (stop_words is None):
+    if (stop_words is None):
         stop_words=['_', '의','가','이','은','들','는','좀','잘','걍','과','도','를','으로','자','에','와','한','하다','\n']
         
-    temp=[word for word in temp_X if not word in stopwords] # 불용어 제거
+    temp=[word for word in temp if not word in stopwords] # 불용어 제거
     return temp
+
+def id_to_word(ids):
+    """
+    id list
+    """
+
+    model = get_sentencepiece()
+
+    word = model.DecodeIds(ids)
+    return word

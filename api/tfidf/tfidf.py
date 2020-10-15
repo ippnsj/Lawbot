@@ -4,9 +4,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.metrics.pairwise import manhattan_distances
+from sentencepiece_on_project import id_to_word as decode
 import numpy as np
 import pymysql as pms
-
+import sys
 import re
 import io
 # tfidf 모델을 로컬에 저장하기 위한 패키지
@@ -174,7 +175,7 @@ def __normalize(v):
 
 
 # tfidf를 이용하여 본프로젝트의 DB속 판례 데이터와 input으로 받은 data의 유사도를 전체적으로 분석하여 가장 높은 유사도를 보이는 top10을 골라줍니다.
-def similarity_with_db(data, case_name, method, table, Print=False):
+def similarity_with_db(data, case_name, method, table, include_weights=False, Print=False):
     # 사건명 parameter를 추가하고 해당 사건명에 해당하는 판례들만 비교하도록 변경
     """
     data : 판례 데이터 (각각 부분별)
@@ -253,7 +254,10 @@ def similarity_with_db(data, case_name, method, table, Print=False):
     similarity_arr = similarity(tfidf_data, db_data_matrix, method, Print)
 
     # 유사도가 높은순서대로 해당 index를 뽑아서 해당 index에 해당하는 case id를 return합니다. 
-    return similarity_arr
+    if (include_weights):
+        return similarity_arr, weights
+    else:
+        return similarity_arr
 
 def top10(purpose, cause, case_name, method, Print=False):
     """
@@ -281,13 +285,18 @@ def top10(purpose, cause, case_name, method, Print=False):
     print('content finish')
 
     total_simil = summary_simil + judgement_simil + content_simil
+    total_descent_simil = np.sort(total_simil)[:][::-1]
     total_descent_ids = np.array(ids)[np.argsort(total_simil)[:][::-1]]
-    return total_descent_ids[0:10]
+
+    result = {}
+    result['keywords'] = decode(find_indexes())
+    result['ids'] = (total_descent_ids[:10], total_descent_simil*100)
+    return result
         
 def find_ids(case_name):
     cursor = db_cursor()
     sql = ('select ID from ict.Precedent where caseName Like "%'
-        + case_name + '%" or caseName Like "손해배상\n"')
+        + case_name + '%" or caseName Like "손해배상"')
     cursor.execute(sql)
     same_case_name_ids = list(cursor.fetchall())
     ids = [same_case_name_ids[i][0] for i in range(len(same_case_name_ids))]
@@ -313,4 +322,4 @@ def find_indexes(key_weight):
     indexes = np.argsort(key_weight)[::-1]
     return indexes[:10]
 
-print(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+# print(top10(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]))s--++
