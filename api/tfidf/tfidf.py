@@ -256,11 +256,10 @@ def similarity_with_db(data, case_name, method, table, Print=False):
     # 유사도가 높은순서대로 해당 index를 뽑아서 해당 index에 해당하는 case id를 return합니다. 
     return similarity_arr
 
-def top10(purpose, cause, case_name, method, Print=False):
+def top10(data, case_name, method, Print=False):
     """
-    purpose : 소장 청구취지
-    cause : 소장 청구원인
-    str type입니다.
+    data : 소장 청구취지, 원인
+    str[] type입니다. index 0에는 취지가 1에는 원인이 들어갑니다.
 
     case_name : 사건명을 string으로 넣어줍니다. 이때 case_name이 
 
@@ -274,13 +273,13 @@ def top10(purpose, cause, case_name, method, Print=False):
         return
 
     print('start')
-    summary_simil = similarity_with_db(purpose, case_name, method, 'Summary', Print)
+    summary_simil = similarity_with_db(data[0], case_name, method, 'Summary', Print)
     print('summary finish')
-    judgement_simil = similarity_with_db(cause, case_name, method, 'Judgement', Print)
+    judgement_simil = similarity_with_db(data[1], case_name, method, 'Judgement', Print)
     print('judgement finish')
-    content_simil = similarity_with_db(cause, case_name, method, 'Content', Print)
+    content_simil = similarity_with_db(data[1], case_name, method, 'Content', Print)
     print('content finish')
-    tfidf_data = do(load('tfidf_model.pk'), data)
+    tfidf_data = do(load('tfidf_model.pk'), data[0] + data[1])
 
     total_simil = summary_simil + judgement_simil + content_simil
     total_descent_simil = np.sort(total_simil)[:][::-1]
@@ -288,8 +287,8 @@ def top10(purpose, cause, case_name, method, Print=False):
 
     result = {}
     result['keywords'] = []
-    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), purpose))))
-    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), cause))))
+    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), data[0]))))
+    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), data[1]))))
     result['ids'] = (total_descent_ids[:10], total_descent_simil*100)
     return result
         
