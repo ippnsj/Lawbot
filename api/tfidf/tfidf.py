@@ -254,10 +254,7 @@ def similarity_with_db(data, case_name, method, table, Print=False):
     similarity_arr = similarity(tfidf_data, db_data_matrix, method, Print)
 
     # 유사도가 높은순서대로 해당 index를 뽑아서 해당 index에 해당하는 case id를 return합니다. 
-    if (include_weights):
-        return similarity_arr, weights
-    else:
-        return similarity_arr
+    return similarity_arr
 
 def top10(purpose, cause, case_name, method, Print=False):
     """
