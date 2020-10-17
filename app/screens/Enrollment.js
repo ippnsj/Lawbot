@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
-  Keyboard
+  Keyboard,
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";

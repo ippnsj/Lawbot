@@ -10,7 +10,6 @@ import {
   SafeAreaView,
   Alert,
   ToastAndroid,
-  BackHandler,
   Platform
 } from "react-native";
 import * as Font from "expo-font";
@@ -35,15 +34,6 @@ export default class WelcomeScreen extends Component {
 
   componentDidMount() {
     this._loadFonts();
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-  }
-
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
-  }
-
-  handleBackButton() {
-    BackHandler.exitApp();
   }
 
   loginEvent() {
@@ -62,7 +52,7 @@ export default class WelcomeScreen extends Component {
     }).then((json) => {
       if (json.success === true) {
         ToastAndroid.show("로그인 되었습니다.", ToastAndroid.SHORT);
-        this.props.navigation.navigate('WritePettition');
+        this.props.navigation.navigate('Home');
       } else {
         Alert.alert(
           "Login Failure",
@@ -90,7 +80,7 @@ export default class WelcomeScreen extends Component {
           <Text style={styles.logoTitle}>LAWBOT</Text>
           <Image
             style={styles.logoImage}
-            source={require("../assets/logo.png")}
+            source={require("../assets/logo4.png")}
           />
           <TextInput
             placeholder="아이디"

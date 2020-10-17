@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  BackHandler,
   Platform
 } from "react-native";
 import * as Font from "expo-font";
@@ -60,16 +59,8 @@ export default class WritePettition extends Component {
 
   componentDidMount() {
     this._loadFonts();
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-  }
-
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     this.setState({fieldSelectVisible: false});
-  }
-
-  handleBackButton() {
-    BackHandler.exitApp();
+    this.setState({field: this.props.route.params.field});
   }
 
   async getCameraPermission() {
