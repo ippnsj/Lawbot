@@ -79,7 +79,7 @@ export default class WritePettition extends Component {
     data.append("temp", this.state.file);
 
     new Promise((resolve, reject)=> {
-      fetch("http://52.78.171.102:8080/apicall", {
+      fetch("http://15.165.98.145:8080/apicall", {
         method: "POST",
         body: data,
         headers: {

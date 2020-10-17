@@ -43,7 +43,7 @@ export default class Enrollment extends Component {
   confirmID() {
     var body = {};
     body.userID = this.state.id;
-    fetch("http://52.78.171.102:8080/register/check", {
+    fetch("http://15.165.98.145:8080/register/check", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

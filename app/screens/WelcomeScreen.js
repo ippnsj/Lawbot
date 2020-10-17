@@ -40,7 +40,7 @@ export default class WelcomeScreen extends Component {
     var a = {};
     a.userID = this.state.id;
     a.userPW = this.state.password;
-    fetch("http://52.78.171.102:8080/login", {
+    fetch("http://15.165.98.145:8080/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
