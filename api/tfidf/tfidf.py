@@ -261,7 +261,8 @@ def top10(data, case_name, method, Print=False):
     data : 소장 청구취지, 원인
     str[] type입니다. index 0에는 취지가 1에는 원인이 들어갑니다.
 
-    case_name : 사건명을 string으로 넣어줍니다. 이때 case_name이 
+    case_name : 사건명을 string으로 넣어줍니다. 
+    이때 case_name이 
 
     method : string으로 받아줍니다
         'set', 'eucli', 'manhattan', 'cos'
@@ -287,9 +288,8 @@ def top10(data, case_name, method, Print=False):
 
     result = {}
     result['keywords'] = []
-    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), data[0]))))
-    result['keywords'].append(tfidf_decode(find_indexes(do(load('tfidf_model.pk'), data[1]))))
-    result['ids'] = (total_descent_ids[:10], total_descent_simil*100)
+    result['keywords'].append(tfidf_decode(find_indexes(tfidf_data)))
+    result['ids'] = (total_descent_ids[:10], total_descent_simil[:10] * 100)
     return result
         
 def find_ids(case_name):
