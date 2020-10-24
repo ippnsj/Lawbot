@@ -70,7 +70,7 @@ export default class Home extends Component {
               <View style={styles.container}>
                     <View style={styles.header}>
                         <Image source={require("../assets/menu.png")} style={styles.menu} />
-                        <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate('Home')}} >LAWBOT</Text>
+                        <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}} >LAWBOT</Text>
                         <Image
                             source={require("../assets/profile.png")}
                             style={styles.profile}

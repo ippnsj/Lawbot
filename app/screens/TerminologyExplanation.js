@@ -15,6 +15,7 @@ import {
 import * as Font from "expo-font";
 import Constants from "expo-constants";
 import PDFReader from 'rn-pdf-reader-js';
+import { parse } from 'node-html-parser';
 
 import colors from "../config/colors";
 
@@ -47,70 +48,122 @@ export default class TerminologyExplanation extends Component {
 
   async NaverAPI() {
     Keyboard.dismiss();
-
     let data = encodeURIComponent(this.state.word);
     new Promise((resolve, reject)=> {
-      let url = "https://openapi.naver.com/v1/search/encyc?query=" + data +"&display=3&sort=count";
-      fetch(url, {
-        method: "GET",
-        headers: {
-          "X-Naver-Client-Id" : "Akn5Y7uO9AQNtb21Xm6c",
-          "X-Naver-Client-Secret" : "JnMgYfLhJE"
-        }
-      })
-      .then(res=>{
-        if(res.status==200){
-          return res.json();
-        }}).then(json =>{
-          //console.log("json",json.items[0].description)
-          //this.setState({explanation : json.items[0].description})
-          var array = [1,2,3];
-          var target1 = "cid=42131&";
-          var target2 = "cid=40942&";
-          var found1 = false;
-          var found2 = false;
-          // var result = "";
-          //var reg = "[^<]";
-          for (var i in array) {
-            if (json.items[i].link.indexOf(target1) != -1){ 
-              //this.setState({explanation : "법률용어사전\n\n" + json.items[i].description});
-              //var end = json.items[i].link.indexOf('.');
-              var sol1 = json.items[i].description.replace(/<\/b>/g, "");
-              var sol2 = sol1.replace(/<b>/g, "");
-              var first = sol2.split(".");
-              this.setState({explanation : "법률용어사전\n\n" + first[0]});
-              found1 = true;
-              break;
-            }            
-            else if (json.items[i].link.indexOf(target2) != -1){
-              var sol1 = json.items[i].description.replace(/<\/b>/g, "");
-              var sol2 = sol1.replace(/<b>/g, "");
-              var first = sol2.split(".");
-              this.setState({explanation : "두산백과\n\n" + first[0]});
-              found2 = true;
-              break;
+        let url = "https://openapi.naver.com/v1/search/encyc?query=" + data +"&display=3&sort=count";
+        fetch(url, {
+            method: "GET",
+            headers: {
+            "X-Naver-Client-Id" : "Akn5Y7uO9AQNtb21Xm6c",
+            "X-Naver-Client-Secret" : "JnMgYfLhJE"
             }
-          }
+        })
+        .then(res=>{
+            if(res.status !== 200)
+                return {};
 
-          // if(found1==false){
-          //   for (var t in array){
-          //     if (json.items[t].link.indexOf(target2) != -1){
-          //       //this.setState({explanation : json.items[i].description});
-          //       var sol1 = json.items[i].description.replaceAll("</b>", "");
-          //       var sol2 = sol1.replaceAll("<b>", "");
-          //       this.setState({explanation : "법률용어사전\n\n" + sol2});
-          //       found2 = true;
-          //       break;
-          //     }
-          //   }
-          // }
+            return res.json();
+        }).then(json =>{
+            const DICTIONARIES = {
+              "법률용어사전": "cid=42131",
+              "두산백과": "cid=40942",
+            };
+            let idx = -1;
+            let dict = "";
 
-          if(found1==false && found2==false){
-            this.setState({explanation : "Not found"});
-          }
+            for(let [key, val] of Object.entries(DICTIONARIES)) {
+              for(let i = 0; i < json.items.length; i++) {
+                if(json.items[i].link.indexOf(val) != -1) {
+                  idx = i;
+                  dict = key;
+                  break;
+                }
+              }
+
+              if(idx != -1)
+                  break;
+            }
+
+            if(idx == -1) {
+                this.setState({explanation: "검색 결과가 없습니다."});
+                return;
+              }
+
+            fetch(json.items[idx].link, {
+                method: 'get',
+            }).then(res => {
+              return res.text();
+            }).then(res => {
+                const root = parse(res);
+                const summary = root.querySelector('.summary_area');
+                const descriptions = root.querySelectorAll('.txt');
+                let description = '';
+                for(let k of descriptions) {
+                    description += k.text;
+                }
+
+                let ret = dict + '\n';
+                if(summary) {
+                  ret += summary.text + '\n';
+                }
+
+                if(description) {
+                  ret += description;
+                }
+                this.setState({explanation: ret});
+            });
         });
     });
   }
+
+  // async NaverAPI() {
+  //   Keyboard.dismiss();
+
+  //   let data = encodeURIComponent(this.state.word);
+  //   new Promise((resolve, reject)=> {
+  //     let url = "https://openapi.naver.com/v1/search/encyc?query=" + data +"&display=3&sort=count";
+  //     fetch(url, {
+  //       method: "GET",
+  //       headers: {
+  //         "X-Naver-Client-Id" : "Akn5Y7uO9AQNtb21Xm6c",
+  //         "X-Naver-Client-Secret" : "JnMgYfLhJE"
+  //       }
+  //     })
+  //     .then(res=>{
+  //       if(res.status==200){
+  //         return res.json();
+  //       }}).then(json =>{
+  //         var array = [1,2,3];
+  //         var target1 = "cid=42131&";
+  //         var target2 = "cid=40942&";
+  //         var found1 = false;
+  //         var found2 = false;
+  //         console.log(json.items);
+  //         for (var i in array) {
+  //           if (json.items[i].link.indexOf(target1) != -1){ 
+  //             var sol1 = json.items[i].description.replace(/<\/b>/g, "");
+  //             var sol2 = sol1.replace(/<b>/g, "");
+  //             var first = sol2.split(".");
+  //             this.setState({explanation : "법률용어사전\n\n" + first[0]});
+  //             found1 = true;
+  //             break;
+  //           }            
+  //           else if (json.items[i].link.indexOf(target2) != -1){
+  //             var sol1 = json.items[i].description.replace(/<\/b>/g, "");
+  //             var sol2 = sol1.replace(/<b>/g, "");
+  //             var first = sol2.split(".");
+  //             this.setState({explanation : "두산백과\n\n" + first[0]});
+  //             found2 = true;
+  //             break;
+  //           }
+  //         }
+
+  //         if(found1==false && found2==false){
+  //           this.setState({explanation : "Not found"});
+  //         }
+  //       });
+  //   });
+  // }
 
   componentDidMount() {
     this._loadFonts();
@@ -125,7 +178,7 @@ export default class TerminologyExplanation extends Component {
         <View style={styles.container}>
           <View style={styles.header}>
             <Image source={require("../assets/menu.png")} style={styles.menu} />
-            <Text style={styles.logoTitle}>LAWBOT</Text>
+            <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}}>LAWBOT</Text>
             <Image
               source={require("../assets/profile.png")}
               style={styles.profile}
@@ -189,7 +242,7 @@ const styles = StyleSheet.create({
   },
   explanationText: {
     fontSize: 15,
-    textAlign: "center"
+    textAlign: "center",
   },
   fileImage: {
     flex: 6,

@@ -9,7 +9,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  Platform
+  Platform,
+  ToastAndroid,
+  Alert
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
@@ -17,7 +19,7 @@ import * as Permissions from "expo-permissions";
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
 import * as ImageManipulator from "expo-image-manipulator";
-//import * as DocumentPicker from 'expo-document-picker';
+import { MyContext } from "../../context.js";
 
 import colors from "../config/colors";
 
@@ -45,7 +47,9 @@ export default class WritePettition extends Component {
     cameraRollPermission: false,
     file: null,
     fieldSelectVisible: false,
-
+    keywords: [],
+    ids: [],
+    similarities: [],
   };
 
   async _loadFonts() {
@@ -75,16 +79,18 @@ export default class WritePettition extends Component {
   }
 
   async fetchOCR() {
+    const ctx = this.context;
     let data = new FormData();
     data.append("temp", this.state.file);
 
     new Promise((resolve, reject)=> {
-      fetch("http://15.165.98.145:8080/apicall", {
+      fetch(`${ctx.API_URL}/apicall`, {
         method: "POST",
         body: data,
         headers: {
             // 'Content-Type': 'multipart/form-data',
             // 'Accept': 'application/json',
+            'token': ctx.token,
         },
       }).then((result) => {
         return result.json();
@@ -99,8 +105,13 @@ export default class WritePettition extends Component {
         var split = txt.split(regEx);
         if(split.length != 1) {
           var split1 = split[1].split(regEx1);
-          this.state.purpose = split1[0];
-          this.state.cause = split1[1];
+          if(split1.length != 1) {
+            this.state.purpose = split1[0];
+            this.state.cause = split1[1];
+          }
+          else {
+            this.state.purpose = split1[0];
+          }
         }
         else{
           var split1 = txt.split(regEx1);
@@ -120,11 +131,54 @@ export default class WritePettition extends Component {
     // let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });
     // let result = await DocumentPicker.getDocumentAsync({ });
     //   this.setState({ file: result });
+    ToastAndroid.showWithGravityAndOffset("잠시만 기다려주세요.", ToastAndroid.SHORT, ToastAndroid.TOP, 0, 100);
     var lastIndex = this.state.file.uri.lastIndexOf(".");
     var mimetype = this.state.file.uri.substr(lastIndex+1);
     this.state.file.name = this.state.file.filename;
     this.state.file.type = "application/" + mimetype;
     this.fetchOCR();
+  }
+
+  fetchNLP() {
+    if(this.state.purpose == "" || this.state.cause == "") {
+      Alert.alert( "오류", "청구취지와 청구원인을 모두 채워주세요.", [ { text: "알겠습니다."} ]);
+    }
+    else {
+      ToastAndroid.show("분석중... 잠시만 기다려주세요.", ToastAndroid.SHORT);
+      const ctx = this.context;
+      let body = {
+        purpose: this.state.purpose,
+        cause: this.state.cause,
+        caseName: this.state.caseName,
+        method:"cos"
+      };
+      fetch(`${ctx.API_URL}/analyze`, {
+        method: 'POST',
+        headers: {
+            'token': ctx.token,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      }).then((result) => {
+          return result.json();
+      }).then((result) => {
+        this.setState({
+          ids: [],
+          similarities: [],
+          keywords: []
+        })
+        for(var i = 0; i < 10; i++) {
+          this.state.ids.push(result.ids[0][i]);
+          this.state.similarities.push(Math.round(result.ids[1][i]));
+          this.state.keywords.push(result.keywords[0][i]);
+        }
+        this.props.navigation.navigate('SimilarCaseAnalysis', {
+          ids: this.state.ids,
+          similarities: this.state.similarities,
+          keywords: this.state.keywords
+        });
+      });
+    }
   }
 
   async getCameraRollPermission() {
@@ -138,6 +192,7 @@ export default class WritePettition extends Component {
   }
 
   async takePictureAndCreateAlbum() {
+    ToastAndroid.showWithGravityAndOffset("사진이 찍혔습니다. 잠시만 기다려주세요.", ToastAndroid.SHORT, ToastAndroid.TOP, 0, 100);
     const { uri } = await this.camera.takePictureAsync();
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
@@ -165,12 +220,15 @@ export default class WritePettition extends Component {
     if (this.state.file !== null) {
       return (
         <View style={styles.picturePreviewContainer}>
-          <View style={{ flex: 1 }}></View>
+          {/* <View style={{ flex: 1, backgroundColor: "#fff" }}></View> */}
           <Image
             source={{ uri: this.state.file.uri }}
             style={styles.picturePreview}
           />
           <View style={styles.picturePreviewUnderbar}>
+            <TouchableOpacity style={styles.pictureSubmit} onPress={() => { this.setState({file: null}) }}>
+              <Text style={styles.submitText}>다시찍기</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.pictureSubmit} onPress={() => {this.uploadPDF();}}>
               <Text style={styles.submitText}>확인</Text>
             </TouchableOpacity>
@@ -211,7 +269,7 @@ export default class WritePettition extends Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <Image source={require("../assets/menu.png")} style={styles.menu} />
-          <Text style={styles.logoTitle}>LAWBOT</Text>
+          <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}}>LAWBOT</Text>
           <Image
             source={require("../assets/profile.png")}
             style={styles.profile}
@@ -277,7 +335,7 @@ export default class WritePettition extends Component {
                 ></TextInput>
               </ScrollView>
             </View>
-            <TouchableOpacity style={styles.submit}>
+            <TouchableOpacity style={styles.submit} onPress={() => this.fetchNLP()}>
               <Text style={styles.submitText}>유사 판례 분석</Text>
             </TouchableOpacity>
           </View>
@@ -353,6 +411,7 @@ export default class WritePettition extends Component {
     );
   }
 }
+WritePettition.contextType = MyContext;
 
 const styles = StyleSheet.create({
   body: {
@@ -493,8 +552,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   fileUploadGuide: {
-    margin: "5%",
     fontSize: 12,
+    fontFamily: "KPWDBold",
     color: "#959595",
     margin: "4%",
   },
@@ -564,16 +623,18 @@ const styles = StyleSheet.create({
   },
   picturePreviewUnderbar: {
     flex: 1,
-    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center"
   },
   pictureSubmit: {
     borderWidth: 2,
     borderColor: colors.primary,
     borderRadius: 5,
     width: "20%",
-    marginVertical: "5%",
     alignItems: "center",
     paddingVertical: "0.5%",
+    marginHorizontal: 20,
   },
   profile: {
     width: 20,

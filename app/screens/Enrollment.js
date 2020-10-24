@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
+import { MyContext } from "../../context.js";
 
 import colors from "../config/colors";
 
@@ -41,12 +42,14 @@ export default class Enrollment extends Component {
   }
 
   confirmID() {
+    const ctx = this.context;
     var body = {};
     body.userID = this.state.id;
-    fetch("http://15.165.98.145:8080/register/check", {
+    fetch(`${ctx.API_URL}/register/check`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "token": ctx.token,
       },
       body: JSON.stringify(body),
     })
@@ -220,6 +223,7 @@ export default class Enrollment extends Component {
     );
   }
 }
+Enrollment.contextType = MyContext;
 
 const styles = StyleSheet.create({
   body: {

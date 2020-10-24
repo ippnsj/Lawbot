@@ -10,18 +10,20 @@ import {
   SafeAreaView,
   Alert,
   ToastAndroid,
-  Platform
+  Platform,
+  AsyncStorage,
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
+import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
 
 export default class WelcomeScreen extends Component {
   state = {
     fontsLoaded: false,
-    id: "",
-    password: "",
+    id: '',
+    password: '',
   };
 
   async _loadFonts() {
@@ -37,10 +39,11 @@ export default class WelcomeScreen extends Component {
   }
 
   loginEvent() {
+    const ctx = this.context;
     var a = {};
     a.userID = this.state.id;
     a.userPW = this.state.password;
-    fetch("http://15.165.98.145:8080/login", {
+    fetch(`${ctx.API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +55,10 @@ export default class WelcomeScreen extends Component {
     }).then((json) => {
       if (json.success === true) {
         ToastAndroid.show("로그인 되었습니다.", ToastAndroid.SHORT);
-        this.props.navigation.navigate('Home');
+        ctx.updateToken(json.token);
+        AsyncStorage.setItem('auth.accessToken', json.token).then(res => {
+          this.props.navigation.navigate('Home');
+        })
       } else {
         Alert.alert(
           "Login Failure",
@@ -109,6 +115,7 @@ export default class WelcomeScreen extends Component {
     );
   }
 }
+WelcomeScreen.contextType = MyContext;
 
 const styles = StyleSheet.create({
   container: {
