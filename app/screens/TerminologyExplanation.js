@@ -230,8 +230,6 @@ const styles = StyleSheet.create({
     width: "90%",
     borderRadius: 8,
     marginBottom: 20,
-    maxHeight: "90%",
-    padding: 10,
   },
   explanationContainer: {
     flex: 1,
@@ -243,6 +241,7 @@ const styles = StyleSheet.create({
   explanationText: {
     fontSize: 15,
     textAlign: "center",
+    marginVertical: 10,
   },
   fileImage: {
     flex: 6,
