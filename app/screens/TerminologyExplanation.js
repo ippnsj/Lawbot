@@ -18,6 +18,7 @@ import PDFReader from 'rn-pdf-reader-js';
 import { parse } from 'node-html-parser';
 
 import colors from "../config/colors";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
 
 export default class TerminologyExplanation extends Component {
   state = {
@@ -185,28 +186,25 @@ export default class TerminologyExplanation extends Component {
             />
           </View>
           <KeyboardAvoidingView style={styles.body}>
-              <PDFReader source={{ uri: this.props.route.params.file.uri }} style={ styles.fileImage } />
-              <View style={styles.wordContainer}>
-                  <TextInput 
-                  style={styles.word}
-                  placeholder={"법률용어를 입력해주세요."}
-                  onChangeText={(word) => this.setState({ word })}
-                  value={this.state.word} />
-                  <TouchableOpacity
-                  style={styles.terminologyButton}
-
-                  onPress={() => this.NaverAPI()}
-
-                  >
-                  <Text style={styles.terminologyButtonText}>검색</Text>
-                  </TouchableOpacity>
-              </View>
+            <PDFReader source={{ uri: this.props.route.params.file.uri }} style={ styles.fileImage } />
+            <View style={styles.wordContainer}>
+              <TextInput 
+              style={styles.word}
+              placeholder={"법률용어를 입력해주세요."}
+              onChangeText={(word) => this.setState({ word })}
+              value={this.state.word}
+              onSubmitEditing={() => this.NaverAPI()}
+              returnKeyType="search" />
+              <TouchableOpacity style={styles.terminologyButton} onPress={() => this.NaverAPI()}>
+              <Text style={styles.terminologyButtonText}>검색</Text>
+              </TouchableOpacity>
+            </View>
           </KeyboardAvoidingView>
           <View style={styles.explanationContainer}>
-              <ScrollView style={styles.explanation}>
-                  <Text style={styles.explanationText}>{this.state.explanation}</Text>
-              </ScrollView>
-          </View> 
+            <ScrollView style={styles.explanation}>
+                <Text style={styles.explanationText}>{this.state.explanation}</Text>
+            </ScrollView>
+          </View>
         </View>
     );
   }
@@ -241,7 +239,7 @@ const styles = StyleSheet.create({
   explanationText: {
     fontSize: 15,
     textAlign: "center",
-    marginVertical: 10,
+    padding: 10,
   },
   fileImage: {
     flex: 6,

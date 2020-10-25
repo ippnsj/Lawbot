@@ -93,12 +93,18 @@ export default class WelcomeScreen extends Component {
             style={styles.textInput}
             onChangeText={(id) => this.setState({ id })}
             value={this.state.id}
+            onSubmitEditing={() =>  this.secondTextInput.focus()}
+            returnKeyType="next"
+            blurOnSubmit={false}
           />
           <TextInput
             placeholder="비밀번호"
             style={styles.textInput}
             onChangeText={(password) => this.setState({ password })}
             value={this.state.password}
+            ref={(input) => { this.secondTextInput = input; }}
+            onSubmitEditing={() => this.loginEvent()}
+            returnKeyType="done"
           />
           <TouchableOpacity
             style={styles.loginButton}

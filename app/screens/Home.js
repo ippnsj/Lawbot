@@ -7,17 +7,13 @@ import {
     TextInput,
     KeyboardAvoidingView,
     TouchableOpacity,
-    ScrollView,
-    Modal,
-    BackHandler
+    Alert
   } from "react-native";
+import {Picker} from '@react-native-community/picker';
 import * as Font from "expo-font";
-import * as Permissions from "expo-permissions";
-import { Camera } from "expo-camera";
-import * as MediaLibrary from "expo-media-library";
-import * as ImageManipulator from "expo-image-manipulator";
 import Constants from "expo-constants";
 import * as DocumentPicker from 'expo-document-picker';
+import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
 
@@ -26,15 +22,15 @@ export default class Home extends Component {
     state = {
         fontsLoaded: false,
         file: null,
+        qna: "",
+        qnaKind: "키워드"
     };
   
     async _loadFonts() {
       await Font.loadAsync({
           SCDream8: require("../assets/fonts/SCDream8.otf"),
           KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
-            KPWDMedium: require("../assets/fonts/KPWDMedium.ttf")
-
-
+          KPWDMedium: require("../assets/fonts/KPWDMedium.ttf")
       });
       this.setState({ fontsLoaded: true });
     }
@@ -62,6 +58,34 @@ export default class Home extends Component {
         });
     }
 
+    searchQNA() {
+        if(this.state.qna == "") {
+            Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
+        }else {
+            const ctx = this.context;
+            var body = {};
+            body.kind = this.state.qnaKind;
+            body.content = this.state.qna;
+
+            fetch(`${ctx.API_URL}/qna/question/search`, {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "token": ctx.token
+                },
+                body: JSON.stringify(body),
+            })
+            .then((res) => {
+                return res.json();
+            }).then((res) => {
+                this.props.navigation.navigate("QnaList", {
+                    list: res,
+                });
+            })
+        }
+    }
+
     render() {
         if (!this.state.fontsLoaded) {
             return <View />;
@@ -81,11 +105,26 @@ export default class Home extends Component {
 
                     <View style={styles.searchSection}>
                         <View style={styles.searchBar}>
-                            <Image source={require("../assets/search.png")} style={styles.search} />
+                            <Picker
+                                selectedValue={this.state.qnaKind}
+                                style={{ width: 110 }}
+                                onValueChange={(itemValue, itemIndex) => this.setState({qnaKind: itemValue})}
+                            >
+                                <Picker.Item label="키워드" value="키워드" />
+                                <Picker.Item label="제목" value="제목" />
+                                <Picker.Item label="내용" value="내용" />
+                            </Picker>
                             <TextInput 
-                                placeholder="궁금한 법률 내용 검색! 법률 Q&A"
+                                placeholder="법률 Q&A를 검색해주세요"
                                 style={styles.textInput}
+                                value={this.state.qna}
+                                onChangeText={(qna) => this.setState({ qna })}
+                                onSubmitEditing={() => {this.searchQNA()}}
+                                returnKeyType="search"
                             />
+                            <TouchableOpacity onPress={() => {this.searchQNA()}}>
+                                <Image source={require("../assets/search.png")} style={styles.search} />
+                            </TouchableOpacity>
                         </View>
                         <View style={styles.underline}></View>
                     </View>
@@ -206,8 +245,8 @@ export default class Home extends Component {
             </View>
           )
     };
-    
 }
+Home.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
@@ -237,24 +276,22 @@ const styles=StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        paddingLeft: "5%",
-        paddingRight: "5%",
         minHeight: 50,
     },
     search : {
         width:30,
         height:30,
-        marginRight: 25,
         marginBottom: 5
     },
     textInput : {
         fontSize: 16,
         fontFamily: "KPWDBold",
         fontWeight: "400",
-        color: "#E7E7E7"
+        color: "#8D8D8D",
+        width: 200,
     },
     underline : {
-        width: 300,
+        width: 360,
         height: 5,
         backgroundColor: "#E7E7E7",
         marginLeft: 10,
@@ -272,8 +309,6 @@ const styles=StyleSheet.create({
         width: 20,
         height: 20,
     },
-
-
     selectSection: {
         justifyContent: "space-evenly",
         marginTop: "10%",
@@ -287,18 +322,17 @@ const styles=StyleSheet.create({
         flexDirection: "row",
     },
     selectEtc: {
-        backgroundColor: "#D20808",
-        borderRadius: 6,
+        backgroundColor: colors.secondary,
+        borderRadius: 8,
+        alignSelf: "center",
         paddingVertical: 3,
         paddingHorizontal: 10,
-        height: 25
     },
     selectEtcText: {
         color: "white",
-        alignSelf: "stretch",
-        fontSize: 13,
+        fontFamily: "KPWDBold",
+        fontSize: 12,
     },
-
     selectContent: {
         marginTop: "5%"
     },
@@ -349,18 +383,16 @@ const styles=StyleSheet.create({
     },
     termButton: {
         marginTop: "5%",
-        borderColor: "#c00202",
+        borderColor: colors.primary,
         backgroundColor: "white",
         borderRadius: 6,
         borderWidth: 2,
         paddingVertical: 3,
-        paddingHorizontal: 10,
-        height: 30,
-        width: 300,
+        paddingHorizontal: 30,
         alignSelf: "center"
     },
     termButtonText: {
-        color: "#c00202",
+        color: colors.primary,
         alignSelf: "center",
         fontFamily: "KPWDBold",
         fontSize: 15,
