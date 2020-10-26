@@ -9,8 +9,11 @@ import TerminologyExplanation from "./app/screens/TerminologyExplanation";
 import CaseBefore from "./app/screens/CaseBefore";
 import CaseView from "./app/screens/CaseView";
 import QnaList from "./app/screens/QnaList";
-import QAMain from "./app/screens/QAMain";
 import QnA from "./app/screens/QnA";
+import QaLawyer from "./app/screens/QaLawyer";
+import QaUser from "./app/screens/QaUser";
+import QaWrite from "./app/screens/QaWrite";
+import QaAnswer from "./app/screens/QaAnswer";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 // import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -51,7 +54,7 @@ export default class App extends Component {
         if(res.success) {
           this.setState({
             token: token,
-            firstPage: "QnA",
+            firstPage: "Home",
           })
         }
 
@@ -88,8 +91,11 @@ export default class App extends Component {
             <Stack.Screen name="CaseBefore" component={CaseBefore} options={{ headerShown: false }} />
             <Stack.Screen name="CaseView" component={CaseView} options={{ headerShown: false }} />
             <Stack.Screen name="QnaList" component={QnaList} options={{ headerShown: false }} />
-            <Stack.Screen name="QAMain" component={QAMain} options={{ headerShown: false }} />
             <Stack.Screen name="QnA" component={QnA} options={{ headerShown: false }} />
+            <Stack.Screen name="QaLawyer" component={QaLawyer} options={{ headerShown: false }} />
+            <Stack.Screen name="QaAnswer" component={QaAnswer} options={{ headerShown: false }} />
+            <Stack.Screen name="QaUser" component={QaUser} options={{ headerShown: false }} />
+            <Stack.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
           </Stack.Navigator>
           {/* <Drawer.Navigator>
           </Drawer.Navigator> */}

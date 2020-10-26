@@ -43,22 +43,22 @@ export default class QnaList extends Component {
         const ctx = this.context;
         var userList = [];
 
-        for(var i = 0; i < this.props.route.params.list.length; i++) {
-            //console.log(`${ctx.API_URL}/user/${this.props.route.params.list[i].USER_ID}`);
-            fetch(`${ctx.API_URL}/user/name/${this.props.route.params.list[i].User_ID}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "token": ctx.token
-                },
-            }).then((res) => {
-                return res.json();
-            }).then((res) => {
-                console.log(res);
-                userList[i] = res;
-            });
-        }
-        this.setState({userids: userList});
+        // for(var i = 0; i < this.props.route.params.list.length; i++) {
+        //     //console.log(`${ctx.API_URL}/user/${this.props.route.params.list[i].USER_ID}`);
+        //     fetch(`${ctx.API_URL}/user/name/${this.props.route.params.list[i].User_ID}`, {
+        //         method: "GET",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             "token": ctx.token
+        //         },
+        //     }).then((res) => {
+        //         return res.json();
+        //     }).then((res) => {
+        //         console.log(res);
+        //         userList[i] = res;
+        //     });
+        // }
+        // this.setState({userids: userList});
     }
 
     searchQNA() {
@@ -130,7 +130,7 @@ export default class QnaList extends Component {
                     </View>
                     {!this.state.listExist ? <View style={styles.nolist}><Text>관련 QNA를 찾을 수 없습니다...</Text></View> :
                         <View style={styles.yeslist}>
-                            {this.state.list.map((ques, idx) => {
+                            {/* {this.state.list.map((ques, idx) => {
                                 return (
                                     <View key={idx}>
 
@@ -138,7 +138,7 @@ export default class QnaList extends Component {
                                 );
                             })
 
-                            }
+                            } */}
                         {/* {questions.map((q, idx)=> {
                                                     return(
                                                         <View key={idx}>

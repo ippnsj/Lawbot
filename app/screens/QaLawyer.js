@@ -38,7 +38,7 @@ const questions = [
     
 ]
 
-export default class Qa extends Component {
+export default class QaLawyer extends Component {
     state = {
         fontsLoaded: false,
         file: null,
