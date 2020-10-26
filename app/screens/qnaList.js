@@ -17,12 +17,15 @@ import { MyContext } from '../../context.js';
 import colors from "../config/colors";
 
 
-export default class Home extends Component {
+export default class QnaList extends Component {
     state = {
         fontsLoaded: false,
         listExist: false,
         qna: "",
-        qnaKind: "키워드"
+        qnaKind: "키워드",
+        list: [],
+        userids: [],
+        categories: [],
     };
   
     async _loadFonts() {
@@ -36,7 +39,26 @@ export default class Home extends Component {
   
     componentDidMount() {
         this._loadFonts();
-        this.props.route.params.list.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true});
+        this.props.route.params.list.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true, list: this.props.route.params.list});
+        const ctx = this.context;
+        var userList = [];
+
+        for(var i = 0; i < this.props.route.params.list.length; i++) {
+            //console.log(`${ctx.API_URL}/user/${this.props.route.params.list[i].USER_ID}`);
+            fetch(`${ctx.API_URL}/user/name/${this.props.route.params.list[i].User_ID}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": ctx.token
+                },
+            }).then((res) => {
+                return res.json();
+            }).then((res) => {
+                console.log(res);
+                userList[i] = res;
+            });
+        }
+        this.setState({userids: userList});
     }
 
     searchQNA() {
@@ -108,6 +130,15 @@ export default class Home extends Component {
                     </View>
                     {!this.state.listExist ? <View style={styles.nolist}><Text>관련 QNA를 찾을 수 없습니다...</Text></View> :
                         <View style={styles.yeslist}>
+                            {this.state.list.map((ques, idx) => {
+                                return (
+                                    <View key={idx}>
+
+                                    </View>
+                                );
+                            })
+
+                            }
                         {/* {questions.map((q, idx)=> {
                                                     return(
                                                         <View key={idx}>
@@ -135,7 +166,7 @@ export default class Home extends Component {
           )
     };
 }
-Home.contextType = MyContext;
+QnaList.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
@@ -156,7 +187,7 @@ const styles=StyleSheet.create({
         paddingLeft: "5%",
         paddingRight: "5%",
         minHeight: 50,
-        backgroundColor: "#fff"
+        backgroundColor: "#fff",
     },
     searchSection:{
         alignItems:"center"

@@ -8,7 +8,7 @@ import SimilarCaseAnalysis from "./app/screens/SimilarCaseAnalysis";
 import TerminologyExplanation from "./app/screens/TerminologyExplanation";
 import CaseBefore from "./app/screens/CaseBefore";
 import CaseView from "./app/screens/CaseView";
-import QnaList from "./app/screens/qnaList";
+import QnaList from "./app/screens/QnaList";
 import QAMain from "./app/screens/QAMain";
 import QnA from "./app/screens/QnA";
 import { NavigationContainer } from '@react-navigation/native';
@@ -51,7 +51,7 @@ export default class App extends Component {
         if(res.success) {
           this.setState({
             token: token,
-            firstPage: "Home",
+            firstPage: "QnA",
           })
         }
 
