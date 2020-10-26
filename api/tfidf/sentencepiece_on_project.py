@@ -34,3 +34,27 @@ def get_sentencepiece():
     # 현재 디렉토리에 학습된 모델이 있어야합니다.
     src_sp.Load("output.model")
     return src_sp
+
+def significant_words(file, stop_words = None):
+    """
+    file은 하나씩만 넣읍시다.
+    """
+    model = get_sentencepiece()
+   
+    temp = sentencepiece.EncodeAsPieces(file) # 학습된 sentenpiece 모델을 이용합니다.
+    
+    if (stop_words is None):
+        stop_words=['_', '의','가','이','은','들','는','좀','잘','걍','과','도','를','으로','자','에','와','한','하다','\n']
+        
+    temp=[word for word in temp if not word in stopwords] # 불용어 제거
+    return temp
+
+def id_to_word(ids):
+    """
+    id list
+    """
+
+    model = get_sentencepiece()
+
+    word = model.DecodeIds(ids)
+    return word
