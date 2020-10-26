@@ -1,0 +1,85 @@
+.loginimg
+{
+    display: block;
+    margin-left: auto;
+    margin-right:auto;
+    height:300px;
+}
+.background
+{
+    background-color :#f5f6f7;
+    height:1000px;
+}
+.loginBoard
+{
+    border: 1px black solid;
+    border-radius: 8px;
+    margin-top:20px;
+    margin-left: auto;
+    margin-right:auto;
+    width:30%;
+    background-color:white;
+}
+.password
+{
+    
+    border-radius: 8px;
+    width: 80%;
+    margin-left: auto;
+    margin-right:auto;
+    border : 1px gray solid;
+    margin-top:10px;
+    padding: 6px 0;
+    line-height: 50px;
+}
+.submit
+{
+    background-color: #1877f2;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    line-height: 48px;
+    padding: 0 16px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top:10px;
+    display:block; 
+    margin-bottom: 10px;
+    color:white;
+}
+.registerinput
+{
+    color:black;
+    border: none;
+    margin-left:10px;
+    font-size:20px;
+    width:90%;
+}
+.register
+{
+    padding-left:0px;
+    text-decoration : none;
+    text-align:center;
+    background-color: #1877f2;
+    border: none;
+    border-radius: 6px;
+    font-size: 20px;
+    line-height: 48px;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    display:block; 
+    margin-bottom: 20px;
+    color:white;
+}
+.registerBoard
+{
+    color : #f5f6f7;
+    border-radius: 8px;
+    margin-top:20px;
+    margin-left: auto;
+    margin-right:auto;
+    width:30%;
+    background-color:white;
+}
