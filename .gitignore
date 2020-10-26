@@ -55,3 +55,14 @@ apps/bare-expo/deploy-url.txt
 docs/pages/versions/*/react-native/ADDED_*.md
 docs/pages/versions/*/react-native/REMOVED_*.md
 docs/pages/versions/*/react-native/*.diff
+
+
+# custom
+**/.ipynb_checkpoints
+**/__pycache__
+.aws_ssh_key
+api/tfidf/case_content/
+api/tfidf/case_summary
+api/tfidf/case_judgement/
+api/tfidf/case_name/
+api/tfidf/Case_main/
