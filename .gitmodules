@@ -1,0 +1,3 @@
+[submodule "api/ict_tfidf"]
+	path = api/ict_tfidf
+	url = https://github.com/dkstlzu/ict_tfidf.git
