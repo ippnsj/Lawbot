@@ -7,7 +7,6 @@ import {
     TextInput,
     KeyboardAvoidingView,
     TouchableOpacity,
-    Alert
   } from "react-native";
 import {Picker} from '@react-native-community/picker';
 import * as Font from "expo-font";
@@ -58,34 +57,6 @@ export default class Home extends Component {
         });
     }
 
-    searchQNA() {
-        if(this.state.qna == "") {
-            Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
-        }else {
-            const ctx = this.context;
-            var body = {};
-            body.kind = this.state.qnaKind;
-            body.content = this.state.qna;
-
-            fetch(`${ctx.API_URL}/qna/question/search`, {
-                method: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "token": ctx.token
-                },
-                body: JSON.stringify(body),
-            })
-            .then((res) => {
-                return res.json();
-            }).then((res) => {
-                this.props.navigation.navigate("QnaList", {
-                    list: res,
-                });
-            })
-        }
-    }
-
     render() {
         if (!this.state.fontsLoaded) {
             return <View />;
@@ -105,25 +76,9 @@ export default class Home extends Component {
 
                     <View style={styles.searchSection}>
                         <View style={styles.searchBar}>
-                            <Picker
-                                selectedValue={this.state.qnaKind}
-                                style={{ width: 110 }}
-                                onValueChange={(itemValue, itemIndex) => this.setState({qnaKind: itemValue})}
-                            >
-                                <Picker.Item label="키워드" value="키워드" />
-                                <Picker.Item label="제목" value="제목" />
-                                <Picker.Item label="내용" value="내용" />
-                            </Picker>
-                            <TextInput 
-                                placeholder="법률 Q&A를 검색해주세요"
-                                style={styles.textInput}
-                                value={this.state.qna}
-                                onChangeText={(qna) => this.setState({ qna })}
-                                onSubmitEditing={() => {this.searchQNA()}}
-                                returnKeyType="search"
-                            />
-                            <TouchableOpacity onPress={() => {this.searchQNA()}}>
-                                <Image source={require("../assets/search.png")} style={styles.search} />
+                            <Image source={require("../assets/search.png")} style={styles.search} />
+                            <TouchableOpacity onPress={()=>this.props.navigation.navigate('QaUser')}>
+                                <Text style={styles.textInput}>궁금한 법률 내용 검색! 법률 Q&A</Text> 
                             </TouchableOpacity>
                         </View>
                         <View style={styles.underline}></View>
@@ -281,17 +236,17 @@ const styles=StyleSheet.create({
     search : {
         width:30,
         height:30,
-        marginBottom: 5
+        marginBottom: 5,
+        marginRight: 10
     },
     textInput : {
         fontSize: 16,
         fontFamily: "KPWDBold",
-        fontWeight: "400",
-        color: "#8D8D8D",
-        width: 200,
+        fontWeight: "700",
+        color: "#BCBCBC"
     },
     underline : {
-        width: 360,
+        width: 300,
         height: 5,
         backgroundColor: "#E7E7E7",
         marginLeft: 10,
