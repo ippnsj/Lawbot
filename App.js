@@ -14,6 +14,7 @@ import QaLawyer from "./app/screens/QaLawyer";
 import QaUser from "./app/screens/QaUser";
 import QaWrite from "./app/screens/QaWrite";
 import QaAnswer from "./app/screens/QaAnswer";
+import QnaView from "./app/screens/QnaView";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 // import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -96,6 +97,7 @@ export default class App extends Component {
             <Stack.Screen name="QaAnswer" component={QaAnswer} options={{ headerShown: false }} />
             <Stack.Screen name="QaUser" component={QaUser} options={{ headerShown: false }} />
             <Stack.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
+            <Stack.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
           </Stack.Navigator>
           {/* <Drawer.Navigator>
           </Drawer.Navigator> */}

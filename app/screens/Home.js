@@ -7,7 +7,6 @@ import {
     TextInput,
     KeyboardAvoidingView,
     TouchableOpacity,
-    Alert
   } from "react-native";
 import {Picker} from '@react-native-community/picker';
 import * as Font from "expo-font";
@@ -56,34 +55,6 @@ export default class Home extends Component {
         this.props.navigation.navigate('WritePettition', {
             field: field,
         });
-    }
-
-    searchQNA() {
-        if(this.state.qna == "") {
-            Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
-        }else {
-            const ctx = this.context;
-            var body = {};
-            body.kind = this.state.qnaKind;
-            body.content = this.state.qna;
-
-            fetch(`${ctx.API_URL}/qna/question/search`, {
-                method: "POST",
-                headers: {
-                    "Accept": "application/json",
-                    "Content-Type": "application/json",
-                    "token": ctx.token
-                },
-                body: JSON.stringify(body),
-            })
-            .then((res) => {
-                return res.json();
-            }).then((res) => {
-                this.props.navigation.navigate("QnaList", {
-                    list: res,
-                });
-            })
-        }
     }
 
     render() {

@@ -9,6 +9,7 @@ import {
     TouchableOpacity,
     ScrollView,
     Modal,
+    Alert
   } from "react-native";
 import * as Font from "expo-font";
 import * as Permissions from "expo-permissions";
@@ -108,7 +109,8 @@ export default class QaUser extends Component {
                 name: "강혜연",
                 url: require("../assets/lawyer3.jpg")
             },
-        ]
+        ],
+        categories: {},
     };
 
   
@@ -149,22 +151,34 @@ export default class QaUser extends Component {
             body.kind = this.state.qnaKind;
             body.content = this.state.qna;
 
-            fetch(`${ctx.API_URL}/qna/question/search`, {
-                method: "POST",
+            fetch(`${ctx.API_URL}/qna/category`, {
+                method: "GET",
                 headers: {
-                    "Accept": "application/json",
                     "Content-Type": "application/json",
                     "token": ctx.token
                 },
-                body: JSON.stringify(body),
-            })
-            .then((res) => {
-                return res.json();
-            }).then((res) => {
-                this.props.navigation.navigate("QnaList", {
-                    list: res,
-                });
-            })
+                }).then((res) => {
+                    return res.json();
+                }).then((res) => {
+                    this.setState({categories: res});
+                    fetch(`${ctx.API_URL}/qna/question/search`, {
+                        method: "POST",
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "token": ctx.token
+                        },
+                        body: JSON.stringify(body),
+                    })
+                    .then((res) => {
+                        return res.json();
+                    }).then((res) => {
+                        this.props.navigation.navigate("QnaList", {
+                            posts: res.posts,
+                            categories: this.state.categories
+                        });
+                    })
+            })   
         }
     }
     
@@ -206,9 +220,9 @@ export default class QaUser extends Component {
                                 style={{ width: 110 }}
                                 onValueChange={(itemValue, itemIndex) => this.setState({qnaKind: itemValue})}
                             >
+                                <Picker.Item label="키워드" value="키워드" />
                                 <Picker.Item label="제목" value="제목" />
                                 <Picker.Item label="내용" value="내용" />
-                                <Picker.Item label="키워드" value="키워드" />
                             </Picker>
                             <TextInput 
                                 placeholder="검색어를 입력하세요"
