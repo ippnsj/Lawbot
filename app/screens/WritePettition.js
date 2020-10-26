@@ -149,7 +149,7 @@ export default class WritePettition extends Component {
       let body = {
         purpose: this.state.purpose,
         cause: this.state.cause,
-        caseName: this.state.caseName,
+        caseName: this.state.field,
         method:"cos"
       };
       fetch(`${ctx.API_URL}/analyze`, {

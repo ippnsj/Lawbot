@@ -7,7 +7,8 @@ import {
     TextInput,
     KeyboardAvoidingView,
     TouchableOpacity,
-    Alert
+    Alert,
+    ScrollView
   } from "react-native";
 import {Picker} from '@react-native-community/picker';
 import * as Font from "expo-font";
@@ -17,29 +18,85 @@ import { MyContext } from '../../context.js';
 import colors from "../config/colors";
 
 
-export default class Home extends Component {
+export default class QnaList extends Component {
     state = {
         fontsLoaded: false,
         listExist: false,
         qna: "",
-        qnaKind: "키워드"
+        qnaKind: "키워드",
+        posts: {},
+        userids: [],
+        categories: {},
+        writtenDate: [],
     };
   
     async _loadFonts() {
       await Font.loadAsync({
           SCDream8: require("../assets/fonts/SCDream8.otf"),
           KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
-          KPWDMedium: require("../assets/fonts/KPWDMedium.ttf")
+          KPWDMedium: require("../assets/fonts/KPWDMedium.ttf"),
+          KPWDLight: require("../assets/fonts/KPWDLight.ttf")
       });
       this.setState({ fontsLoaded: true });
     }
   
-    componentDidMount() {
+    async componentDidMount() {
         this._loadFonts();
-        this.props.route.params.list.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true});
+        this.props.route.params.posts.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true, posts: this.props.route.params.posts});
+        const ctx = this.context;
+        var userList = [];
+        var date = [];
+
+        this.setState({categories: this.props.route.params.categories});
+
+        for(var i = 0; i < this.props.route.params.posts.length; i++) {
+            date.push(this.timeForToday(this.props.route.params.posts[i].writtenDate));
+
+            await fetch(`${ctx.API_URL}/user/name/${this.props.route.params.posts[i].User_ID}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": ctx.token
+                },
+            }).then((res) => {
+                return res.json();
+            }).then((res) => {
+                var id = res.userID.substring(0,4);
+                
+                for(var j = 4; j < res.userID.length; j++) {
+                    id += "*";
+                }
+                userList.push(id);
+            });
+        }
+        this.setState({writtenDate: date});
+        this.setState({userids: userList});
     }
 
-    searchQNA() {
+    timeForToday(value) {
+        const today = new Date();
+        const timeValue = new Date(value);
+
+        const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+        if (betweenTime < 1) return '방금전';
+        if (betweenTime < 60) {
+            return `${betweenTime}분전`;
+        }
+
+        const betweenTimeHour = Math.floor(betweenTime / 60);
+        if (betweenTimeHour < 24) {
+            return `${betweenTimeHour}시간전`;
+        }
+
+        const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+        if (betweenTimeDay < 365) {
+            return `${betweenTimeDay}일전`;
+        }
+
+        return `${Math.floor(betweenTimeDay / 365)}년전`;
+ }
+
+    async searchQNA() {
         if(this.state.qna == "") {
             Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
         }else {
@@ -48,9 +105,10 @@ export default class Home extends Component {
             body.kind = this.state.qnaKind;
             body.content = this.state.qna;
 
-            fetch(`${ctx.API_URL}/qna/question/search`, {
+            await fetch(`${ctx.API_URL}/qna/question/search`, {
                 method: "POST",
                 headers: {
+                    "Accept": "application/json",
                     "Content-Type": "application/json",
                     "token": ctx.token
                 },
@@ -59,9 +117,39 @@ export default class Home extends Component {
             .then((res) => {
                 return res.json();
             }).then((res) => {
-                console.log(res);
+                this.searchAgain(res.posts);
             })
         }
+    }
+
+    async searchAgain(posts) {
+        posts.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true, posts: posts});
+        const ctx = this.context;
+        var userList = [];
+        var date = [];
+
+        for(var i = 0; i < posts.length; i++) {
+            date.push(this.timeForToday(posts[i].writtenDate));
+
+            await fetch(`${ctx.API_URL}/user/name/${posts[i].User_ID}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": ctx.token
+                },
+            }).then((res) => {
+                return res.json();
+            }).then((res) => {
+                var id = res.userID.substring(0,4);
+                
+                for(var j = 4; j < res.userID.length; j++) {
+                    id += "*";
+                }
+                userList.push(id);
+            });
+        }
+        this.setState({writtenDate: date});
+        this.setState({userids: userList});
     }
 
     render() {
@@ -107,35 +195,41 @@ export default class Home extends Component {
                         <View style={styles.underline}></View>
                     </View>
                     {!this.state.listExist ? <View style={styles.nolist}><Text>관련 QNA를 찾을 수 없습니다...</Text></View> :
-                        <View style={styles.yeslist}>
-                        {/* {questions.map((q, idx)=> {
+                        <ScrollView style={styles.yeslist}>
+                            {this.state.posts.map((post, idx) => {
+                                return (
+                                    <TouchableOpacity key={idx} style={styles.post} onPress={() => this.props.navigation.navigate("QnaView", {post: post, categories: this.state.categories, date: this.state.writtenDate[idx]})}>
+                                        <View style={styles.tagContainer}>
+                                            {
+                                                post.tags.map((tag, idx)=> {
                                                     return(
-                                                        <View key={idx}>
-                                                            <View style={styles.interestQ_content_question_field}>
-                                                            {q.field.map((f, idx)=> {
-                                                                return(
-                                                                    <Text style={styles.interestQ_content_question_field_text} key={idx}>{f}</Text>
-                                                                    )
-                                                                })}
-                                                            </View>
-    
-                                                            <Text style={styles.interestQ_content_question_title}>{q.title}</Text>
-                                                            <Text style={styles.interestQ_content_question_content}>{q.content}</Text>
-                                                            <TouchableOpacity  onPress={() => this.handleButtons(idx) }>
-                                                                <Text style={styles.interestQ_content_question_answer}>답변하기</Text>
-                                                            </TouchableOpacity>
-                                                            
-                                                        </View>
+                                                        <Text style={styles.tag} key={idx}>{this.state.categories[tag.Category_ID].name}</Text>
                                                     )
-                                                })} */}
-                        </View>
+                                                })
+                                            }
+                                        </View>
+                                        <Text style={styles.postTitle}>{post.title}</Text>
+                                        <Text style={styles.postContent} numberOfLines={4}>{post.content}</Text>
+                                        <View style={styles.postInfo}>
+                                            <Text style={styles.postDate}>{this.state.writtenDate[idx]}</Text>
+                                            <Text style={styles.postUser}>{this.state.userids[idx]}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })
+
+                            }
+                        </ScrollView>
                     }
                   </KeyboardAvoidingView>
+                  <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite')}  >                       
+                        <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
+                  </TouchableOpacity>
             </View>
           )
     };
 }
-Home.contextType = MyContext;
+QnaList.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
@@ -156,7 +250,7 @@ const styles=StyleSheet.create({
         paddingLeft: "5%",
         paddingRight: "5%",
         minHeight: 50,
-        backgroundColor: "#fff"
+        backgroundColor: "#fff",
     },
     searchSection:{
         alignItems:"center"
@@ -175,7 +269,7 @@ const styles=StyleSheet.create({
     title:{
         fontFamily: "KPWDBold",
         fontSize: 18,
-        marginLeft: "5%",
+        marginLeft: 10,
         marginTop: 20,
     },
     textInput : {
@@ -204,7 +298,63 @@ const styles=StyleSheet.create({
         width: 20,
         height: 20,
     },
-    yeslist: {
 
-    }
+    nolist: {
+        marginTop: 250,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    yeslist: {
+        paddingTop: 10,
+    },
+    post: {
+        margin: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E7E7E7",
+        paddingBottom: 10,
+    },
+    tagContainer: {
+        flexDirection: "row",
+    },
+    tag: {
+        marginRight: 10,
+        fontSize: 12,
+        fontFamily: "KPWDBold",
+        color: "#B1B1B1"
+    },
+    postTitle: {
+        fontSize: 15,
+        fontFamily: "KPWDBold",
+    },
+    postContent: {
+        fontSize: 12,
+        fontFamily: "KPWDLight",
+        color: "#737373",
+        marginVertical: 3,
+    },
+    postInfo: {
+        flexDirection: "row",
+    },
+    postDate: {
+        fontSize: 10,
+        fontFamily: "KPWDLight",
+        color: "#C3C3C3"
+    },
+    postUser: {
+        marginLeft: 10,
+        fontSize: 10,
+        fontFamily: "KPWDLight",
+        color: "#C3C3C3"
+    },
+
+    button: {
+        position: 'absolute',
+        bottom: 10,
+        right: 10,
+        zIndex: 1,
+    }, 
+    writebuttonimg: {
+        width: 100,
+        height: 100,
+    },
 });

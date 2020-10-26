@@ -9,15 +9,20 @@ import {
     TouchableOpacity,
     ScrollView,
     Modal,
+    Alert
   } from "react-native";
 import * as Font from "expo-font";
 import * as Permissions from "expo-permissions";
 import { Camera } from "expo-camera";
+import {Picker} from '@react-native-community/picker';
+
 import * as MediaLibrary from "expo-media-library";
 import * as ImageManipulator from "expo-image-manipulator";
 import Constants from "expo-constants";
 import * as DocumentPicker from 'expo-document-picker';
 import colors from "../config/colors";
+import { MyContext } from '../../context.js';
+
 
 const questions = [
     {
@@ -38,11 +43,14 @@ const questions = [
     
 ]
 
-export default class Qa extends Component {
+
+export default class QaUser extends Component {
     state = {
         fontsLoaded: false,
         file: null,
-         interests: [
+        qna: "",
+        qnaKind: "키워드",
+        interests: [
             {
                 name: "#관심분야 전체",
                 selected: true
@@ -67,7 +75,42 @@ export default class Qa extends Component {
                 name: "#기타",
                 selected: false
             },
-        ]
+        ],
+        lawyers : [
+            {
+                name: "김수지",
+                url: require("../assets/lawyer1.jpg")
+            },
+            {
+                name: "박철수",
+                url: require("../assets/lawyer2.jpg")
+            },{
+                name: "강혜연",
+                url: require("../assets/lawyer3.jpg")
+            },
+            {
+                name: "김수지",
+                url: require("../assets/lawyer1.jpg")
+            },
+            {
+                name: "박철수",
+                url: require("../assets/lawyer2.jpg")
+            },{
+                name: "강혜연",
+                url: require("../assets/lawyer3.jpg")
+            },{
+                name: "김수지",
+                url: require("../assets/lawyer1.jpg")
+            },
+            {
+                name: "박철수",
+                url: require("../assets/lawyer2.jpg")
+            },{
+                name: "강혜연",
+                url: require("../assets/lawyer3.jpg")
+            },
+        ],
+        categories: {},
     };
 
   
@@ -98,6 +141,46 @@ export default class Qa extends Component {
         
         this.setState({interests: newInt});
     }
+
+    searchQNA() {
+        if(this.state.qna == "") {
+            Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
+        }else {
+            const ctx = this.context;
+            var body = {};
+            body.kind = this.state.qnaKind;
+            body.content = this.state.qna;
+
+            fetch(`${ctx.API_URL}/qna/category`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": ctx.token
+                },
+                }).then((res) => {
+                    return res.json();
+                }).then((res) => {
+                    this.setState({categories: res});
+                    fetch(`${ctx.API_URL}/qna/question/search`, {
+                        method: "POST",
+                        headers: {
+                            "Accept": "application/json",
+                            "Content-Type": "application/json",
+                            "token": ctx.token
+                        },
+                        body: JSON.stringify(body),
+                    })
+                    .then((res) => {
+                        return res.json();
+                    }).then((res) => {
+                        this.props.navigation.navigate("QnaList", {
+                            posts: res.posts,
+                            categories: this.state.categories
+                        });
+                    })
+            })   
+        }
+    }
     
     render() {
         if (!this.state.fontsLoaded) {
@@ -113,20 +196,56 @@ export default class Qa extends Component {
                             style={styles.profile}
                         />
                     </View>
+
+
+                {/* 글쓰기 버튼!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                {/* 글쓰기 버튼!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                    <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite')}  >                       
+                        <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
+                    </TouchableOpacity>
+                {/* 글쓰기 버튼!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                {/* 글쓰기 버튼!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+              
                 
+
                 {/* body */}
                 <ScrollView >
                     <View style={styles.body}>
+                        
                         {/* QA bar */}
                     <View style={styles.searchSection}>
                         <View style={styles.searchBar}>
+                            <Picker
+                                selectedValue={this.state.qnaKind}
+                                style={{ width: 110 }}
+                                onValueChange={(itemValue, itemIndex) => this.setState({qnaKind: itemValue})}
+                            >
+                                <Picker.Item label="키워드" value="키워드" />
+                                <Picker.Item label="제목" value="제목" />
+                                <Picker.Item label="내용" value="내용" />
+                            </Picker>
+                            <TextInput 
+                                placeholder="검색어를 입력하세요"
+                                style={styles.textInput}
+                                value={this.state.qna}
+                                onChangeText={(qna) => this.setState({ qna })}
+                                onSubmitEditing={() => {this.searchQNA()}}
+                                returnKeyType="search"
+                            />
+                            <TouchableOpacity onPress={() => {this.searchQNA()}}>
+                                <Image source={require("../assets/search.png")} style={styles.search} />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.underline}></View>
+
+                        {/* <View style={styles.searchBar}>
                             <Image source={require("../assets/search.png")} style={styles.search} />
                             <TextInput 
-                                placeholder="궁금한 법령이나 키워드를 압력해 보세요!"
+                                placeholder="궁금한 법령이나 키워드를 입력해 보세요!"
                                 style={styles.textInput}
                             />
                         </View>
-                        <View style={styles.underline}></View>
+                        <View style={styles.underline}></View> */}
                     </View>
 
 
@@ -145,8 +264,8 @@ export default class Qa extends Component {
                             <Text style={styles.myNews_content_icon}>A.</Text>
                             <View style={styles.myNews_content_main}>
                                 <View style={styles.myNews_content_main_subtitle}>
-                                    <Text style={styles.myNews_content_main_subtitle_red}>내가 쓴 답변</Text>
-                                    <Text style={styles.myNews_content_main_subtitle_black}>이 채택되었습니다.</Text>
+                                    <Text style={styles.myNews_content_main_subtitle_red}>답변 2개</Text>
+                                    <Text style={styles.myNews_content_main_subtitle_black}>가 등록 되었습니다.</Text>
                                 </View>
                                 <Text style={styles.myNews_content_main_question}>편의점 폐기음식 먹은 것 손해배상 해야하나요?</Text>
                             </View>
@@ -156,6 +275,33 @@ export default class Qa extends Component {
                     {/* interest */}
                     <View style={{backgroundColor: "#EBEBEB", marginHorizontal: -20, marginTop: "5%" }}>
                         <View style={styles.interest}>
+                            <View style={styles.interestQ}>
+                                <View style={styles.interestQ_header}>
+                                    <Text style={styles.interestQ_header_title}>관심분야 우수 답변자</Text>
+                                    
+                                    <TouchableOpacity  onPress={() => this.setState({fieldSelectVisible: true})}>
+                                        <Text style={styles.interestQ_header_text}>전체 보기</Text>
+                                    </TouchableOpacity>
+                                    <Image style={styles.more} source={require("../assets/more.png")} />
+                                </View>
+
+                                <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={styles.interestQ_content_tags}>
+                                    
+                                    {this.state.lawyers.map((lawyer, idx)=> {
+                                        return(
+                                            <View style={styles.interest_lawyer} key={idx}>
+                                                <Image style={styles.interest_lawyer_pic} source={lawyer.url}/>
+                                                <Text style={styles.interest_lawyer_name}>{lawyer.name}</Text>
+                                            </View>
+                                            // <TouchableOpacity  onPress={() => this.handleButtons(idx) } key={idx}>
+                                            //     <Text style={inter.selected ? styles.interestQ_content_tags_tag_clicked : styles.interestQ_content_tags_tag}>{inter.name}</Text>
+                                            // </TouchableOpacity>
+                                        )
+                                    })}
+                                </ScrollView>
+                                {/* <Image source={this.state.img} /> */}
+                            </View>
+                            
 
                             {/* interest question */}
                             <View style={styles.interestQ}>
@@ -211,12 +357,18 @@ export default class Qa extends Component {
                                                                 )
                                                             })}
                                                         </View>
+                                                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('QaAnswer')}>
+                                                            <View>
+                                                                <Text style={styles.interestQ_content_question_title}>{q.title}</Text>
+                                                                <Text style={styles.interestQ_content_question_content}>{q.content}</Text>
+                                                                <View>
+                                                                    <Text style={styles.interestQ_content_question_answer}>답변</Text>
 
-                                                        <Text style={styles.interestQ_content_question_title}>{q.title}</Text>
-                                                        <Text style={styles.interestQ_content_question_content}>{q.content}</Text>
-                                                        <TouchableOpacity  onPress={() => this.handleButtons(idx) }>
-                                                            <Text style={styles.interestQ_content_question_answer}>답변하기</Text>
+                                                                </View>
+                                                            </View>
                                                         </TouchableOpacity>
+
+                                                        
                                                         
                                                     </View>
                                                 )
@@ -232,14 +384,15 @@ export default class Qa extends Component {
                  
                     </View>
                 </ScrollView>
+               
 
                     
             </View>
           )
         
-    }
+    };
 }
-
+QaUser.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
@@ -265,39 +418,34 @@ const styles=StyleSheet.create({
     },
 
     searchSection:{
-        alignItems:"center",
-        marginTop: 5
+        alignItems:"center"
     },
     searchBar: {
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        paddingLeft: "5%",
-        paddingRight: "5%",
         minHeight: 50,
     },
     search : {
         width:30,
         height:30,
-        marginRight: 15,
         marginBottom: 5
     },
-
     textInput : {
         fontSize: 16,
-        fontFamily: "KPWDBold",
-        fontWeight: "400",
-        color: "#E7E7E7"
+        fontWeight: "700",
+        color: "#8D8D8D",
+        width: 150,
     },
-
     underline : {
-        width: 340,
+        width: 320,
         height: 5,
         backgroundColor: "#E7E7E7",
         marginLeft: 10,
         marginTop: -7,
         borderRadius: 30
     },
+
     logoTitle: {
         fontSize: 20,
         fontFamily: "SCDream8",
@@ -309,6 +457,14 @@ const styles=StyleSheet.create({
     profile: {
         width: 20,
         height: 20,
+    },
+
+    writingButton: {
+        position: "absolute",
+        bottom: 0,
+        right: 0,
+        zIndex: 1,
+        backgroundColor: "red"
     },
 
 
@@ -430,6 +586,23 @@ const styles=StyleSheet.create({
     },
 
 
+    interest_lawyer: {
+        justifyContent: "space-evenly",
+        alignItems: "center",
+        marginRight: 15,
+        marginBottom: "5%"
+    },
+    interest_lawyer_pic: {
+        borderRadius: 100,
+        width: 50,
+        height: 50
+    },
+    interest_lawyer_name : {
+        fontSize: 12,
+        fontFamily: "KPWDMedium"
+    },
+
+
 
     interestQ_content_tags: {
         flexDirection: "row",
@@ -474,9 +647,10 @@ const styles=StyleSheet.create({
     interestQ_content_question_answer: {
         fontFamily: "KPWDBold",
         fontSize: 13,
-        alignSelf: "flex-end",
+        alignSelf: "flex-start",
         color: colors.primary,
-        marginBottom: "5%"
+        marginBottom: "5%",
+        marginTop: 5
     },
     interestQ_button: {
         marginVertical: "5%",
@@ -496,4 +670,24 @@ const styles=StyleSheet.create({
         fontFamily: "KPWDBold",
         fontSize: 15,
     },
+
+    bottom: {
+        flex: 1,
+        justifyContent: "flex-end",
+        marginBottom: 36,
+        backgroundColor: 'rgba(52, 52, 52, 0.8)'
+    },
+
+    button: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        zIndex: 1,
+
+        // backgroundColor: "yellow",
+    }, 
+    writebuttonimg: {
+        width: 100,
+        height: 100,
+    }
 });
