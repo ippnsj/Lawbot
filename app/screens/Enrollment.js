@@ -6,6 +6,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   TouchableOpacity,
+  ToastAndroid,
   Alert,
   Platform,
   Keyboard,
@@ -26,6 +27,11 @@ export default class Enrollment extends Component {
     lawyer: false,
     phone: "",
     confirmPhone: "",
+    idValid : false,
+    pwValid : false,
+    nameValid : false,
+    birthValid : false,
+    phoneValid: false,
   };
 
   async _loadFonts() {
@@ -44,37 +50,141 @@ export default class Enrollment extends Component {
   confirmID() {
     const ctx = this.context;
     var body = {};
-    body.userID = this.state.id;
-    fetch(`${ctx.API_URL}/register/check`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "token": ctx.token,
-      },
-      body: JSON.stringify(body),
-    })
-    .then((response) => {
-      return response.json();
-    }).then((json) => {
-      if (json.success === true) {
-        Keyboard.dismiss();
-        
-        Alert.alert(
+    this.checkID();
+    if (this.state.idValid){
+      body.userID = this.state.id;
+      this.state.idValid = true;
+      fetch(`${ctx.API_URL}/register/check`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": ctx.token,
+        },
+        body: JSON.stringify(body),
+      })
+      .then((response) => {
+        return response.json();
+      }).then((json) => {
+        if (json.success === true) {
+          Keyboard.dismiss();
+          
+          Alert.alert(
+              "아이디 중복확인",
+              "사용가능한 아이디입니다."
+          );
+        } else {
+          Alert.alert(
             "아이디 중복확인",
-            "사용가능한 아이디입니다."
-        );
-      } else {
-        Alert.alert(
-          "아이디 중복확인",
-          "이미 존재하는 아이디입니다."
-        );
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+            "이미 존재하는 아이디입니다."
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }else{
+      Alert.alert(
+          "아이디 확인",
+          "5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다."
+      );
+    }
   }
+  confirmEnroll(){
+    this.checkID();
+    this.checkPW();
+    this.checkName();
+    this.checkPhone();
+    this.checkBirth();
 
+    if (!this.state.idValid){
+      Alert.alert(
+          "아이디 확인",
+          "5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다."
+      );
+    }else if (!this.state.pwValid){
+      Alert.alert(
+        "패스워드 확인", 
+        "8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요."
+      );
+    }else if (!this.state.nameValid){
+      Alert.alert(
+        "이름 확인", 
+        "한글과 영문 대 소문자를 사용하세요. (특수기호, 공백 사용 불가)"
+      );
+    }else if (!this.state.birthValid){
+      Alert.alert(
+        "생년월일 확인", 
+        "19970812와 같은 형식인지 확인하세요. (공백 사용 불가)"
+      );
+    }else if (!this.state.phoneValid){
+      Alert.alert(
+        "전화번호 확인", 
+        "010-0000-0000와 같은 형식인지 확인하세요. (공백 사용 불가)"
+      );
+    }else{
+      const ctx = this.context;
+      var a = {};
+      a.userID = this.state.id;
+      a.userPW = this.state.password;
+      a.name = this.state.name;
+      a.birth = this.state.birth;
+      a.phone = this.state.phone;
+      a.Lawyer = this.state.lawyer;
+      fetch(`${ctx.API_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // "token": ctx.token,
+        },
+        body: JSON.stringify(a),
+      })
+      .then((response) => {
+        return response.json();
+      }).then((json) => {
+        if (json.success === true) {
+          this.props.navigation.navigate('WelcomeScreen');
+          ToastAndroid.show("회원가입이 성공적으로 완료되었습니다.", ToastAndroid.SHORT);
+        } else {
+          Alert.alert(
+            "회원가입 실패",
+            "다시 회원정보를 입력해주시길 바랍니다."
+          );
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }
+
+  }
+  checkID(){
+    let regEx = /^[A-Za-z0-9_-]*$/gm;
+    let idInRange = (this.state.id.length >= 2) && (this.state.id.length <= 20);
+    this.state.idValid = regEx.test(this.state.id) && idInRange;
+  }
+  checkPW(){
+    let regEx = /^[A-Za-z0-9_-~!@#$%&*()-_+={}`[\];'"<,>\.?\/|]*$/gm;
+    let isInRange = (this.state.password.length >= 8) && (this.state.password.length <= 16);
+    this.state.pwValid = regEx.test(this.state.password) && isInRange;
+  }
+  checkName(){
+    let regEx = /^[가-힣a-zA-Z]+$/gmu;
+    this.state.nameValid = regEx.test(this.state.name);
+  }
+  checkBirth(){
+    let regEx = /^[0-9]+$/gm;
+    let lenCheck = this.state.birth.length == 8;
+    this.state.birthValid = regEx.test(this.state.birth) && (lenCheck);
+  }
+  checkPhone(){
+    let regEx = /^[0-9-]+$/gm;
+    let lenCheck = this.state.phone.length == 13;
+    this.state.phoneValid = regEx.test(this.state.phone) && lenCheck;
+  }
+  confirmThisPhone(){
+    // 추후에 사업자 등록을 한다면 다날 가입을 통해서 IamPort 이용 본인인증 서비스 구현 필요 
+  }
+  
   render() {
     if (!this.state.fontsLoaded) {
       return <View />;
@@ -93,7 +203,7 @@ export default class Enrollment extends Component {
                         <TextInput
                             placeholder="아이디를 입력해주세요."
                             style={styles.textInputForId}
-                            onChangeText={(id) => this.setState({ id })}
+                            onChangeText={(id) => {this.setState({ id }); }}
                             value={this.state.id}
                             maxLength={45}
                         />
@@ -108,7 +218,7 @@ export default class Enrollment extends Component {
                         <TextInput
                             placeholder="비밀번호를 입력해주세요."
                             style={styles.textInput}
-                            onChangeText={(password) => this.setState({ password })}
+                            onChangeText={(password) => {this.setState({ password }); }}
                             value={this.state.password}
                             maxLength={45}
                         />
@@ -120,7 +230,7 @@ export default class Enrollment extends Component {
                         <TextInput
                             placeholder="이름을 입력해주세요."
                             style={styles.textInput}
-                            onChangeText={(name) => this.setState({ name })}
+                            onChangeText={(name) => {this.setState({ name }); }}
                             value={this.state.name}
                             maxLength={45}
                         />
@@ -132,7 +242,7 @@ export default class Enrollment extends Component {
                         <TextInput
                             placeholder="예) 19970812"
                             style={styles.textInput}
-                            onChangeText={(birth) => this.setState({ birth })}
+                            onChangeText={(birth) => {this.setState({ birth }); }}
                             value={this.state.birth}
                         />
                     </View>
@@ -154,11 +264,14 @@ export default class Enrollment extends Component {
                         <TextInput
                             placeholder="010-XXXX-XXXX"
                             style={styles.textInputForId}
-                            onChangeText={(phone) => this.setState({ phone })}
+                            onChangeText={(phone) => {this.setState({ phone }); }}
                             value={this.state.phone}
                             maxLength={45}
                         />
-                        <TouchableOpacity style={styles.idconfirmButton}>
+                        <TouchableOpacity 
+                            style={styles.idconfirmButton} 
+                            onPress = {()=> {this.confirmThisPhone();}}
+                        >
                             <Text style={styles.idconfirmButtonText}>인증</Text>
                         </TouchableOpacity>
                     </View>
@@ -178,7 +291,7 @@ export default class Enrollment extends Component {
                     </View>
                 </View>
                 <View style={styles.enrollButtonContainer}>
-                    <TouchableOpacity style={styles.enrollButton}>
+                    <TouchableOpacity style={styles.enrollButton} onPress = {()=>this.confirmEnroll()}>
                         <Text style={styles.enrollButtonText}>회원가입</Text>
                     </TouchableOpacity>
                 </View>
