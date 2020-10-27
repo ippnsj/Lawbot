@@ -50,6 +50,24 @@ export default class QaUser extends Component {
         file: null,
         qna: "",
         qnaKind: "키워드",
+        questions: [
+            {
+                field: ["자동차", "산업재해", "폭행"],
+                title: "음주운전 처벌수위와 대처",
+                content: "우선 과거 2016년도 음주운전 취소(수치 0.158)된적이 있고, 2017년 무면허 전과가있습니다."
+                
+            },
+            {
+                field: ["자동차",  "사기", "폭행"],
+                title: "자동차 주행중 돌이 날라와서 찍힘 사고가 발생했습니다",
+                content: "자유로를 주행중에 돌빵을 당했습니다. 블랙박스를 수차례 돌려 보았지만 이게 앞차에서 날아온 돌은 아닌것 같고 갑자기 공중에서 생기더니 차에 맞았습니다. 주행도로 옆에는 항타기 공사중이었고 혹시나 그 현장에서 날아온건 아닐까 또 블랙박스를 돌려 보았지만 돌이 날아오는 방향은 기계와 반대입니다."
+            },
+            {
+                field: ["자동차", "모욕" ],
+                title: "음주교통사고 피해자입니다",
+                content: "안녕하세요\n저는 음주교통사고 피해자차량의 동승자입니다.\n일주일전 운전자와 함께 차량으로 서행중에 뒤에서 음주차량이 저희차를 한번박고 세번을 추가로 더 박았습니다."
+            },
+        ],
         interests: [
             {
                 name: "#관심분야 전체",
@@ -347,7 +365,7 @@ export default class QaUser extends Component {
 
                                         {/* 찐 질문 */}
                                         <View>
-                                            {questions.map((q, idx)=> {
+                                            {this.state.questions.map((q, idx)=> {
                                                 return(
                                                     <View key={idx}>
                                                         <View style={styles.interestQ_content_question_field}>
@@ -367,9 +385,6 @@ export default class QaUser extends Component {
                                                                 </View>
                                                             </View>
                                                         </TouchableOpacity>
-
-                                                        
-                                                        
                                                     </View>
                                                 )
                                             })}

@@ -109,13 +109,13 @@ export default class SimilarCaseAnalysis extends Component {
               <ScrollView style={styles.cases} scrollEnabled alwaysBounceHorizontal horizontal>
                 <View style={styles.caseBound}>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[0] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[0]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[0]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[0]}</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[5] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[5]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[5]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[5]}</Text>
                     </TouchableOpacity>
@@ -123,13 +123,13 @@ export default class SimilarCaseAnalysis extends Component {
                 </View>
                 <View style={styles.caseBound}>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[1] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[1]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[1]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[1]}</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[6] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[6]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[6]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[6]}</Text>
                     </TouchableOpacity>
@@ -137,13 +137,13 @@ export default class SimilarCaseAnalysis extends Component {
                 </View>
                 <View style={styles.caseBound}>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[2] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[2]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[2]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[2]}</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[7] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[7]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[7]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[7]}</Text>
                     </TouchableOpacity>
@@ -151,13 +151,13 @@ export default class SimilarCaseAnalysis extends Component {
                 </View>
                 <View style={styles.caseBound}>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[3] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[3]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[3]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[3]}</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[8] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[8]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[8]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[8]}</Text>
                     </TouchableOpacity>
@@ -165,13 +165,13 @@ export default class SimilarCaseAnalysis extends Component {
                 </View>
                 <View style={styles.caseBound}>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[4] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[4]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[4]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[4]}</Text>
                     </TouchableOpacity>
                   </View>
                   <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[9] + "%"}</Text>
+                    <Text style={styles.similarityText}>{this.state.similarities[9]}</Text>
                     <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[9]) }}>
                       <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[9]}</Text>
                     </TouchableOpacity>

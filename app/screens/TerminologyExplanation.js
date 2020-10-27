@@ -80,7 +80,6 @@ export default class TerminologyExplanation extends Component {
                   break;
                 }
               }
-
               if(idx != -1)
                   break;
             }
@@ -102,12 +101,10 @@ export default class TerminologyExplanation extends Component {
                 for(let k of descriptions) {
                     description += k.text;
                 }
-
                 let ret = dict + '\n';
                 if(summary) {
                   ret += summary.text + '\n';
                 }
-
                 if(description) {
                   ret += description;
                 }

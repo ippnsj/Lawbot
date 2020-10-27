@@ -11,7 +11,8 @@ import {
   Modal,
   Platform,
   ToastAndroid,
-  Alert
+  Alert,
+  Keyboard
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
@@ -109,9 +110,7 @@ export default class WritePettition extends Component {
             this.state.purpose = split1[0];
             this.state.cause = split1[1];
           }
-          else {
-            this.state.purpose = split1[0];
-          }
+          else { this.state.purpose = split1[0];}
         }
         else{
           var split1 = txt.split(regEx1);
@@ -119,7 +118,6 @@ export default class WritePettition extends Component {
             this.state.cause = split1[1];
           }
         }
-
         this.setState({file: null});
         this.setState({cameraPermission: false});
         this.setState({cameraRollPermission: false});
@@ -140,6 +138,7 @@ export default class WritePettition extends Component {
   }
 
   fetchNLP() {
+    Keyboard.dismiss();
     if(this.state.purpose == "" || this.state.cause == "") {
       Alert.alert( "오류", "청구취지와 청구원인을 모두 채워주세요.", [ { text: "알겠습니다."} ]);
     }
@@ -169,7 +168,7 @@ export default class WritePettition extends Component {
         })
         for(var i = 0; i < 10; i++) {
           this.state.ids.push(result.ids[0][i]);
-          this.state.similarities.push(Math.round(result.ids[1][i]));
+          this.state.similarities.push(result.ids[1][i]);
           this.state.keywords.push(result.keywords[0][i]);
         }
         this.props.navigation.navigate('SimilarCaseAnalysis', {
@@ -335,7 +334,7 @@ export default class WritePettition extends Component {
                 ></TextInput>
               </ScrollView>
             </View>
-            <TouchableOpacity style={styles.submit} onPress={() => this.fetchNLP()}>
+            <TouchableOpacity style={styles.submit} onPress={() => {this.fetchNLP()}}>
               <Text style={styles.submitText}>유사 판례 분석</Text>
             </TouchableOpacity>
           </View>
