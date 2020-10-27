@@ -276,15 +276,17 @@ const styles=StyleSheet.create({
         fontFamily: "KPWDBold",
         fontWeight: "400",
         color: "#8D8D8D",
-        width: 200,
+        width: 180,
     },
     underline : {
-        width: 360,
+        width: 340,
         height: 5,
         backgroundColor: "#E7E7E7",
         marginLeft: 10,
-        marginTop: -7
+        marginTop: -7,
+        borderRadius: 30
     },
+
     logoTitle: {
         fontSize: 20,
         fontFamily: "SCDream8",

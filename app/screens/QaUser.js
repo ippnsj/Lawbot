@@ -243,7 +243,7 @@ export default class QaUser extends Component {
                                 <Picker.Item label="내용" value="내용" />
                             </Picker>
                             <TextInput 
-                                placeholder="검색어를 입력하세요"
+                                placeholder="법률 Q&A를 검색해주세요"
                                 style={styles.textInput}
                                 value={this.state.qna}
                                 onChangeText={(qna) => this.setState({ qna })}
@@ -448,12 +448,13 @@ const styles=StyleSheet.create({
     },
     textInput : {
         fontSize: 16,
-        fontWeight: "700",
+        fontFamily: "KPWDBold",
+        fontWeight: "400",
         color: "#8D8D8D",
-        width: 150,
+        width: 180,
     },
     underline : {
-        width: 320,
+        width: 340,
         height: 5,
         backgroundColor: "#E7E7E7",
         marginLeft: 10,
