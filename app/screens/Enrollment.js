@@ -15,6 +15,7 @@ import * as Font from "expo-font";
 import Constants from "expo-constants";
 import { MyContext } from "../../context.js";
 
+import Certification from "./Certification.js";
 import colors from "../config/colors";
 
 export default class Enrollment extends Component {
@@ -181,8 +182,11 @@ export default class Enrollment extends Component {
     let lenCheck = this.state.phone.length == 13;
     this.state.phoneValid = regEx.test(this.state.phone) && lenCheck;
   }
+
   confirmThisPhone(){
-    // 추후에 사업자 등록을 한다면 다날 가입을 통해서 IamPort 이용 본인인증 서비스 구현 필요 
+    // 추후에 사업자 등록을 한다면 다날 가입을 통해서 IamPort 이용 본인인증 서비스 구현 필요
+    console.log("here");
+    Certification({ navigation: this.props.navigation, name: this.state.name, phone: this.state.phone });
   }
   
   render() {

@@ -10,13 +10,11 @@ import {
     ScrollView,
     Alert
   } from "react-native";
-import {Picker} from '@react-native-community/picker';
 import * as Font from "expo-font";
 import Constants from "expo-constants";
-import * as DocumentPicker from 'expo-document-picker';
-import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
+import Header from "./Header.js";
 
 const question =  {
     field: ["교통사고/범죄", "명예훼손/모욕", "폭행/협박"],
@@ -25,7 +23,6 @@ const question =  {
     views: 75,
     content: "제가 운전 중이었는데 어쩌고 저쩌고 갑자기 저보고 개새끼야라고 욕을 했는데 저도 같이 욕을 했습니다. 에바밥바밥ㅂ라리릴리리ㅣ 안녕 클레오파트라. 세상에서 제일가는 포테이토 칩.    그래서 제가 물을 마셨어요. 근데 물이 맛이 없어. 물이름은 평창수. 내 자취방 물도 맛이 없어ㅠㅠ 맛있는 물 먹고싶어"
 }
-
 
 const answers = [
     {
@@ -80,25 +77,13 @@ export default class QaAnswer extends Component {
         this._loadFonts();
     }
 
-
-
-    render() {
-        
-            
+    render() {   
             if (!this.state.fontsLoaded) {
                 return <View />;
               }
               return (
                   <View style={styles.container}>
-                        <View style={styles.header}>
-                            <Image source={require("../assets/menu.png")} style={styles.menu} />
-                            <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate('Home')}} >LAWBOT</Text>
-                            <Image
-                                source={require("../assets/profile.png")}
-                                style={styles.profile}
-                            />
-                        </View>
-
+                        <Header {...this.props}/>
                         
                         <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite')}  >                       
                             <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
@@ -185,29 +170,6 @@ const styles=StyleSheet.create({
         flex: 1,
         marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
         backgroundColor: "#fff",
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingLeft: "5%",
-        paddingRight: "5%",
-        minHeight: 50,
-        backgroundColor: "#fff"
-    },
-
-   
-    logoTitle: {
-        fontSize: 20,
-        fontFamily: "SCDream8",
-    },
-    menu: {
-        width: 20,
-        height: 20,
-    },
-    profile: {
-        width: 20,
-        height: 20,
     },
     
     bottom: {

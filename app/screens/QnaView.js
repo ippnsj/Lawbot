@@ -17,6 +17,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
+import Header from "./Header.js";
 
 const question =  {
     field: ["교통사고/범죄", "명예훼손/모욕", "폭행/협박"],
@@ -90,14 +91,7 @@ export default class QaAnswer extends Component {
               }
               return (
                   <View style={styles.container}>
-                        <View style={styles.header}>
-                            <Image source={require("../assets/menu.png")} style={styles.menu} />
-                            <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate('Home')}} >LAWBOT</Text>
-                            <Image
-                                source={require("../assets/profile.png")}
-                                style={styles.profile}
-                            />
-                        </View>
+                        <Header {...this.props}/>
 
                         
                         <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite')}  >                       
@@ -185,29 +179,6 @@ const styles=StyleSheet.create({
         flex: 1,
         marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
         backgroundColor: "#fff",
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingLeft: "5%",
-        paddingRight: "5%",
-        minHeight: 50,
-        backgroundColor: "#fff"
-    },
-
-   
-    logoTitle: {
-        fontSize: 20,
-        fontFamily: "SCDream8",
-    },
-    menu: {
-        width: 20,
-        height: 20,
-    },
-    profile: {
-        width: 20,
-        height: 20,
     },
     
     bottom: {

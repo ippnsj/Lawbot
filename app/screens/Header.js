@@ -1,0 +1,75 @@
+import React, {Component}from 'react';
+import {
+    Text,
+    View,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+  } from "react-native";
+import * as Font from "expo-font";
+import { DrawerActions } from '@react-navigation/drawer';
+
+import colors from "../config/colors";
+
+
+export default class Header extends Component {
+    state = {
+        fontsLoaded: false,
+    };
+  
+    async _loadFonts() {
+      await Font.loadAsync({
+          SCDream8: require("../assets/fonts/SCDream8.otf"),
+          KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
+          KPWDMedium: require("../assets/fonts/KPWDMedium.ttf")
+      });
+      this.setState({ fontsLoaded: true });
+    }
+  
+    componentDidMount() {
+        this._loadFonts();
+    }
+
+    render() {
+        if (!this.state.fontsLoaded) {
+            return <View />;
+          }
+          return (
+            <View style={styles.header}>
+                <TouchableOpacity onPress={() => {this.props.navigation.openDrawer()}}>
+                    <Image source={require("../assets/menu.png")} style={styles.menu} />
+                </TouchableOpacity>
+                <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}} >LAWBOT</Text>
+                <Image
+                    source={require("../assets/profile.png")}
+                    style={styles.profile}
+                />
+            </View>
+          )
+    };
+}
+
+const styles=StyleSheet.create({
+    header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingLeft: "5%",
+        paddingRight: "5%",
+        minHeight: 50,
+        backgroundColor: "#fff",
+        zIndex: 1,
+    },
+    logoTitle: {
+        fontSize: 20,
+        fontFamily: "SCDream8",
+    },
+    menu: {
+        width: 20,
+        height: 20,
+    },
+    profile: {
+        width: 20,
+        height: 20,
+    },
+});

@@ -18,7 +18,7 @@ import PDFReader from 'rn-pdf-reader-js';
 import { parse } from 'node-html-parser';
 
 import colors from "../config/colors";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
+import Header from "./Header.js";
 
 export default class TerminologyExplanation extends Component {
   state = {
@@ -174,14 +174,7 @@ export default class TerminologyExplanation extends Component {
 
     return (
         <View style={styles.container}>
-          <View style={styles.header}>
-            <Image source={require("../assets/menu.png")} style={styles.menu} />
-            <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}}>LAWBOT</Text>
-            <Image
-              source={require("../assets/profile.png")}
-              style={styles.profile}
-            />
-          </View>
+          <Header {...this.props}/>
           <KeyboardAvoidingView style={styles.body}>
             <PDFReader source={{ uri: this.props.route.params.file.uri }} style={ styles.fileImage } />
             <View style={styles.wordContainer}>
@@ -242,27 +235,6 @@ const styles = StyleSheet.create({
     flex: 6,
     width: "100%",
     height: "100%",
-  },
-  header: {
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingLeft: "5%",
-    paddingRight: "5%",
-    minHeight: 50,
-  },
-  logoTitle: {
-    fontSize: 20,
-    fontFamily: "SCDream8",
-  },
-  menu: {
-    width: 20,
-    height: 20,
-  },
-  profile: {
-    width: 20,
-    height: 20,
   },
   terminologyButton: {
     alignItems: "center",

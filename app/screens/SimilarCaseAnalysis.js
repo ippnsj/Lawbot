@@ -11,7 +11,9 @@ import {
 
 import * as Font from "expo-font";
 import Constants from "expo-constants";
+
 import colors from "../config/colors";
+import Header from "./Header.js";
 
 export default class SimilarCaseAnalysis extends Component {
   state = {
@@ -79,14 +81,7 @@ export default class SimilarCaseAnalysis extends Component {
 
     return (
         <View style={styles.container}>
-          <View style={styles.header}>
-            <Image source={require("../assets/menu.png")} style={styles.menu} />
-            <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}}>LAWBOT</Text>
-            <Image
-                source={require("../assets/profile.png")}
-                style={styles.profile}
-            />
-          </View>
+          <Header {...this.props}/>
           <View style = {styles.body}>
             <View style={styles.titleContainer}>
               <Text style = {styles.title}>유사 판례 분석</Text>
@@ -233,27 +228,6 @@ const styles = StyleSheet.create({
       flex: 1,
       marginTop: Platform.OS === `ios` ? 1 : Constants.statusBarHeight,
       backgroundColor: "#fff",
-    },
-    header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingLeft: "5%",
-      paddingRight: "5%",
-      minHeight: 50,
-      backgroundColor: "#fff",
-    },
-    logoTitle: {
-      fontSize: 20,
-      fontFamily: "SCDream8",
-    },
-    menu: {
-      width: 20,
-      height: 20,
-    },
-    profile: {
-      width: 20,
-      height: 20,
     },
     title:{
       fontFamily: "KPWDBold",

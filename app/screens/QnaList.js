@@ -16,6 +16,7 @@ import Constants from "expo-constants";
 import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
+import Header from "./Header.js";
 
 export default class QnaList extends Component {
     state = {
@@ -157,14 +158,7 @@ export default class QnaList extends Component {
           }
           return (
               <View style={styles.container}>
-                    <View style={styles.header}>
-                        <Image source={require("../assets/menu.png")} style={styles.menu} />
-                        <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}} >LAWBOT</Text>
-                        <Image
-                            source={require("../assets/profile.png")}
-                            style={styles.profile}
-                        />
-                    </View>
+                    <Header {...this.props}/>
                   {/* QA bar */}
                   <KeyboardAvoidingView style={styles.body}>
                     <Text style={styles.title}>법률 QNA</Text>
@@ -242,15 +236,6 @@ const styles=StyleSheet.create({
         marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
         backgroundColor: "#fff",
     },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingLeft: "5%",
-        paddingRight: "5%",
-        minHeight: 50,
-        backgroundColor: "#fff",
-    },
     searchSection:{
         alignItems:"center"
     },
@@ -285,19 +270,6 @@ const styles=StyleSheet.create({
         marginLeft: 10,
         marginTop: -7,
         borderRadius: 30
-    },
-
-    logoTitle: {
-        fontSize: 20,
-        fontFamily: "SCDream8",
-    },
-    menu: {
-        width: 20,
-        height: 20,
-    },
-    profile: {
-        width: 20,
-        height: 20,
     },
 
     nolist: {

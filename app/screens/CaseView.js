@@ -18,6 +18,7 @@ import WebView from "react-native-webview";
 import { parse } from 'node-html-parser';
 
 import colors from "../config/colors";
+import Header from "./Header.js";
 
 export default class CaseView extends Component {
   state = {
@@ -115,14 +116,7 @@ export default class CaseView extends Component {
 
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-            <Image source={require("../assets/menu.png")} style={styles.menu} />
-            <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}}>LAWBOT</Text>
-            <Image
-                source={require("../assets/profile.png")}
-                style={styles.profile}
-            />
-        </View>
+        <Header {...this.props}/>
         <View style={styles.webViewContainer}>
           <WebView 
           source={{ uri: this.props.route.params.caseURL }}
@@ -162,18 +156,6 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "#fff",
   },
-  logoTitle: {
-    fontSize: 20,
-    fontFamily: "SCDream8",
-  },
-  menu: {
-    width: 20,
-    height: 20,
-  },
-  profile: {
-    width: 20,
-    height: 20,
-  },
   body: {
     flex: 0.3,
     justifyContent: "center",
@@ -198,16 +180,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: "center",
     padding: 10,
-  },
-  header: {
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingLeft: "5%",
-    paddingRight: "5%",
-    minHeight: 50,
-    zIndex: 1,
   },
   terminologyButton: {
     alignItems: "center",

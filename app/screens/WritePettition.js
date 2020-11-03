@@ -23,6 +23,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { MyContext } from "../../context.js";
 
 import colors from "../config/colors";
+import Header from "./Header.js";
 
 const purposePlaceholder = `청구취지를 자세히 입력해주세요.
 
@@ -51,6 +52,10 @@ export default class WritePettition extends Component {
     keywords: [],
     ids: [],
     similarities: [],
+    // purposeWrite: false,
+    // causeWrite: false,
+    // purposeCon: false,
+    // causeCon: false
   };
 
   async _loadFonts() {
@@ -266,14 +271,7 @@ export default class WritePettition extends Component {
 
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Image source={require("../assets/menu.png")} style={styles.menu} />
-          <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}}>LAWBOT</Text>
-          <Image
-            source={require("../assets/profile.png")}
-            style={styles.profile}
-          />
-        </View>
+        <Header {...this.props}/>
         <KeyboardAvoidingView style={styles.body}>
           <View style={styles.fieldContatiner}>
             <Text style={styles.field}>{this.state.field}</Text>
@@ -560,23 +558,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 10,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingLeft: "5%",
-    paddingRight: "5%",
-    minHeight: 50,
-    backgroundColor: "#fff"
-  },
-  logoTitle: {
-    fontSize: 20,
-    fontFamily: "SCDream8",
-  },
-  menu: {
-    width: 20,
-    height: 20,
-  },
   // person: {
   //   fontSize: 15,
   //   fontFamily: "KPBRegular",
@@ -634,10 +615,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: "0.5%",
     marginHorizontal: 20,
-  },
-  profile: {
-    width: 20,
-    height: 20,
   },
   purpose: {
     backgroundColor: "#F6F6F6",

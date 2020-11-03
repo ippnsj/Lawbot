@@ -6,22 +6,21 @@ import Enrollment from "./app/screens/Enrollment";
 import WritePettition from "./app/screens/WritePettition";
 import SimilarCaseAnalysis from "./app/screens/SimilarCaseAnalysis";
 import TerminologyExplanation from "./app/screens/TerminologyExplanation";
-import CaseBefore from "./app/screens/CaseBefore";
 import CaseView from "./app/screens/CaseView";
 import QnaList from "./app/screens/QnaList";
-import QnA from "./app/screens/QnA";
 import QaLawyer from "./app/screens/QaLawyer";
 import QaUser from "./app/screens/QaUser";
 import QaWrite from "./app/screens/QaWrite";
 import QaAnswer from "./app/screens/QaAnswer";
 import QnaView from "./app/screens/QnaView";
+import SideMenu from "./app/screens/SideMenu";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-// import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MyContext, PRODUCTION_URL } from './context.js';
 
 const Stack = createStackNavigator();
-// const Drawer = createDrawerNavigator();
+const Drawer = createDrawerNavigator();
 
 export default class App extends Component {
   state = {
@@ -82,7 +81,7 @@ export default class App extends Component {
         updateToken: this.updateToken,
       }}>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName={this.state.firstPage}>
+          {/* <Stack.Navigator initialRouteName={this.state.firstPage}>
             <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
             <Stack.Screen name="Enrollment" component={Enrollment} options={{ headerShown: false }} />
@@ -98,9 +97,22 @@ export default class App extends Component {
             <Stack.Screen name="QaUser" component={QaUser} options={{ headerShown: false }} />
             <Stack.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
             <Stack.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
-          </Stack.Navigator>
-          {/* <Drawer.Navigator>
-          </Drawer.Navigator> */}
+          </Stack.Navigator> */}
+          <Drawer.Navigator drawerContent={(props) => <SideMenu {...props}/>} initialRouteName={this.state.firstPage}>
+            <Drawer.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
+            <Drawer.Screen name="Home" component={Home} options={{ headerShown: false }} />
+            <Drawer.Screen name="Enrollment" component={Enrollment} options={{ headerShown: false }} />
+            <Drawer.Screen name="WritePettition" component={WritePettition} options={{ headerShown: false }} />
+            <Drawer.Screen name="SimilarCaseAnalysis" component={SimilarCaseAnalysis} options={{ headerShown: false }} />
+            <Drawer.Screen name="TerminologyExplanation" component={TerminologyExplanation} options={{ headerShown: false }} />
+            <Drawer.Screen name="CaseView" component={CaseView} options={{ headerShown: false }} />
+            <Drawer.Screen name="QnaList" component={QnaList} options={{ headerShown: false }} />
+            <Drawer.Screen name="QaLawyer" component={QaLawyer} options={{ headerShown: false }} />
+            <Drawer.Screen name="QaAnswer" component={QaAnswer} options={{ headerShown: false }} />
+            <Drawer.Screen name="QaUser" component={QaUser} options={{ headerShown: false }} />
+            <Drawer.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
+            <Drawer.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
+          </Drawer.Navigator>
         </NavigationContainer>
       </MyContext.Provider>
     )

@@ -105,6 +105,7 @@ export default class WelcomeScreen extends Component {
             ref={(input) => { this.secondTextInput = input; }}
             onSubmitEditing={() => this.loginEvent()}
             returnKeyType="done"
+            secureTextEntry={true}
           />
           <TouchableOpacity
             style={styles.loginButton}
