@@ -24,6 +24,7 @@ import { MyContext } from "../../context.js";
 
 import colors from "../config/colors";
 import Header from "./Header.js";
+import { DrawerContentScrollView } from "@react-navigation/drawer";
 
 const purposePlaceholder = `청구취지를 자세히 입력해주세요.
 
@@ -42,7 +43,7 @@ const causePlaceholder = `청구원인을 자세히 입력해주세요.
 export default class WritePettition extends Component {
   state = {
     fontsLoaded: false,
-    field: "손해배상(자)",
+    field: "",
     purpose: "",
     cause: "",
     cameraPermission: false,
@@ -70,7 +71,18 @@ export default class WritePettition extends Component {
   componentDidMount() {
     this._loadFonts();
     this.setState({fieldSelectVisible: false});
-    this.setState({field: this.props.route.params.field});
+  }
+
+  componentDidUpdate() {
+    if(this.props.route.params.fieldChanged && this.state.field != this.props.route.params.field) {
+      this.props.route.params.fieldChanged = false;
+      this.setState({field: this.props.route.params.field});
+    }
+
+    if(this.props.route.params.pageRerender) {
+      this.props.route.params.pageRerender = false;
+      this.setState({ cameraPermission: false, cameraRollPermission: false });
+    }
   }
 
   async getCameraPermission() {

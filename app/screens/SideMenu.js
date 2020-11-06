@@ -86,7 +86,7 @@ export default class SideMenu extends Component {
             <Image source={require("../assets/close.png")} style={styles.close} />
           </TouchableOpacity>
           <View style={styles.user}>
-            <Image source={require("../assets/logo4.png")} style={styles.userImage} />
+            <Image source={{ uri: this.state.user.photo }} style={styles.userImage} />
             <View style={styles.userProfile}>
               <Text style={styles.userName}>{this.state.user.name}</Text>
               <View style={styles.userProfileCont}>
@@ -155,7 +155,6 @@ SideMenu.contextType = MyContext;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      marginTop: Platform.OS === `ios` ? 1 : Constants.statusBarHeight,
       backgroundColor: "#fff",
     },
 
@@ -181,7 +180,7 @@ const styles = StyleSheet.create({
       borderRadius: 40,
     },
     userProfile: {
-      marginLeft: 20,
+      marginLeft: 15,
     },
     userName: {
       fontSize: 25,

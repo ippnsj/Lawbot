@@ -12,10 +12,12 @@ import {
   ToastAndroid,
   Platform,
   AsyncStorage,
+  BackHandler
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
 import { MyContext } from '../../context.js';
+// import { withNavigationFocus } from 'react-navigation';
 
 import colors from "../config/colors";
 
@@ -34,8 +36,33 @@ export default class WelcomeScreen extends Component {
     this.setState({ fontsLoaded: true });
   }
 
+  handleBackButton = () => {
+    if(this.props.navigation.isFocused()) {
+      Alert.alert(
+      '로우봇 종료',
+      '로우봇을 종료하시겠습니까...?', [{
+          text: '아니요',
+      }, {
+          text: '네',
+          onPress: () => BackHandler.exitApp()
+      }, ], {
+          cancelable: false
+      }
+      )
+
+      return true;
+    }else {
+      return false;
+    }
+  }
+
   componentDidMount() {
     this._loadFonts();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
   }
 
   loginEvent() {
@@ -113,7 +140,7 @@ export default class WelcomeScreen extends Component {
           >
             <Text style={styles.loginButtonText}>로그인</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.enrollButton} onPress={() => { this.props.navigation.navigate('Enrollment') }}>
+          <TouchableOpacity style={styles.enrollButton} onPress={() => { this.props.navigation.navigate('Enrollment'); }}>
             <Text style={styles.enrollButtonText}>회원가입</Text>
           </TouchableOpacity>
         </SafeAreaView>
@@ -123,6 +150,7 @@ export default class WelcomeScreen extends Component {
   }
 }
 WelcomeScreen.contextType = MyContext;
+// export default withNavigationFocus(WelcomeScreen);
 
 const styles = StyleSheet.create({
   container: {

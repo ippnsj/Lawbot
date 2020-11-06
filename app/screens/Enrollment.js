@@ -15,7 +15,6 @@ import * as Font from "expo-font";
 import Constants from "expo-constants";
 import { MyContext } from "../../context.js";
 
-import Certification from "./Certification.js";
 import colors from "../config/colors";
 
 export default class Enrollment extends Component {
@@ -33,6 +32,7 @@ export default class Enrollment extends Component {
     nameValid : false,
     birthValid : false,
     phoneValid: false,
+    phoneValidDone: false,
   };
 
   async _loadFonts() {
@@ -94,8 +94,8 @@ export default class Enrollment extends Component {
     this.checkID();
     this.checkPW();
     this.checkName();
-    this.checkPhone();
     this.checkBirth();
+    this.checkPhone();
 
     if (!this.state.idValid){
       Alert.alert(
@@ -121,6 +121,11 @@ export default class Enrollment extends Component {
       Alert.alert(
         "전화번호 확인", 
         "010-0000-0000와 같은 형식인지 확인하세요. (공백 사용 불가)"
+      );
+    }else if (!this.state.phoneValidDone){
+      Alert.alert(
+        "인증번호 확인", 
+        "전화번호 인증을 해주세요."
       );
     }else{
       const ctx = this.context;
@@ -184,9 +189,72 @@ export default class Enrollment extends Component {
   }
 
   confirmThisPhone(){
-    // 추후에 사업자 등록을 한다면 다날 가입을 통해서 IamPort 이용 본인인증 서비스 구현 필요
-    console.log("here");
-    Certification({ navigation: this.props.navigation, name: this.state.name, phone: this.state.phone });
+    this.checkPhone();
+    if(this.state.phoneValid) {
+      const ctx = this.context;
+      let body = {};
+      body.phone = this.state.phone;
+
+      fetch(`${ctx.API_URL}/register/phone-validate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // "token": ctx.token,
+        },
+        body: JSON.stringify(body),
+      }).then((result) => {
+        return result.json();
+      }).then((result) => {
+        if(result.success) {
+          Alert.alert(
+            "인증번호 발송완료", 
+            "인증번호가 발송되었습니다."
+          );
+        }else {
+          Alert.alert(
+            "인증번호 발송실패", 
+            "인증번호 발송에 실패하였습니다. 전화번호를 다시 확인해주세요."
+          );
+        }
+      });
+    }else {
+      Alert.alert(
+        "전화번호 확인", 
+        "010-0000-0000와 같은 형식인지 확인하세요. (공백 사용 불가)"
+      );
+    }
+  }
+
+  confirmPhoneValidateNum() {
+    Keyboard.dismiss();
+    const ctx = this.context;
+    let body = {};
+    body.phone = this.state.phone;
+    body.validateNum = parseInt(this.state.confirmPhone);
+
+    fetch(`${ctx.API_URL}/register/phone-check`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // "token": ctx.token,
+      },
+      body: JSON.stringify(body),
+    }).then((result) => {
+      return result.json();
+    }).then((result) => {
+      if(result.success) {
+        Alert.alert(
+          "인증완료", 
+          "인증에 성공하였습니다."
+        );
+        this.setState({ phoneValidDone: true });
+      }else {
+        Alert.alert(
+          "인증실패", 
+          "인증에 실패하였습니다. 다시 인증해주세요."
+        );
+      }
+    });
   }
   
   render() {
@@ -271,10 +339,12 @@ export default class Enrollment extends Component {
                             onChangeText={(phone) => {this.setState({ phone }); }}
                             value={this.state.phone}
                             maxLength={45}
+                            editable={!this.state.phoneValidDone}
                         />
                         <TouchableOpacity 
-                            style={styles.idconfirmButton} 
+                            style={!this.state.phoneValidDone ? styles.idconfirmButton : styles2.idconfirmButton}
                             onPress = {()=> {this.confirmThisPhone();}}
+                            disabled={this.state.phoneValidDone}
                         >
                             <Text style={styles.idconfirmButtonText}>인증</Text>
                         </TouchableOpacity>
@@ -288,8 +358,9 @@ export default class Enrollment extends Component {
                             style={styles.textInputForId}
                             onChangeText={(confirmPhone) => this.setState({ confirmPhone })}
                             value={this.state.confirmPhone}
+                            editable={!this.state.phoneValidDone}
                         />
-                        <TouchableOpacity style={styles.idconfirmButton}>
+                        <TouchableOpacity style={!this.state.phoneValidDone ? styles.idconfirmButton : styles2.idconfirmButton} onPress = {()=> {this.confirmPhoneValidateNum();}} disabled={this.state.phoneValidDone}>
                             <Text style={styles.idconfirmButtonText}>확인</Text>
                         </TouchableOpacity>
                     </View>
@@ -480,5 +551,14 @@ const styles2 = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         width: "38%",
+    },    
+    idconfirmButton: {
+      alignItems: "center",
+      backgroundColor: colors.primary,
+      padding: 10,
+      borderRadius: 5,
+      width: "25%",
+      marginLeft: 15,
+      opacity: 0.6
     },
 });

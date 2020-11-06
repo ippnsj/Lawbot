@@ -14,12 +14,13 @@ import QaWrite from "./app/screens/QaWrite";
 import QaAnswer from "./app/screens/QaAnswer";
 import QnaView from "./app/screens/QnaView";
 import SideMenu from "./app/screens/SideMenu";
+import MyPage from "./app/screens/MyPage";
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+// import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { MyContext, PRODUCTION_URL } from './context.js';
 
-const Stack = createStackNavigator();
+// const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default class App extends Component {
@@ -30,14 +31,10 @@ export default class App extends Component {
     loaded: false,
   };
 
-  // updateToken() {
-  //   this.setState({}); // class App
-  // }
-
   updateToken = (new_token) => {
     this.setState({ // React
       token: new_token,
-    })
+    });
   }
 
   async componentDidMount() {
@@ -98,7 +95,7 @@ export default class App extends Component {
             <Stack.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
             <Stack.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
           </Stack.Navigator> */}
-          <Drawer.Navigator drawerContent={(props) => <SideMenu {...props}/>} initialRouteName={this.state.firstPage}>
+          <Drawer.Navigator drawerContent={(props) => <SideMenu {...props}/>} initialRouteName={this.state.firstPage} hideStatusBar>
             <Drawer.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Drawer.Screen name="Home" component={Home} options={{ headerShown: false }} />
             <Drawer.Screen name="Enrollment" component={Enrollment} options={{ headerShown: false }} />
@@ -112,6 +109,7 @@ export default class App extends Component {
             <Drawer.Screen name="QaUser" component={QaUser} options={{ headerShown: false }} />
             <Drawer.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
             <Drawer.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
+            <Drawer.Screen name="MyPage" component={MyPage} options={{ headerShown: false }} />
           </Drawer.Navigator>
         </NavigationContainer>
       </MyContext.Provider>

@@ -40,10 +40,12 @@ export default class Header extends Component {
                     <Image source={require("../assets/menu.png")} style={styles.menu} />
                 </TouchableOpacity>
                 <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}} >LAWBOT</Text>
-                <Image
-                    source={require("../assets/profile.png")}
-                    style={styles.profile}
-                />
+                <TouchableOpacity onPress={() => {this.props.navigation.navigate("MyPage")}}>
+                    <Image
+                        source={require("../assets/profile.png")}
+                        style={styles.profile}
+                    />
+                </TouchableOpacity>
             </View>
           )
     };

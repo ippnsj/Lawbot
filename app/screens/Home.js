@@ -4,14 +4,15 @@ import {
     View,
     StyleSheet,
     Image,
-    TextInput,
     KeyboardAvoidingView,
     TouchableOpacity,
+    BackHandler,
+    Alert
   } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
 import * as DocumentPicker from 'expo-document-picker';
-import { MyContext } from '../../context.js';
+import { MyContext } from '../../context.js'; 
 
 import colors from "../config/colors";
 import Header from "./Header.js";
@@ -32,9 +33,34 @@ export default class Home extends Component {
       });
       this.setState({ fontsLoaded: true });
     }
+
+    handleBackButton = () => {
+        if(this.props.navigation.isFocused()) {
+            Alert.alert(
+            '로우봇 종료',
+            '로우봇을 종료하시겠습니까...?', [{
+                text: '아니요',
+            }, {
+                text: '네',
+                onPress: () => BackHandler.exitApp()
+            }, ], {
+                cancelable: false
+            }
+            )
+
+            return true;
+        }else {
+            return false;
+        }
+    }
   
     componentDidMount() {
         this._loadFonts();
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    }
+    
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     }
 
     async terminologyExplanation() {
@@ -48,11 +74,10 @@ export default class Home extends Component {
     }
 
     async writePettition(field) {
-        // console.log(field);
-        // this.setState({field: word});
-        // console.log(this.state.field);
         this.props.navigation.navigate('WritePettition', {
+            fieldChanged: true,
             field: field,
+            pageRerender: true,
         });
     }
 
@@ -88,7 +113,7 @@ export default class Home extends Component {
                         <View style={styles.selectContent}> 
                             <View style={styles.fieldRow}>
                                 <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.props.navigation.navigate('WritePettition',{field: "손해배상(자)"}); }}>
+                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(자)"); }}>
                                     <Image style={styles.fieldImage} source={require("../assets/carAccident.png")} />
                                 </TouchableOpacity>
                                 <Text style={styles.fieldText}>자동차</Text>
@@ -194,6 +219,7 @@ export default class Home extends Component {
     };
 }
 Home.contextType = MyContext;
+// export default withNavigationFocus(Home);
 
 const styles=StyleSheet.create({
     body: {
