@@ -1,5 +1,6 @@
-
 import pymysql as pms
+import json
+import logging
 
 # DB에 연결
 host = "ict.cor8kkyfcogd.ap-northeast-2.rds.amazonaws.com"
@@ -20,7 +21,7 @@ def recommand(category_list, n=5):
 
     n : 상위 몇명까지 뽑을지에 대한 인풋 파라미터 입니다.
     """
-    laywers = []
+    lawyers = []
     
     query = 'SELECT ID FROM Lawyer'
     cursor.execute(query)
