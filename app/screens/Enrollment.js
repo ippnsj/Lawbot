@@ -176,6 +176,15 @@ export default class Enrollment extends Component {
   checkName(){
     let regEx = /^[가-힣a-zA-Z]+$/gmu;
     this.state.nameValid = regEx.test(this.state.name);
+    let regExEng = /^[a-zA-Z]+$/gm;
+    let regExKor = /^[가-힣]+$/gmu;
+    if (regExEng.test(this.state.name)){
+      this.state.nameValid = (this.state.name.length<= 9);
+    }else if (regExKor.test(this.state.name)){
+      this.state.nameValid = (this.state.name.length<= 5);
+    }else{
+      this.state.nameValid = false;
+    }
   }
   checkBirth(){
     let regEx = /^[0-9]+$/gm;
