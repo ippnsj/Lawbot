@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   Platform,
-  ScrollView
+  ScrollView,
+  Modal
 } from "react-native";
 
 import * as Font from "expo-font";
@@ -15,6 +16,14 @@ import Constants from "expo-constants";
 import colors from "../config/colors";
 import Header from "./Header.js";
 
+const tags={
+  "자동차":0,  "산업재해":1,  "환경":2, "언론보도":3, "지식재산권":4, "의료":5, "건설":6, "국가":7, "기타":8, "가족/가정":9, "이혼":10, "폭행":11, "사기":12, "성범죄":13, "명예훼손":14, "모욕":15, "협박":16, "교통사고":17, "계약":18, "개인정보":19, "상속":20, "재산범죄":21, "매매":22, "노동":23, "채권추심":24, "회생/파산":25, "마약/대마":26, "소비자":27, "국방":28, "병역":29, "주거침입":30, "도급/용역":31, "건설/부동산":32, "위증":33, "무고죄":34, "아동/소년범죄":35, "임대차":36, "대여금":37, "온라인범죄":38, "음주운전":39
+}
+
+const categories=[
+  "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방", "병역", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
+]
+
 export default class SimilarCaseAnalysis extends Component {
   state = {
       fontsLoaded: false,
@@ -22,7 +31,15 @@ export default class SimilarCaseAnalysis extends Component {
       similarities: [],
       keywords: "",
       caseURL: "",
+      fields: "",
+      category:[],
+      tagSelectVisible:false,
+      field:[],
   };
+
+  
+  
+
 
   async _loadFonts(){
     await Font.loadAsync({
@@ -47,6 +64,43 @@ export default class SimilarCaseAnalysis extends Component {
       keywords: keytags
     });
   }
+
+  overlayClose() {
+    this.setState({tagSelectVisible: false});
+    for (var i in this.state.field){
+      console.log(this.state.field[i]);
+      this.state.category.push(tags[this.state.field[i]]);
+    }
+
+    fetch(`${ctx.API_URL}/lawr`, {
+      method: "POST",
+      headers: {
+          // 'Content-Type': 'multipart/form-data',
+          // 'Accept': 'application/json',
+          'token': ctx.token,
+      },
+      body: JSON.stringify(this.state.category),
+    }
+    ).then((result) => {
+      return result.json();
+    }).then((result) => {
+      this.setState({ token: ctx.token, user: result });
+    });
+  
+
+
+}
+
+
+
+  categorySelect(cat) {
+    // console.log(cat)
+    this.setState(prevState => ({
+        field: [...prevState.field, cat]
+    }));
+    //console.log(this.state.field);
+}
+
 
   getHTML(caseID){
     var main = {
@@ -73,6 +127,18 @@ export default class SimilarCaseAnalysis extends Component {
         console.error(error);
     });
 }
+
+    /*
+    이제 여기에 getHTML 같은 함수 제작
+    */
+  getLawyer(category){
+    console.log(category);
+  }
+
+
+
+
+
 
   render(){
     if (!this.state.fontsLoaded) {
@@ -176,11 +242,40 @@ export default class SimilarCaseAnalysis extends Component {
               <TouchableOpacity style={styles.submit}>
                 <Text style={styles.submitText}>다른 사례 분석하기</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.submit}>
+              <TouchableOpacity style={styles.submit} onPress={()=> this.setState({tagSelectVisible: true,field:[],category:[]})}>
                 <Text style={styles.submitText}>관련 변호사 추천 받기</Text>
               </TouchableOpacity>
             </View>
           </View>
+          <Modal visible={this.state.tagSelectVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
+                <View style={styles.fieldSelectModal}>
+                    <View style={styles.fieldSelectContainer}>
+                        <View style={styles.fieldSelectHeader}>
+                            <Text style={styles.fieldModalText}>분야설정</Text>
+                        </View>
+                        <ScrollView>
+                            {categories.map((cat, idx)=>{
+                                return(
+                                    <TouchableOpacity onPress={()=>this.categorySelect(cat)} key={idx}>
+                                        <Text style={ this.state.field.indexOf(cat)>-1 ? styles.categoryText_selected : styles.categoryText_unselect
+                                        }>{cat}</Text>
+                                    </TouchableOpacity>
+                                )
+                            })}
+                        </ScrollView>
+                    
+                    </View>
+                    <TouchableOpacity style={styles.fieldSelectCancel} onPress={() => this.overlayClose()}>
+                        <Text style={styles.fieldSelectCancelText}>완료</Text>
+                    </TouchableOpacity>
+                    
+                </View>
+          </Modal>
+        
+
+
+
+
         </View>
     );
 
@@ -298,5 +393,49 @@ const styles = StyleSheet.create({
       marginTop : "0%",
       marginLeft: "10%",
     },
-});
+
+    fieldSelectModal: {
+      flex: 1,
+      backgroundColor: 'rgba(52, 52, 52, 0.8)',
+      justifyContent: "center",
+    },
+    fieldSelectContainer: {
+      height: "35%",
+      width: "80%",
+      backgroundColor: "#fff",
+      alignItems: "center",
+      alignSelf: "center",
+      paddingHorizontal: "2%",
+      paddingVertical: "3%"
+    },
+    fieldSelectCancel: {
+      backgroundColor: colors.primary,
+      justifyContent: "center",
+      alignItems: "center",
+      width: "80%",
+      height: "6%",
+      alignSelf: "center"
+    },
+    fieldSelectCancelText: {
+      color: "#fff",
+      fontSize: 15,
+      fontFamily: "KPWDBold",
+    },
+    fieldModalText: {
+      fontSize: 20,
+      fontFamily: "KPWDBold",
+    },
+    categoryText_unselect: {
+      marginVertical: 5,
+      color: "#939393",
+      fontSize: 18,
+      fontFamily: "KPWDMedium"
+    },
   
+    categoryText_selected: {
+      marginVertical: 5,
+      color: colors.primary,
+      fontSize: 18,
+      fontFamily: "KPWDMedium"
+    },
+});
