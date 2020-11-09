@@ -23,7 +23,6 @@ export default class MyPage extends Component {
     categories: {}, 
     user: {},
     userInt: [],
-    file: null,
   };
 
   async _loadFonts() {
@@ -38,8 +37,22 @@ export default class MyPage extends Component {
     this.setState({ fontsLoaded: true });
   }
 
+  isFocused = () => {
+    const ctx = this.context;
+
+    if(ctx.token !== '' && this.state.token === ctx.token && ctx.favCategoryUpdated) {
+        ctx.favCategoryUpdated = false;
+        const { userInt } = this.state;
+        for(var i = 0; i < this.state.userInt.length; i++) {
+            userInt[i] = ctx.userInt[i];
+        }
+        this.setState({ userInt });
+    }
+}
+
   async componentDidMount() {
     this._loadFonts();
+    this.props.navigation.addListener('focus', this.isFocused);
 
     const ctx = this.context;
     const { userInt } = this.state;
@@ -122,6 +135,10 @@ export default class MyPage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.props.navigation.removeListener('focus', this.isFocused);
+  }
+
   async logout() {
     await AsyncStorage.clear();
     const ctx = this.context;
@@ -146,7 +163,13 @@ export default class MyPage extends Component {
             }).then((result) => {
                 return result.json();
             }).then((result) => {
-                
+                ctx.favCategoryUpdated = true;
+                userInt[idx] = userInt[idx]*-1;
+                this.setState({
+                    userInt,
+                });
+            }).then(() => {
+                ctx.userInt = userInt;
             });
     }else if(userInt[idx]*-1 === 1) {
         fetch(`${ctx.API_URL}/user/interests`, {
@@ -159,13 +182,15 @@ export default class MyPage extends Component {
             }).then((result) => {
                 return result.json();
             }).then((result) => {
-            });
+                ctx.favCategoryUpdated = true;
+                userInt[idx] = userInt[idx]*-1;
+                this.setState({
+                    userInt,
+                });
+            }).then(() => {
+                ctx.userInt = userInt;
+        });
     }
-
-    userInt[idx] = userInt[idx]*-1;
-    this.setState({
-        userInt,
-    });
   }
 
   async choosePicture() {
@@ -210,7 +235,7 @@ export default class MyPage extends Component {
                 this.setState(prevState => ({
                     user: {
                         ...prevState.user,
-                        photo: result.uri,
+                        photo: `${result.uri}?random=${new Date()}`,
                     },
                 }));
             }
@@ -245,7 +270,7 @@ export default class MyPage extends Component {
                 </View>
             </View>
             <TouchableOpacity style={styles.userImageCont} onPress={() => this.choosePicture()}>
-                <Image source={{ uri: `${this.state.user.photo}?random=${new Date()}` }} style={styles.userImage} />
+                <Image source={{ uri: this.state.user.photo} } style={styles.userImage} />
             </TouchableOpacity>
         </View>
         <View style={styles.bar}></View>

@@ -20,20 +20,30 @@ import colors from "../config/colors";
 import Header from "./Header.js";
 import { ScrollView } from 'react-native-gesture-handler';
 
-const categories=[
-    "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방", "병역", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄"   
-]
-
-
 export default class QaWrite extends Component {
     state = {
         fontsLoaded: false,
         title: "",
         content:"",
+        field: [],
         categoryVisible: false,
-        field: []
+        categories: {}
     };
   
+    isFocused = () => {
+        this.setState({ title: "", content: "" });
+
+        this.fieldReset();
+    }
+
+    fieldReset() {
+      const field = [];
+      for(var i = 0; i < this.props.route.params.categories.length; i++) {
+        field[i] = -1;
+      }
+      this.setState({ field });
+    }
+
     async _loadFonts() {
       await Font.loadAsync({
           SCDream8: require("../assets/fonts/SCDream8.otf"),
@@ -47,28 +57,53 @@ export default class QaWrite extends Component {
   
     componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
+
+        this.setState({categories: this.props.route.params.categories});
+        
+        this.fieldReset();
     }
 
-    categorySelect(cat) {
-        // console.log(cat)
-        this.setState(prevState => ({
-            field: [...prevState.field, cat]
-        }));
-        console.log(this.state.field)
+    componentWillUnmount() {
+      this.props.navigation.removeListener('focus', this.isFocused);
+    }
+
+    categorySelect(idx) {
+      const { field } = this.state; 
+      field[idx] = -field[idx];
+      this.setState({ field });
     }
 
     overlayClose() {
         this.setState({categoryVisible: false});
     }
 
-    createArticle() {
-        var article={
-            title: this.state.title,
-            content: this.state.content,
-            field: this.state.field,
+    async createArticle() {
+      const ctx = this.context;
+      let body = {
+        question: {},
+        category: [],
+      };
+      body.question.title = this.state.title;
+      body.question.content = this.state.content;
+      for(var i = 0; i < this.state.field.length; i++) {
+        if(this.state.field[i] === 1) {
+          body.category.push(this.state.categories[i].ID);
         }
-        this.props.navigation.goBack();
-        // console.log(article)
+      }
+
+      await fetch(`${ctx.API_URL}/qna/question`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "token": ctx.token
+        },
+        body: JSON.stringify(body),
+      }).then((result) => {
+      });
+
+      this.props.navigation.navigate("QaUser");
     }
 
     render() {
@@ -87,6 +122,7 @@ export default class QaWrite extends Component {
                             style={styles.title}
                             value={this.state.title}
                             onChangeText={(title)=>this.setState({title})}
+                            maxLength={45}
                         />
                     </View>
                     <View style={{height: 0.5, backgroundColor: "lightgray"}}></View>
@@ -109,14 +145,14 @@ export default class QaWrite extends Component {
                         </View>
                     </TouchableOpacity>
 
-                    <View style={{height: 0.5, backgroundColor: "lightgray"}}></View>
+                    {/* <View style={{height: 0.5, backgroundColor: "lightgray"}}></View> */}
                     
-                    <TouchableOpacity >
+                    {/* <TouchableOpacity >
                         <View style={{flexDirection: "row"}}>
                             <Image style={styles.icon} source={require("../assets/attachIcon.png")} />
                             <Text style={styles.attach}>첨부파일 등록</Text>
                         </View>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
                     <TouchableOpacity style={styles.Button}  onPress={() => this.createArticle()}>
                             <Text style={styles.ButtonText}>질문 등록하기</Text>
@@ -130,11 +166,11 @@ export default class QaWrite extends Component {
                             <Text style={styles.fieldModalText}>분야설정</Text>
                         </View>
                         <ScrollView>
-                            {categories.map((cat, idx)=>{
+                            {this.state.categories.map((cat, idx)=>{
                                 return(
-                                    <TouchableOpacity onPress={()=>this.categorySelect(cat)} key={idx}>
-                                        <Text style={ this.state.field.indexOf(cat)>-1 ? styles.categoryText_selected : styles.categoryText_unselect
-                                        }>{cat}</Text>
+                                    <TouchableOpacity onPress={()=>this.categorySelect(idx)} key={idx}>
+                                        <Text style={ this.state.field[idx] === 1 ? styles.categoryText_selected : styles.categoryText_unselect
+                                        }>{cat.name}</Text>
                                     </TouchableOpacity>
                                 )
                             })}
@@ -152,6 +188,7 @@ export default class QaWrite extends Component {
           )
     }
 }
+QaWrite.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
@@ -212,7 +249,7 @@ const styles=StyleSheet.create({
 
 
 
-    fieldSelectModal: {
+  fieldSelectModal: {
     flex: 1,
     backgroundColor: 'rgba(52, 52, 52, 0.8)',
     justifyContent: "center",

@@ -76,25 +76,10 @@ export default class App extends Component {
         API_URL: this.state.url,
         token: this.state.token,
         updateToken: this.updateToken,
+        favCategoryUpdated: false,
+        userInt: [],
       }}>
         <NavigationContainer>
-          {/* <Stack.Navigator initialRouteName={this.state.firstPage}>
-            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-            <Stack.Screen name="Enrollment" component={Enrollment} options={{ headerShown: false }} />
-            <Stack.Screen name="WritePettition" component={WritePettition} options={{ headerShown: false }} />
-            <Stack.Screen name="SimilarCaseAnalysis" component={SimilarCaseAnalysis} options={{ headerShown: false }} />
-            <Stack.Screen name="TerminologyExplanation" component={TerminologyExplanation} options={{ headerShown: false }} />
-            <Stack.Screen name="CaseBefore" component={CaseBefore} options={{ headerShown: false }} />
-            <Stack.Screen name="CaseView" component={CaseView} options={{ headerShown: false }} />
-            <Stack.Screen name="QnaList" component={QnaList} options={{ headerShown: false }} />
-            <Stack.Screen name="QnA" component={QnA} options={{ headerShown: false }} />
-            <Stack.Screen name="QaLawyer" component={QaLawyer} options={{ headerShown: false }} />
-            <Stack.Screen name="QaAnswer" component={QaAnswer} options={{ headerShown: false }} />
-            <Stack.Screen name="QaUser" component={QaUser} options={{ headerShown: false }} />
-            <Stack.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
-            <Stack.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
-          </Stack.Navigator> */}
           <Drawer.Navigator drawerContent={(props) => <SideMenu {...props}/>} initialRouteName={this.state.firstPage} hideStatusBar>
             <Drawer.Screen name="WelcomeScreen" component={WelcomeScreen} options={{ headerShown: false }} />
             <Drawer.Screen name="Home" component={Home} options={{ headerShown: false }} />

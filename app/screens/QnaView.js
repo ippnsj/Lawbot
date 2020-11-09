@@ -19,53 +19,16 @@ import { MyContext } from '../../context.js';
 import colors from "../config/colors";
 import Header from "./Header.js";
 
-const question =  {
-    field: ["교통사고/범죄", "명예훼손/모욕", "폭행/협박"],
-    title: "운전 중 언어폭행 및 협박을 받았습니다.",
-    date: "2020.08.24",
-    views: 75,
-    content: "제가 운전 중이었는데 어쩌고 저쩌고 갑자기 저보고 개새끼야라고 욕을 했는데 저도 같이 욕을 했습니다. 에바밥바밥ㅂ라리릴리리ㅣ 안녕 클레오파트라. 세상에서 제일가는 포테이토 칩.    그래서 제가 물을 마셨어요. 근데 물이 맛이 없어. 물이름은 평창수. 내 자취방 물도 맛이 없어ㅠㅠ 맛있는 물 먹고싶어"
-}
-
-
-const answers = [
-    {
-        name: "박지수",
-        url: require("../assets/lawyer1.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n연락 조라조 \n추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n법무법인 풀씨 대표변호사 박지수"
-    },
-    {
-        name: "박지수",
-        url: require("../assets/lawyer2.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n 연락 조라조 \n 추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n 법무법인 풀씨 대표변호사 박지수"
-    },
-    {
-        name: "박지수",
-        url: require("../assets/lawyer3.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n 연락 조라조 \n 추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n 법무법인 풀씨 대표변호사 박지수"
-    },
-    {
-        name: "박지수",
-        url: require("../assets/lawyer1.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n 연락 조라조 \n 추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n 법무법인 풀씨 대표변호사 박지수"
-    },
-]
-
-export default class QaAnswer extends Component {
-
+export default class QnaView extends Component {
     state = {
         fontsLoaded: false,
         categories: [],
         post: {},
         date: "",
+        user: {},
+        token: "",
+        answers: {},
+        favSelected: false,
     };
   
     async _loadFonts() {
@@ -79,10 +42,97 @@ export default class QaAnswer extends Component {
       });
       this.setState({ fontsLoaded: true });
     }
-  
-    componentDidMount() {
-        this._loadFonts();
+
+    isFocused = () => {
+        // if(this.props.route.params.post.ID !== this.state.post.ID) {
         this.setState({post: this.props.route.params.post, categories: this.props.route.params.categories, date: this.props.route.params.date});
+        this.setState({ answers: {} });
+        this.getAnswers();
+        // }
+    }
+
+    async getAnswers() {
+        const ctx = this.context;
+
+        await fetch(`${ctx.API_URL}/qna/answer/${this.props.route.params.post.ID}`, {
+            method: "GET",
+            headers: {
+                "token": ctx.token
+            }
+        }).then((res) => {
+            return res.json();
+        }).then((res) => {
+            this.setState({ answers: res });
+        });
+    }
+  
+    async componentDidMount() {
+        this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
+        this.setState({post: this.props.route.params.post, categories: this.props.route.params.categories, date: this.props.route.params.date});
+
+        const ctx = this.context;
+
+        await fetch(`${ctx.API_URL}/user`, {
+            method: "GET",
+            headers: {
+                'token': ctx.token,
+            },
+          }).then((result) => {
+            return result.json();
+          }).then((result) => {
+            this.setState({ token: ctx.token, user: result });
+          });
+    }
+
+    async componentDidUpdate() {
+        const ctx = this.context;
+
+        if(ctx.token != '') {
+            if(this.state.token != ctx.token) {
+                await fetch(`${ctx.API_URL}/user`, {
+                    method: "GET",
+                    headers: {
+                        'token': ctx.token,
+                    },
+                }).then((result) => {
+                    return result.json();
+                }).then((result) => {
+                    this.setState({ token: ctx.token, user: result });
+                });
+            }
+        }
+    }
+
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
+    }
+
+    favSelected() {
+
+    }
+
+    timeForToday(value) {
+        const today = new Date();
+        const timeValue = new Date(value);
+
+        const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+        if (betweenTime < 1) return '방금전';
+        if (betweenTime < 60) {
+            return `${betweenTime}분전`;
+        }
+
+        const betweenTimeHour = Math.floor(betweenTime / 60);
+        if (betweenTimeHour < 24) {
+            return `${betweenTimeHour}시간전`;
+        }
+
+        const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+        if (betweenTimeDay < 365) {
+            return `${betweenTimeDay}일전`;
+        }
+
+        return `${Math.floor(betweenTimeDay / 365)}년전`;
     }
 
     render() {
@@ -91,13 +141,7 @@ export default class QaAnswer extends Component {
               }
               return (
                   <View style={styles.container}>
-                        <Header {...this.props}/>
-
-                        
-                        <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite')}  >                       
-                            <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
-                        </TouchableOpacity>
-              
+                        <Header {...this.props}/>              
                
                     {/* body */}
                     <ScrollView >
@@ -115,10 +159,21 @@ export default class QaAnswer extends Component {
                                 <View >
                                     <Text style={styles.question_title}>Q. {this.state.post.title}</Text>
                                     <Text style={styles.question_content}>{this.state.post.content}</Text>
+                                    {this.state.user.lawyer === 1 ? 
+                                        <TouchableOpacity style={styles.answerButton} onPress={() => this.props.navigation.navigate("QaAnswer", { post: this.state.post })}>
+                                            <Text style={styles.answerButtonText}>A. 답변하기</Text>
+                                        </TouchableOpacity> :
+                                        null
+                                    }
                                     <View style={styles.question_footer}>
                                         <Text style={styles.question_footer_date}>{this.state.date}</Text>
                                         <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
                                         <Text style={styles.question_footer_views} >조회수{' ' + this.state.post.views}</Text>
+                                        <TouchableOpacity style={styles.favCont} onPress={() => this.setState({ favSelected: !this.state.favSelected })}>
+                                            {this.state.favSelected ? <Image source={require("../assets/star.png")}  style={styles.favStar} /> :
+                                            <Image source={require("../assets/starEmpty.png")} style={styles.favStar} />}
+                                            <Text style={styles.favText}>즐겨찾기</Text>
+                                        </TouchableOpacity>
                                     </View>
                                 </View>
 
@@ -127,30 +182,27 @@ export default class QaAnswer extends Component {
 
                             <View style={styles.answers}>
                                 <View style={{backgroundColor: 'black', marginHorizontal: "-6%", marginTop: '5%'}}>
-                                    <Text style={{color:"white", marginVertical: "3%", alignSelf:"center", fontSize: 16, fontFamily: "KPBLight"}}>변호사 답변 3개</Text>
+                                <Text style={{color:"white", marginVertical: "3%", alignSelf:"center", fontSize: 16, fontFamily: "KPBLight"}}>변호사 답변 {this.state.answers.length !== undefined ? this.state.answers.length : 0 }개</Text>
                                 </View>
-                                
-                                {answers.map((ans, idx)=>{
+                                {this.state.answers.length !== undefined ? this.state.answers.map((ans, idx)=>{
                                     return(
                                         <View style={styles.answer} key={idx}>
                                             <View style={styles.answer_lawyer}>
-                                                <Image style={styles.answer_lawyer_pic} source={ans.url} />
+                                                <Image style={styles.answer_lawyer_pic} source={{ uri: ans.Lawyer.User.photo }} />
                                                 <View style={{justifyContent: "center"}}>
-                                                    <Text style={styles.answer_lawyer_name}>{ans.name}</Text>
-                                                    <Text style={styles.answer_lawyer_team}>{ans.team}</Text>
+                                                    <Text style={styles.answer_lawyer_name}>{ans.Lawyer.User.name}</Text>
+                                                    <Text style={styles.answer_lawyer_team}>{ans.Lawyer.companyName}</Text>
                                                 </View>
 
                                                 
                                             </View>
                                             <Text style={styles.answer_content}>{ans.content}</Text>
                                             <View style={styles.answer_footer}>
-                                                <Text style={styles.answer_footer_date}>{question.date}</Text>
-                                                <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
-                                                <Text style={styles.answer_footer_views} >{question.views}</Text>
+                                                <Text style={styles.answer_footer_date}>{this.timeForToday(ans.writtenDate)}</Text>
                                             </View>
                                         </View>
-                                    )
-                                })}
+                                    ) 
+                                }): null }
 
                             </View>
                         
@@ -165,7 +217,7 @@ export default class QaAnswer extends Component {
               )
     }
 }
-
+QnaView.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
@@ -237,11 +289,15 @@ const styles=StyleSheet.create({
     },
     question_footer_date: {
         marginRight: 10,
-        color: "lightgray"
+        color: "lightgray",
+        fontFamily: "KPWDLight",
+        fontSize: 12
     },
     question_footer_views: {
         marginRight: 10,
-        color: "lightgray"
+        color: "lightgray",
+        fontFamily: "KPWDLight",
+        fontSize: 12
     },
 
     boardContentBullet: {
@@ -311,5 +367,32 @@ const styles=StyleSheet.create({
         color: "lightgray"
     },
 
+    answerButton: {
+        backgroundColor: colors.primary,
+        alignSelf: "center",
+        paddingVertical: 15,
+        paddingHorizontal: 35,
+        marginBottom: 25,
+    },
+    answerButtonText: {
+        color: "#fff",
+        fontFamily: "KPBBold",
+        fontSize: 15
+    },
 
+    favCont: {
+        flexDirection: "row",
+        alignItems: "center",
+        position: "absolute",
+        right: 0,
+    },
+    favStar: {
+        width: 12,
+        height: 12,
+    },
+    favText: {
+        fontFamily: "KPWDLight",
+        fontSize: 12,
+        marginLeft: 8,
+    }
 })

@@ -19,12 +19,15 @@ import { parse } from 'node-html-parser';
 
 import colors from "../config/colors";
 import Header from "./Header.js";
+import { MyContext } from '../../context.js';
 
 export default class CaseView extends Component {
   state = {
     fontsLoaded: false,
     word: "",
-    explanation: `법률용어의 의미를 알려드립니다.`
+    explanation: `법률용어의 의미를 알려드립니다.`,
+    favSelected: false,
+    caseID: "",
   };
 
   async _loadFonts() {
@@ -35,8 +38,67 @@ export default class CaseView extends Component {
     this.setState({ fontsLoaded: true });
   }
 
+  isFocused = () => {
+    const ctx = this.context;
+    let body = {};
+    body.Precedent_ID = this.props.route.params.caseID;
+    this.setState({ caseID: this.props.route.params.caseID });
+
+    fetch(`${ctx.API_URL}/user/judgement/check`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "token": ctx.token
+      },
+      body: JSON.stringify(body)
+    }).then((res) => {
+      return res.json();
+    }).then((res) => {
+      this.setState({ favSelected: res.success });
+    });
+  }
+
+  favSelected() {
+    const ctx = this.context;
+    let body = {};
+    body.Precedent_ID = this.state.caseID;
+
+    if(this.state.favSelected) {
+      fetch(`${ctx.API_URL}/user/judgement`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "token": ctx.token
+      },
+      body: JSON.stringify(body)
+      }).then((res) => {
+        return res.json();
+      }).then((res) => {
+      });
+    }else {
+      fetch(`${ctx.API_URL}/user/judgement`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "token": ctx.token
+        },
+        body: JSON.stringify(body)
+        }).then((res) => {
+          return res.json();
+        }).then((res) => {
+        });
+    }
+
+    this.setState({ favSelected: !this.state.favSelected });
+  }
+
   componentDidMount() {
     this._loadFonts();
+    this.props.navigation.addListener('focus', this.isFocused);
+  }
+
+  componentWillUnmount() {
+    this.props.navigation.removeListener('focus', this.isFocused);
   }
 
   async NaverAPI() {
@@ -144,10 +206,15 @@ export default class CaseView extends Component {
               <Text style={styles.explanationText}>{this.state.explanation}</Text>
           </ScrollView>
         </View>
+        <TouchableOpacity style={styles.favCont} onPress={() => this.favSelected()}>
+            {this.state.favSelected ? <Image source={require("../assets/star.png")}  style={styles.favStar} /> :
+            <Image source={require("../assets/starEmpty.png")} style={styles.favStar} />}
+        </TouchableOpacity>
       </View>
     );
   }
 }
+CaseView.contextType = MyContext;
 
 const styles = StyleSheet.create({
   container: {
@@ -218,5 +285,18 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       alignItems: "center",
       zIndex: -1,
-  }
+  },
+
+  favCont: {
+    flexDirection: "row",
+    alignItems: "center",
+    position: "absolute",
+    right: 30,
+    top: 60,
+    backgroundColor: "#fff"
+  },
+  favStar: {
+      width: 20,
+      height: 20,
+  },
 });

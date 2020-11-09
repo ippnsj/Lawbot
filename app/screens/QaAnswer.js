@@ -6,301 +6,229 @@ import {
     Image,
     TextInput,
     KeyboardAvoidingView,
+    Modal,
     TouchableOpacity,
     ScrollView,
-    Alert
+    ToastAndroid
   } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
+import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
 import Header from "./Header.js";
 
-const question =  {
-    field: ["교통사고/범죄", "명예훼손/모욕", "폭행/협박"],
-    title: "운전 중 언어폭행 및 협박을 받았습니다.",
-    date: "2020.08.24",
-    views: 75,
-    content: "제가 운전 중이었는데 어쩌고 저쩌고 갑자기 저보고 개새끼야라고 욕을 했는데 저도 같이 욕을 했습니다. 에바밥바밥ㅂ라리릴리리ㅣ 안녕 클레오파트라. 세상에서 제일가는 포테이토 칩.    그래서 제가 물을 마셨어요. 근데 물이 맛이 없어. 물이름은 평창수. 내 자취방 물도 맛이 없어ㅠㅠ 맛있는 물 먹고싶어"
-}
-
-const answers = [
-    {
-        name: "박지수",
-        url: require("../assets/lawyer1.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n연락 조라조 \n추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n법무법인 풀씨 대표변호사 박지수"
-    },
-    {
-        name: "박지수",
-        url: require("../assets/lawyer2.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n 연락 조라조 \n 추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n 법무법인 풀씨 대표변호사 박지수"
-    },
-    {
-        name: "박지수",
-        url: require("../assets/lawyer3.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n 연락 조라조 \n 추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n 법무법인 풀씨 대표변호사 박지수"
-    },
-    {
-        name: "박지수",
-        url: require("../assets/lawyer1.jpg"),
-        team: "법무법인 풀씨",
-        date: "2020.08.24",
-        content: "님 저한테 연락주세요 사건 해결에 도움을 드리겠습니다. \n 연락 조라조 \n 추가 문의 사항이 있을 경우 나에게 전화하도록하십시오.\n 법무법인 풀씨 대표변호사 박지수"
-    },
-]
-
-export default class QaAnswer extends Component {
-
+export default class QaWrite extends Component {
     state = {
         fontsLoaded: false,
-        file: null,
+        content:"",
+        displayQuestion: false,
+        post: {},
     };
   
+    isFocused = () => {
+        this.setState({ content: "", post: this.props.route.params.post });
+    }
+
+    overlayClose() {
+        this.setState({displayQuestion: false});
+    }
+
     async _loadFonts() {
       await Font.loadAsync({
           SCDream8: require("../assets/fonts/SCDream8.otf"),
           KPWDBold: require("../assets/fonts/KPWDBold.ttf"),
           KPWDMedium: require("../assets/fonts/KPWDMedium.ttf"),
-          KPBLight: require("../assets/fonts/KoPubBatang-Light.ttf"),
-            KPBBold: require("../assets/fonts/KoPubBatang-Bold.ttf")
+          KPWDLight: require("../assets/fonts/KPWDLight.ttf"),
+          KPBBold: require("../assets/fonts/KoPubBatang-Bold.ttf")
       });
       this.setState({ fontsLoaded: true });
     }
   
     componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
     }
 
-    render() {   
-            if (!this.state.fontsLoaded) {
-                return <View />;
-              }
-              return (
-                  <View style={styles.container}>
-                        <Header {...this.props}/>
-                        
-                        <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite')}  >                       
-                            <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
-                        </TouchableOpacity>
-              
-               
-                    {/* body */}
-                    <ScrollView >
-                        <View style={styles.body}>
+    componentWillUnmount() {
+      this.props.navigation.removeListener('focus', this.isFocused);
+    }
 
-                            <View style={styles.question}>
-                                <View style={styles.question_field}>
-                                    {question.field.map((f, idx)=> {
-                                        return(
-                                            <Text style={styles.question_field_text} key={idx}>{f}</Text>
-                                        )
-                                    })}
-                                </View>
+    writeAnswer() {
+        const ctx = this.context;
+        let body = {
+            "content": this.state.content,
+            "Question_ID": this.state.post.ID
+        };
 
-                                <View >
-                                    <Text style={styles.question_title}>Q. {question.title}</Text>
-                                    <Text style={styles.question_content}>{question.content}</Text>
-                                    <View style={styles.question_footer}>
-                                        <Text style={styles.question_footer_date}>{question.date}</Text>
-                                        <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
-                                        <Text style={styles.question_footer_views} >{question.views}</Text>
-                                    </View>
-                                </View>
+        fetch(`${ctx.API_URL}/qna/answer`, {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "token": ctx.token
+            },
+            body: JSON.stringify(body)
+        }).then((res) => {
+            return res.json();
+        }).then((res) => {
+            if(res.success) {
+                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                this.props.navigation.goBack();
+            }else {
+                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+            }
+        });
+    }
 
-                            </View>
+    render() {
+        if (!this.state.fontsLoaded) {
+            return <View />;
+          }
+          return (
+            <View style={styles.container}>
+                <Header {...this.props}/>
 
-
-                            <View style={styles.answers}>
-                                <View style={{backgroundColor: 'black', marginHorizontal: "-6%", marginTop: '5%'}}>
-                                    <Text style={{color:"white", marginVertical: "3%", alignSelf:"center", fontSize: 16, fontFamily: "KPBLight"}}>변호사 답변 3개</Text>
-                                </View>
-                                
-                                {answers.map((ans, idx)=>{
-                                    return(
-                                        <View style={styles.answer} key={idx}>
-                                            <View style={styles.answer_lawyer}>
-                                                <Image style={styles.answer_lawyer_pic} source={ans.url} />
-                                                <View style={{justifyContent: "center"}}>
-                                                    <Text style={styles.answer_lawyer_name}>{ans.name}</Text>
-                                                    <Text style={styles.answer_lawyer_team}>{ans.team}</Text>
-                                                </View>
-
-                                                
-                                            </View>
-                                            <Text style={styles.answer_content}>{ans.content}</Text>
-                                            <View style={styles.answer_footer}>
-                                                <Text style={styles.answer_footer_date}>{question.date}</Text>
-                                                <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
-                                                <Text style={styles.answer_footer_views} >{question.views}</Text>
-                                            </View>
-                                        </View>
-                                    )
-                                })}
-
-                            </View>
-                        
-                                
-                        </View>
-                        {/* body end */}
-                        
-                    </ScrollView>
-
-                        
+                <View style={{marginTop: "3%", flex: 1, marginBottom: "1%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginHorizontal: "10%"}}>
+                    <TouchableOpacity onPress={() => {this.props.navigation.goBack()}}><Image source={require("../assets/close.png")} style={styles.close} /></TouchableOpacity>
+                    <TouchableOpacity onPress={() => {this.setState({ displayQuestion: true })}}><Text style={styles.questionViewText}>Q. 질문보기</Text></TouchableOpacity>
                 </View>
-              )
+                <View style={{height: 0.5, backgroundColor: "lightgray", width: "80%", alignSelf:"center"}}></View>
+                <KeyboardAvoidingView style={styles.body}>
+                    <View style={{flex: 1, margin: "5%"}}>
+                        {/* <View style={{margin: "3%", flex: 1, marginBottom: "1%", flexDirection: "row", justifyContent: "space-between"}}>
+                            <TouchableOpacity onPress={() => {this.props.navigation.goBack()}}><Image source={require("../assets/close.png")} style={styles.close} /></TouchableOpacity>
+                            <TouchableOpacity><Text style={styles.questionViewText}>Q. 질문보기</Text></TouchableOpacity>
+                        </View>
+                        <View style={{height: 0.5, backgroundColor: "lightgray"}}></View> */}
+
+                        <View style={{margin: "3%", flex: 20}}>
+                            <TextInput 
+                                placeholder="서비스 운영정책을 지켜 답변을 작성해주세요."
+                                style={styles.content}
+                                value={this.state.content}
+                                onChangeText={(content)=>this.setState({content})}
+                                multiline
+                            />
+                        </View>
+                    </View>
+                    <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
+                    <TouchableOpacity style={styles.Button}  onPress={() => {this.writeAnswer()}}>
+                        <Text style={styles.ButtonText}>답변 등록하기</Text>
+                    </TouchableOpacity>
+                </KeyboardAvoidingView>
+                <Modal visible={this.state.displayQuestion} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
+                    <View style={styles.questionViewModal}>
+                        <View style={styles.questionViewContainer}>
+                            <Text style={styles.question_title}>Q. {this.state.post.title}</Text>
+                            <ScrollView>
+                                <Text style={styles.question_content}>{this.state.post.content}</Text>
+                            </ScrollView>
+                        </View>
+                        <TouchableOpacity style={styles.questionViewCancel} onPress={() => this.overlayClose()}>
+                            <Text style={styles.questionViewCancelText}>확인</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+            </View>
+          )
     }
 }
-
+QaWrite.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
-        flex: 1,
+        flex: 20,
         overflow: "scroll",
         paddingLeft:"5%",
-        paddingRight:"5%",
-        // backgroundColor: "#c0c0c0"
+        paddingRight:"5%"
       },
     container: {
         flex: 1,
         marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
         backgroundColor: "#fff",
     },
-    
-    bottom: {
+
+    close: {
+        width: 15,
+        height: 15
+    },
+    content: {
+        fontSize: 16,
+        fontFamily: "KPWDLight",
+        color: "black",
+        minHeight: "100%",
+        textAlignVertical: "top"
+    },
+    category: {
+        fontSize: 16,
+        fontFamily: "KPWDMedium",
+        color: "#505050",
+        margin: "3%"
+    },
+    icon: {
+        width: 20,
+        height: 20,
+        alignSelf: "center",
+    },
+     Button: {
+        marginVertical: "8%",
+        borderColor: colors.primary,
+        backgroundColor: "white",
+        borderRadius: 6,
+        borderWidth: 2,
+        paddingVertical: 3,
+        paddingHorizontal: 80,
+        alignSelf: "center"
+    },
+     ButtonText: {
+        color: colors.primary,
+        alignSelf: "center",
+        fontFamily: "KPWDBold",
+        fontSize: 15,
+    },
+    questionViewText: {
+        fontFamily: "KPBBold",
+        fontSize: 16,
+    },
+    questionViewModal: {
         flex: 1,
-        justifyContent: "flex-end",
-        marginBottom: 36,
-        backgroundColor: 'rgba(52, 52, 52, 0.8)'
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
+        justifyContent: "center",
     },
-
-    button: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        zIndex: 1,
-        // backgroundColor: "yellow",
-    }, 
-    writebuttonimg: {
-        width: 100,
-        height: 100,
+    questionViewContainer: {
+        height: "50%",
+        width: "80%",
+        backgroundColor: "#fff",
+        alignSelf: "center",
+        paddingHorizontal: "2%",
+        paddingVertical: "3%"
     },
-
-    question: {
-        marginHorizontal: "5%"
+    questionViewCancel: {
+        backgroundColor: colors.primary,
+        justifyContent: "center",
+        alignItems: "center",
+        width: "80%",
+        height: "6%",
+        alignSelf: "center"
     },
-
-
-    question_field: {
-        flexDirection: "row",
-        marginTop: "5%"
+    questionViewCancelText: {
+        color: "#fff",
+        fontSize: 15,
+        fontFamily: "KPWDBold",
     },
-
-    question_field_text: {
-        color: "lightgray",
-        marginRight: "5%",
-        fontSize: 12,
-        fontFamily: "KPWDBold"
-    },
-
     question_title: {
         fontSize: 20,
         fontFamily: "KPBBold",
         marginTop: "5%",
-        lineHeight: 30
+        lineHeight: 30,
+        textAlign: "center",
     },
-
     question_content: {
-        fontSize: 13,
+        fontSize: 15,
+        fontFamily: "KPWDLight",
         color: "#1d1d1d",
         marginTop: "5%",
         margin: "5%"
     },
-
-    question_footer : {
-        flexDirection: "row",
-        marginHorizontal: "5%"
-    },
-    question_footer_date: {
-        marginRight: 10,
-        color: "lightgray"
-    },
-    question_footer_views: {
-        marginRight: 10,
-        color: "lightgray"
-    },
-
-    boardContentBullet: {
-        fontSize: 4,
-        alignSelf:"center",
-        marginRight: 10,
-        color: "lightgray"
-    },
-    
-
-    answer: {
-        padding: "5%",
-        borderWidth: 0.5,
-        borderColor: "lightgray",
-        marginVertical: "5%"
-    },
-
-    answer_lawyer: {
-        flexDirection: "row",
-        marginRight: 15,
-        marginBottom: "5%",
-       
-    },
-    answer_lawyer_pic: {
-        borderRadius: 100,
-        width: 40,
-        height: 40,
-        marginRight: 10
-    },
-    answer_lawyer_name : {
-        fontSize: 14,
-        fontFamily: "KPWDMedium"
-    },
-    answer_lawyer_team : {
-        fontSize: 12,
-        fontFamily: 'KPBLight',
-        color: "lightgray"
-    },
-
-
-    
-    answer_content: {
-        fontSize: 13,
-        color: "#1d1d1d",
-        marginTop: "5%",
-        margin: "5%",
-        fontFamily: "KPWDMedium"
-    },
-
-    answer_footer : {
-        flexDirection: "row",
-        marginHorizontal: "5%"
-    },
-    answer_footer_date: {
-        marginRight: 10,
-        color: "lightgray"
-    },
-    answer_footer_views: {
-        marginRight: 10,
-        color: "lightgray"
-    },
-
-    boardContentBullet: {
-        fontSize: 4,
-        alignSelf:"center",
-        marginRight: 10,
-        color: "lightgray"
-    },
-
-
 })

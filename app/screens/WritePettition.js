@@ -68,9 +68,14 @@ export default class WritePettition extends Component {
     this.setState({ fontsLoaded: true });
   }
 
+  isFocused = () => {
+    this.setState({ purpose: "", cause: "" });
+  }
+
   componentDidMount() {
     this._loadFonts();
     this.setState({fieldSelectVisible: false});
+    this.props.navigation.addListener('focus', this.isFocused);
   }
 
   componentDidUpdate() {
@@ -83,6 +88,10 @@ export default class WritePettition extends Component {
       this.props.route.params.pageRerender = false;
       this.setState({ cameraPermission: false, cameraRollPermission: false });
     }
+  }
+
+  componentWillUnmount() {
+    this.props.navigation.removeListener('focus', this.isFocused);
   }
 
   async getCameraPermission() {
@@ -168,6 +177,7 @@ export default class WritePettition extends Component {
         caseName: this.state.field,
         method:"cos"
       };
+
       fetch(`${ctx.API_URL}/analyze`, {
         method: 'POST',
         headers: {

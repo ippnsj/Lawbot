@@ -34,8 +34,7 @@ export default class SimilarCaseAnalysis extends Component {
     this.setState({ fontsLoaded: true });
   }
 
-  componentDidMount() {
-    this._loadFonts();
+  isFocused = () => {
     var keywords = this.props.route.params.keywords;
     var keytags = "";
     for(var idx in keywords) {
@@ -46,6 +45,15 @@ export default class SimilarCaseAnalysis extends Component {
       similarities: this.props.route.params.similarities,
       keywords: keytags
     });
+  }
+
+  componentDidMount() {
+    this._loadFonts();
+    this.props.navigation.addListener('focus', this.isFocused);
+  }
+
+  componentWillUnmount() {
+    this.props.navigation.removeListener('focus', this.isFocused);
   }
 
   getHTML(caseID){
@@ -67,6 +75,7 @@ export default class SimilarCaseAnalysis extends Component {
     }).then((response) => {
         this.state.caseURL = response.url;
         this.props.navigation.navigate('CaseView', {
+            caseID: caseID,
             caseURL: this.state.caseURL,
         });
     }).catch((error) => {
@@ -103,77 +112,97 @@ export default class SimilarCaseAnalysis extends Component {
               </View>
               <ScrollView style={styles.cases} scrollEnabled alwaysBounceHorizontal horizontal>
                 <View style={styles.caseBound}>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[0]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[0]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[0]}</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[5]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[5]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[5]}</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {this.state.similarities[0] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[0]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[0]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[0]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
+                  {this.state.similarities[5] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[5]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[5]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[5]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
                 </View>
                 <View style={styles.caseBound}>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[1]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[1]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[1]}</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[6]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[6]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[6]}</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {this.state.similarities[1] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[1]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[1]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[1]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
+                  {this.state.similarities[6] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[6]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[6]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[6]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
                 </View>
                 <View style={styles.caseBound}>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[2]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[2]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[2]}</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[7]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[7]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[7]}</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {this.state.similarities[2] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[2]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[2]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[2]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
+                  {this.state.similarities[7] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[7]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[7]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[7]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
                 </View>
                 <View style={styles.caseBound}>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[3]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[3]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[3]}</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[8]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[8]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[8]}</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {this.state.similarities[3] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[3]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[3]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[3]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
+                  {this.state.similarities[8] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[8]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[8]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[8]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
                 </View>
                 <View style={styles.caseBound}>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[4]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[4]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[4]}</Text>
-                    </TouchableOpacity>
-                  </View>
-                  <View style={styles.case}>
-                    <Text style={styles.similarityText}>{this.state.similarities[9]}</Text>
-                    <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[9]) }}>
-                      <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[9]}</Text>
-                    </TouchableOpacity>
-                  </View>
+                  {this.state.similarities[4] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[4]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[4]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[4]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
+                  {this.state.similarities[9] !== undefined ?
+                    <View style={styles.case}>
+                      <Text style={styles.similarityText}>{this.state.similarities[9]}</Text>
+                      <TouchableOpacity style={styles.caseContainer} onPress={() => { this.getHTML(this.state.ids[9]) }}>
+                        <Text style={styles.caseID}>{"판례일련번호\n" + this.state.ids[9]}</Text>
+                      </TouchableOpacity>
+                    </View> :
+                  null}
                 </View>
               </ScrollView>
-              <TouchableOpacity style={styles.submit}>
+              <TouchableOpacity style={styles.submit} onPress={() => this.props.navigation.navigate("WritePettition")}>
                 <Text style={styles.submitText}>다른 사례 분석하기</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.submit}>

@@ -22,12 +22,14 @@ export default class QnaList extends Component {
     state = {
         fontsLoaded: false,
         listExist: false,
+        token: "",
         qna: "",
         qnaKind: "키워드",
         posts: {},
         userids: [],
         categories: {},
         writtenDate: [],
+        user: {},
     };
   
     async _loadFonts() {
@@ -42,12 +44,14 @@ export default class QnaList extends Component {
   
     async componentDidMount() {
         this._loadFonts();
+
         this.props.route.params.posts.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true, posts: this.props.route.params.posts});
         const ctx = this.context;
         var userList = [];
         var date = [];
 
-        this.setState({categories: this.props.route.params.categories});
+        this.setState({ token: ctx.token, user: this.props.route.params.user });
+        this.setState({ categories: this.props.route.params.categories });
 
         for(var i = 0; i < this.props.route.params.posts.length; i++) {
             date.push(this.timeForToday(this.props.route.params.posts[i].writtenDate));
@@ -71,6 +75,56 @@ export default class QnaList extends Component {
         }
         this.setState({writtenDate: date});
         this.setState({userids: userList});
+    }
+
+    async componentDidUpdate() {
+        if(this.props.route.params.needUpdate) {
+            this.props.route.params.needUpdate = false;
+            this.props.route.params.posts.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true, posts: this.props.route.params.posts});
+            const ctx = this.context;
+            var userList = [];
+            var date = [];
+
+            this.setState({categories: this.props.route.params.categories});
+
+            if(ctx.token != '') {
+                if(this.state.token != ctx.token) {
+                    await fetch(`${ctx.API_URL}/user`, {
+                        method: "GET",
+                        headers: {
+                            'token': ctx.token,
+                        },
+                    }).then((result) => {
+                        return result.json();
+                    }).then((result) => {
+                        this.setState({ token: ctx.token, user: result });
+                    });
+                }
+            }
+
+            for(var i = 0; i < this.props.route.params.posts.length; i++) {
+                date.push(this.timeForToday(this.props.route.params.posts[i].writtenDate));
+
+                await fetch(`${ctx.API_URL}/user/name/${this.props.route.params.posts[i].User_ID}`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "token": ctx.token
+                    },
+                }).then((res) => {
+                    return res.json();
+                }).then((res) => {
+                    var id = res.userID.substring(0,4);
+                    
+                    for(var j = 4; j < res.userID.length; j++) {
+                        id += "*";
+                    }
+                    userList.push(id);
+                });
+            }
+            this.setState({writtenDate: date});
+            this.setState({userids: userList});
+        }
     }
 
     timeForToday(value) {
@@ -103,7 +157,19 @@ export default class QnaList extends Component {
             const ctx = this.context;
             var body = {};
             body.kind = this.state.qnaKind;
-            body.content = this.state.qna;
+            this.props.route.params.category = "";
+            if(this.state.qnaKind === "키워드") {
+                body.content = -1;
+                for(var i = 0; i < this.state.categories.length; i++) {
+                    if(this.state.categories[i].name === this.state.qna) {
+                        body.content = this.state.categories[i].ID;
+                        this.props.route.params.category = "#"+this.state.categories[i].name;
+                        break;
+                    }
+                }
+            }else {
+                body.content = this.state.qna;
+            }
 
             await fetch(`${ctx.API_URL}/qna/question/search`, {
                 method: "POST",
@@ -161,7 +227,15 @@ export default class QnaList extends Component {
                     <Header {...this.props}/>
                   {/* QA bar */}
                   <KeyboardAvoidingView style={styles.body}>
-                    <Text style={styles.title}>법률 QNA</Text>
+                    <View style={styles.titleCont}>
+                        <Text style={styles.title}>법률 QNA</Text>
+                        {this.props.route.params.category === "" ?
+                        null :
+                        <View style={styles.categoryCont}>
+                            <Text style={styles.categoryText}>{this.props.route.params.category}</Text>
+                        </View>
+                        }
+                    </View>
                     <View style={styles.searchSection}>
                         <View style={styles.searchBar}>
                             <Picker
@@ -169,7 +243,7 @@ export default class QnaList extends Component {
                                 style={{ width: 110 }}
                                 onValueChange={(itemValue, itemIndex) => this.setState({qnaKind: itemValue})}
                             >
-                                <Picker.Item label="키워드" value="키워드" />
+                                <Picker.Item label="분야" value="키워드" />
                                 <Picker.Item label="제목" value="제목" />
                                 <Picker.Item label="내용" value="내용" />
                             </Picker>
@@ -215,9 +289,12 @@ export default class QnaList extends Component {
                         </ScrollView>
                     }
                   </KeyboardAvoidingView>
-                  <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite')}  >                       
-                        <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
-                  </TouchableOpacity>
+                  { this.state.user.lawyer === 0 ?
+                    <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('QaWrite', { categories: this.state.categories })}  >                       
+                            <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
+                    </TouchableOpacity> : 
+                        null
+                  }
             </View>
           )
     };
@@ -250,11 +327,28 @@ const styles=StyleSheet.create({
         height:30,
         marginBottom: 5
     },
+    titleCont: {
+        flexDirection: "row"
+    },
     title:{
         fontFamily: "KPWDBold",
         fontSize: 18,
         marginLeft: 10,
         marginTop: 20,
+    },
+    categoryCont: {
+        backgroundColor: colors.primary,
+        marginLeft: 15,
+        marginTop: 20,
+        alignSelf: "center",
+        paddingVertical: 1,
+        paddingHorizontal: 8,
+        borderRadius: 25,
+    },
+    categoryText: {
+        fontFamily: "KPWDBold",
+        fontSize: 12,
+        color: "#fff"
     },
     textInput : {
         fontSize: 16,
