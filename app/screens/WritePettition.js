@@ -24,7 +24,6 @@ import { MyContext } from "../../context.js";
 
 import colors from "../config/colors";
 import Header from "./Header.js";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
 
 const purposePlaceholder = `청구취지를 자세히 입력해주세요.
 
