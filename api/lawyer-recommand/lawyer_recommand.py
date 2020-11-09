@@ -1,6 +1,7 @@
-
 import pymysql as pms
-
+import json
+import os
+import sys
 # DB에 연결
 host = "ict.cor8kkyfcogd.ap-northeast-2.rds.amazonaws.com"
 port = 3306
@@ -15,35 +16,38 @@ except:
     logging.error("연결 실패")
     
 def recommand(category_list, n=5):
-    """
-    category_list : 인풋으로 Category의 ID의 리스트를 받아야합니다.
-
-    n : 상위 몇명까지 뽑을지에 대한 인풋 파라미터 입니다.
-    """
-    laywers = []
+    lawyers_id = []
     
     query = 'SELECT ID FROM Lawyer'
     cursor.execute(query)
-    laywers_id = list(cursor.fetchall())
+    select = [i[0] for i in cursor.fetchall()]
 
-    for lawyer_id in laywers_id:
+    for lawyer_id in select:
     # pymysql을 이용해 DB에서 lawyer들의 id를 하나씩 순차적으로 받아온다. 
     # (하나씩 접근이 불가능 할 경우 id의 리스트를 먼저 저장)
         # score 초기화
         score = 0
         query = "SELECT Category_ID FROM LawyerField WHERE '{0}' = Lawyer_ID".format(lawyer_id)
         cursor.execute(query)
-        category_ids = list(cursor.fetchall())
+        
+        #category = list(cursor.fetchall())
+        category = [t[0] for t in cursor.fetchall()]
 
-        for category_id in category_ids:
-            if category_id in category_list:
+        for interest in category:
+            # DB에서 해당 lawyer의 관심분야를 받아서 category_list에 존재할경우 score++
+            if interest in category_list:
                 score += 1
-
-        # [id, score]로 laywers에 append해준다
-        lawyers.append([lawyer_id, score])
+            # end for loop
+        # [id, score]로 laywers_id에 append해준다
+        lawyers_id.append([lawyer_id, score])
         # end for loop
     
     # lawyers_id 를 스코어에 대해 내림차순으로 정렬
-    lawyers.sort(reverse=True)
-    # laywers[0: 원하는 개수] 만큼 리턴한다.
-    return lawyers[:n]
+    lawyers_id = sorted(lawyers_id, key=lambda lawyer: lawyer[1], reverse=True)
+    return lawyers_id[:n]
+tags=sys.argv[1].split(",")
+for n, i in enumerate(tags):
+    tags[n] = int(i)
+
+#print(tags);
+print(json.dumps(recommand(tags,5)))
