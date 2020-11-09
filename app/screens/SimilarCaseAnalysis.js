@@ -15,14 +15,7 @@ import Constants from "expo-constants";
 
 import colors from "../config/colors";
 import Header from "./Header.js";
-
-const tags={
-  "자동차":0,  "산업재해":1,  "환경":2, "언론보도":3, "지식재산권":4, "의료":5, "건설":6, "국가":7, "기타":8, "가족/가정":9, "이혼":10, "폭행":11, "사기":12, "성범죄":13, "명예훼손":14, "모욕":15, "협박":16, "교통사고":17, "계약":18, "개인정보":19, "상속":20, "재산범죄":21, "매매":22, "노동":23, "채권추심":24, "회생/파산":25, "마약/대마":26, "소비자":27, "국방":28, "병역":29, "주거침입":30, "도급/용역":31, "건설/부동산":32, "위증":33, "무고죄":34, "아동/소년범죄":35, "임대차":36, "대여금":37, "온라인범죄":38, "음주운전":39
-}
-
-const categories=[
-  "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방", "병역", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
-]
+import { MyContext } from '../../context.js';
 
 export default class SimilarCaseAnalysis extends Component {
   state = {
@@ -35,11 +28,8 @@ export default class SimilarCaseAnalysis extends Component {
       category:[],
       tagSelectVisible:false,
       field:[],
+      categories: {},
   };
-
-  
-  
-
 
   async _loadFonts(){
     await Font.loadAsync({
@@ -62,11 +52,22 @@ export default class SimilarCaseAnalysis extends Component {
       similarities: this.props.route.params.similarities,
       keywords: keytags
     });
+
+    this.fieldReset();
   }
 
-  componentDidMount() {
+  fieldReset() {
+    const field = [];
+    for(var i = 0; i < this.props.route.params.categories.length; i++) {
+      field[i] = -1;
+    }
+    this.setState({ field });
+  }
+
+  async componentDidMount() {
     this._loadFonts();
     this.props.navigation.addListener('focus', this.isFocused);
+    this.setState({categories: this.props.route.params.categories});
   }
 
   componentWillUnmount() {
@@ -75,37 +76,39 @@ export default class SimilarCaseAnalysis extends Component {
 
   overlayClose() {
     this.setState({tagSelectVisible: false});
-    for (var i in this.state.field){
-      console.log(this.state.field[i]);
-      this.state.category.push(tags[this.state.field[i]]);
+
+    const ctx = this.context;
+    let body = {
+      tags: [],
+    };
+    for(var i = 0; i < this.state.field.length; i++) {
+      if(this.state.field[i] === 1) {
+        body.tags.push(this.state.categories[i].ID);
+      }
     }
 
     fetch(`${ctx.API_URL}/lawr`, {
       method: "POST",
       headers: {
-          // 'Content-Type': 'multipart/form-data',
-          // 'Accept': 'application/json',
+          'Content-Type': 'application/json',
           'token': ctx.token,
       },
-      body: JSON.stringify(this.state.category),
+      body: JSON.stringify(body),
     }
-    ).then((result) => {
-      return result.json();
-    }).then((result) => {
-      this.setState({ token: ctx.token, user: result });
+    ).then((res) => {
+      return res.json();
+    }).then((res) => {
+      console.log(res);
     });
   }
 
-  categorySelect(cat) {
-    // console.log(cat)
-    this.setState(prevState => ({
-        field: [...prevState.field, cat]
-    }));
-    //console.log(this.state.field);
+  categorySelect(idx) {
+    const { field } = this.state;
+    field[idx] = -field[idx];
+    this.setState({ field });
   }
 
-
-  getHTML(caseID){
+  getHTML(caseID) {
     var main = {
         'OC': 'ICTPoolC',
         'target': 'prec',
@@ -138,11 +141,6 @@ export default class SimilarCaseAnalysis extends Component {
   getLawyer(category){
     console.log(category);
   }
-
-
-
-
-
 
   render(){
     if (!this.state.fontsLoaded) {
@@ -266,7 +264,7 @@ export default class SimilarCaseAnalysis extends Component {
               <TouchableOpacity style={styles.submit} onPress={() => this.props.navigation.navigate("WritePettition")}>
                 <Text style={styles.submitText}>다른 사례 분석하기</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.submit} onPress={()=> this.setState({tagSelectVisible: true,field:[],category:[]})}>
+              <TouchableOpacity style={styles.submit} onPress={()=> this.setState({tagSelectVisible: true})}>
                 <Text style={styles.submitText}>관련 변호사 추천 받기</Text>
               </TouchableOpacity>
             </View>
@@ -278,16 +276,16 @@ export default class SimilarCaseAnalysis extends Component {
                             <Text style={styles.fieldModalText}>분야설정</Text>
                         </View>
                         <ScrollView>
-                            {categories.map((cat, idx)=>{
+                            {this.state.categories.map((cat, idx)=>{
                                 return(
-                                    <TouchableOpacity onPress={()=>this.categorySelect(cat)} key={idx}>
-                                        <Text style={ this.state.field.indexOf(cat)>-1 ? styles.categoryText_selected : styles.categoryText_unselect
-                                        }>{cat}</Text>
+                                    <TouchableOpacity onPress={()=>this.categorySelect(idx)} key={idx}>
+                                        <Text style={ this.state.field[idx] === 1 ? styles.categoryText_selected : styles.categoryText_unselect
+                                        }>{cat.name}</Text>
                                     </TouchableOpacity>
                                 )
-                            })}
+                            })
+                            }
                         </ScrollView>
-                    
                     </View>
                     <TouchableOpacity style={styles.fieldSelectCancel} onPress={() => this.overlayClose()}>
                         <Text style={styles.fieldSelectCancelText}>완료</Text>
@@ -295,16 +293,12 @@ export default class SimilarCaseAnalysis extends Component {
                     
                 </View>
           </Modal>
-        
-
-
-
-
         </View>
     );
 
   }
 }
+SimilarCaseAnalysis.contextType = MyContext;
 
 const styles = StyleSheet.create({
     body: {

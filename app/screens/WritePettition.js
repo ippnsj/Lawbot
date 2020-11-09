@@ -52,6 +52,7 @@ export default class WritePettition extends Component {
     keywords: [],
     ids: [],
     similarities: [],
+    categories: {},
     // purposeWrite: false,
     // causeWrite: false,
     // purposeCon: false,
@@ -71,10 +72,24 @@ export default class WritePettition extends Component {
     this.setState({ purpose: "", cause: "" });
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this._loadFonts();
     this.setState({fieldSelectVisible: false});
     this.props.navigation.addListener('focus', this.isFocused);
+
+    const ctx = this.context;
+
+    await fetch(`${ctx.API_URL}/qna/category`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "token": ctx.token
+      },
+      }).then((res) => {
+        return res.json();
+      }).then((res) => {
+        this.setState({categories: res});
+    });
   }
 
   componentDidUpdate() {
@@ -198,6 +213,7 @@ export default class WritePettition extends Component {
           this.state.keywords.push(result.keywords[0][i]);
         }
         this.props.navigation.navigate('SimilarCaseAnalysis', {
+          categories: this.state.categories,
           ids: this.state.ids,
           similarities: this.state.similarities,
           keywords: this.state.keywords

@@ -49,6 +49,22 @@ export default class QnaView extends Component {
         this.setState({ answers: {} });
         this.getAnswers();
         // }
+
+        const ctx = this.context;
+        let body = {};
+        body.Question_ID = this.props.route.params.post.ID;
+        fetch(`${ctx.API_URL}/user/favqna/check`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "token": ctx.token
+            },
+            body: JSON.stringify(body)
+          }).then((res) => {
+            return res.json();
+          }).then((res) => {
+            this.setState({ favSelected: res.success });
+          });
     }
 
     async getAnswers() {
@@ -109,7 +125,37 @@ export default class QnaView extends Component {
     }
 
     favSelected() {
+        const ctx = this.context;
+        let body = {};
+        body.Question_ID = this.state.post.ID;
 
+        if(this.state.favSelected) {
+        fetch(`${ctx.API_URL}/user/favqna`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "token": ctx.token
+        },
+        body: JSON.stringify(body)
+        }).then((res) => {
+            return res.json();
+        }).then((res) => {
+        });
+        }else {
+        fetch(`${ctx.API_URL}/user/favqna`, {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            "token": ctx.token
+            },
+            body: JSON.stringify(body)
+            }).then((res) => {
+            return res.json();
+            }).then((res) => {
+            });
+        }
+
+        this.setState({ favSelected: !this.state.favSelected });
     }
 
     timeForToday(value) {
@@ -169,7 +215,7 @@ export default class QnaView extends Component {
                                         <Text style={styles.question_footer_date}>{this.state.date}</Text>
                                         <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
                                         <Text style={styles.question_footer_views} >조회수{' ' + this.state.post.views}</Text>
-                                        <TouchableOpacity style={styles.favCont} onPress={() => this.setState({ favSelected: !this.state.favSelected })}>
+                                        <TouchableOpacity style={styles.favCont} onPress={() => this.favSelected()}>
                                             {this.state.favSelected ? <Image source={require("../assets/star.png")}  style={styles.favStar} /> :
                                             <Image source={require("../assets/starEmpty.png")} style={styles.favStar} />}
                                             <Text style={styles.favText}>즐겨찾기</Text>
