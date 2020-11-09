@@ -15,6 +15,9 @@ import QaAnswer from "./app/screens/QaAnswer";
 import QnaView from "./app/screens/QnaView";
 import SideMenu from "./app/screens/SideMenu";
 import MyPage from "./app/screens/MyPage";
+import Lawyer from "./app/screens/Lawyer";
+import LawyerRecommendation from "./app/screens/LawyerRecommendation";
+
 import { NavigationContainer } from '@react-navigation/native';
 // import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -27,7 +30,7 @@ export default class App extends Component {
   state = {
     url: PRODUCTION_URL,
     token: '',
-    firstPage: "WelcomeScreen",
+    firstPage: "LawyerRecommendation",
     loaded: false,
   };
 
@@ -51,7 +54,7 @@ export default class App extends Component {
         if(res.success) {
           this.setState({
             token: token,
-            firstPage: "Home",
+            firstPage: "LawyerRecommendation",
           })
         }
 
@@ -110,6 +113,9 @@ export default class App extends Component {
             <Drawer.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
             <Drawer.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
             <Drawer.Screen name="MyPage" component={MyPage} options={{ headerShown: false }} />
+            <Drawer.Screen name="Lawyer" component={Lawyer} options={{ headerShown: false }} />
+            <Drawer.Screen name="LawyerRecommendation" component={LawyerRecommendation} options={{ headerShown: false }} />
+
           </Drawer.Navigator>
         </NavigationContainer>
       </MyContext.Provider>

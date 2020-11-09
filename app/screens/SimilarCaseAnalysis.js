@@ -87,8 +87,6 @@ export default class SimilarCaseAnalysis extends Component {
       this.setState({ token: ctx.token, user: result });
     });
   
-
-
 }
 
 

@@ -100,7 +100,6 @@ export default class QnaList extends Component {
         if(this.state.qna == "") {
             Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
         }else {
-            const ctx = this.context;
             var body = {};
             body.kind = this.state.qnaKind;
             body.content = this.state.qna;
