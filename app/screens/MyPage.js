@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Platform,
   AsyncStorage,
-  ScrollView
+  ScrollView,
+  Modal
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
@@ -15,6 +16,7 @@ import * as ImagePicker from "expo-image-picker";
 
 import colors from "../config/colors";
 import { MyContext } from '../../context.js';
+import { TextInput } from "react-native-gesture-handler";
 
 export default class MyPage extends Component {
   state = {
@@ -23,6 +25,8 @@ export default class MyPage extends Component {
     categories: {}, 
     user: {},
     userInt: [],
+    introModVisible: false,
+    introduction: "",
   };
 
   async _loadFonts() {
@@ -39,6 +43,7 @@ export default class MyPage extends Component {
 
   isFocused = () => {
     const ctx = this.context;
+    this.setState({ introModVisible: false });
 
     if(ctx.token !== '' && this.state.token === ctx.token && ctx.favCategoryUpdated) {
         ctx.favCategoryUpdated = false;
@@ -77,7 +82,7 @@ export default class MyPage extends Component {
     }).then((result) => {
       return result.json();
     }).then((result) => {
-      this.setState({ token: ctx.token, user: result });
+      this.setState({ token: ctx.token, user: result, introduction: result.introduction });
       for(var i = 0; i < this.state.categories.length; i++) {
           userInt[i] = -1;
       }
@@ -112,7 +117,7 @@ export default class MyPage extends Component {
       }).then((result) => {
         return result.json();
       }).then((result) => {
-        this.setState({ token: ctx.token, user: result });
+        this.setState({ token: ctx.token, user: result, introduction: result.introduction });
         for(var i = 0; i < this.state.categories.length; i++) {
             userInt[i] = -1;
         }
@@ -220,7 +225,7 @@ export default class MyPage extends Component {
         let data = new FormData();
         data.append("temp", image);
 
-        await fetch(`${ctx.API_URL}/user/profile`, {
+        await fetch(`${ctx.API_URL}/user/profile/image`, {
             method: "PUT",
             body: data,
             headers: {
@@ -243,6 +248,10 @@ export default class MyPage extends Component {
     }
   }
 
+  overlayClose() {
+    this.setState({ introModVisible: false });
+  }
+
   render() {
     if (!this.state.fontsLoaded) {
       return <View />;
@@ -261,13 +270,13 @@ export default class MyPage extends Component {
                 </View>
             </View>
             <View style={styles.userLower}>
-                <Text style={styles.updateProfile}>프로필 수정</Text>
+                <Text style={styles.updateProfile} onPress={() => this.props.navigation.navigate("ProfileMod", { user: this.state.user })}>비밀번호 변경</Text>
                 <TouchableOpacity style={styles.logoutButtonCont} onPress={() => this.logout()}>
                     <Text style={styles.logoutButtonText}>로그아웃</Text>
                 </TouchableOpacity>
-                <View style={styles.introCont}>
+                <TouchableOpacity style={styles.introCont} onPress={() => {this.setState({ introModVisible: true })}}>
                     {this.state.user.introduction === null ? <Text style={styles.introText}>소개글이 없습니다.</Text> : <Text style={styles.introText}>{this.state.user.introduction}</Text>}
-                </View>
+                </TouchableOpacity>
             </View>
             <TouchableOpacity style={styles.userImageCont} onPress={() => this.choosePicture()}>
                 <Image source={{ uri: this.state.user.photo} } style={styles.userImage} />
@@ -556,6 +565,32 @@ export default class MyPage extends Component {
                 <Text style={styles.lawyerButtonText}>변호사 홈페이지 가기</Text>
             </TouchableOpacity>
         </View> }
+        <Modal visible={this.state.introModVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
+            <View style={styles.introModModal}>
+                <View style={styles.introModContainer}>
+                    <View style={styles.introModHeader}>
+                        <Text style={styles.introModModalText}>소개글 변경</Text>
+                    </View>
+                    <ScrollView style={styles.introModCont}>
+                        <TextInput 
+                            placeholder="소개글을 입력하세요."
+                            style={styles.intro}
+                            value={this.state.user.introduction !== "" ? this.state.introduction : null}
+                            onChangeText={(introduction)=>this.setState({ introduction })}
+                            multiline
+                        />
+                    </ScrollView>
+                </View>
+                <View style={styles.buttonCont}>
+                    <TouchableOpacity style={styles.introModSubmit} onPress={() => this.overlayClose()}>
+                        <Text style={styles.introModSubmitText}>수정</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.introModCancel} onPress={() => this.overlayClose()}>
+                        <Text style={styles.introModCancelText}>취소</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </Modal>
       </View>
     );
   }
@@ -595,7 +630,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         position: "absolute",
         bottom: 10,
-        left : "35%",
+        left : "33%",
     },
     userName: {
         color: "#fff",
@@ -740,5 +775,63 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: colors.primary,
         fontFamily: "KPWDBold",
+    },
+
+    introModModal: {
+        flex: 1,
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
+        justifyContent: "center",
+    },
+    introModContainer: {
+        height: "35%",
+        width: "80%",
+        backgroundColor: "#fff",
+        alignItems: "center",
+        alignSelf: "center",
+        paddingHorizontal: "2%",
+        paddingVertical: "3%"
+    },
+    introModModalText: {
+        fontSize: 20,
+        fontFamily: "KPWDBold",
+    },
+    introModCont: {
+        width: "100%",
+        backgroundColor: "red"
+    },
+    intro: {
+        backgroundColor: "blue",
+    },
+    introModSubmit: {
+        backgroundColor: colors.primary,
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "center",
+        width: "50%",
+        height: "100%",
+    },
+    introModSubmitText: {
+        color: "#fff",
+        fontSize: 15,
+        fontFamily: "KPWDBold",
+    },
+    introModCancel: {
+        backgroundColor: "lightgray",
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "center",
+        width: "50%",
+        height: "100%",
+    },
+    introModCancelText: {
+        color: "#fff",
+        fontSize: 15,
+        fontFamily: "KPWDBold",
+    },
+    buttonCont: {
+        flexDirection: "row",
+        height: "6%",
+        width: "80%",
+        alignSelf:"center",
     }
 });

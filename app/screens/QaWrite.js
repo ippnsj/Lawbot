@@ -180,7 +180,6 @@ export default class QaWrite extends Component {
                     <TouchableOpacity style={styles.fieldSelectCancel} onPress={() => this.overlayClose()}>
                         <Text style={styles.fieldSelectCancelText}>확인</Text>
                     </TouchableOpacity>
-                    
                 </View>
         </Modal>
          

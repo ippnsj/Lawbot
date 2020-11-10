@@ -53,6 +53,7 @@ export default class WritePettition extends Component {
     ids: [],
     similarities: [],
     categories: {},
+    doingNLP: false,
     // purposeWrite: false,
     // causeWrite: false,
     // purposeCon: false,
@@ -69,7 +70,7 @@ export default class WritePettition extends Component {
   }
 
   isFocused = () => {
-    this.setState({ purpose: "", cause: "" });
+    this.setState({ purpose: "", cause: "", doingNLP: false });
   }
 
   async componentDidMount() {
@@ -184,6 +185,7 @@ export default class WritePettition extends Component {
     }
     else {
       ToastAndroid.show("분석중... 잠시만 기다려주세요.", ToastAndroid.SHORT);
+      this.setState({ doingNLP: true });
       const ctx = this.context;
       let body = {
         purpose: this.state.purpose,
@@ -369,7 +371,7 @@ export default class WritePettition extends Component {
                 ></TextInput>
               </ScrollView>
             </View>
-            <TouchableOpacity style={styles.submit} onPress={() => {this.fetchNLP()}}>
+            <TouchableOpacity style={!this.state.doingNLP ? styles.submit : styles2.submit} onPress={() => {this.fetchNLP()}} disabled={this.state.doingNLP}>
               <Text style={styles.submitText}>유사 판례 분석</Text>
             </TouchableOpacity>
           </View>
@@ -700,4 +702,17 @@ const styles = StyleSheet.create({
     backgroundColor: "#E7E7E7",
     marginLeft: "10%",
   },
+});
+
+const styles2 = StyleSheet.create({
+  submit: {
+    borderWidth: 2,
+    borderColor: colors.primary,
+    borderRadius: 5,
+    width: "80%",
+    marginVertical: "5%",
+    alignItems: "center",
+    paddingVertical: "0.5%",
+    opacity: 0.6
+  }
 });

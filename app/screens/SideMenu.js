@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  Platform,
   AsyncStorage
 } from "react-native";
 import * as Font from "expo-font";

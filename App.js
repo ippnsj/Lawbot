@@ -8,13 +8,13 @@ import SimilarCaseAnalysis from "./app/screens/SimilarCaseAnalysis";
 import TerminologyExplanation from "./app/screens/TerminologyExplanation";
 import CaseView from "./app/screens/CaseView";
 import QnaList from "./app/screens/QnaList";
-import QaLawyer from "./app/screens/QaLawyer";
 import QaUser from "./app/screens/QaUser";
 import QaWrite from "./app/screens/QaWrite";
 import QaAnswer from "./app/screens/QaAnswer";
 import QnaView from "./app/screens/QnaView";
 import SideMenu from "./app/screens/SideMenu";
 import MyPage from "./app/screens/MyPage";
+import ProfileMod from "./app/screens/ProfileMod";
 import { NavigationContainer } from '@react-navigation/native';
 // import { createStackNavigator } from '@react-navigation/stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -89,12 +89,12 @@ export default class App extends Component {
             <Drawer.Screen name="TerminologyExplanation" component={TerminologyExplanation} options={{ headerShown: false }} />
             <Drawer.Screen name="CaseView" component={CaseView} options={{ headerShown: false }} />
             <Drawer.Screen name="QnaList" component={QnaList} options={{ headerShown: false }} />
-            <Drawer.Screen name="QaLawyer" component={QaLawyer} options={{ headerShown: false }} />
             <Drawer.Screen name="QaAnswer" component={QaAnswer} options={{ headerShown: false }} />
             <Drawer.Screen name="QaUser" component={QaUser} options={{ headerShown: false }} />
             <Drawer.Screen name="QaWrite" component={QaWrite} options={{ headerShown: false }} />
             <Drawer.Screen name="QnaView" component={QnaView} options={{ headerShown: false }} />
             <Drawer.Screen name="MyPage" component={MyPage} options={{ headerShown: false }} />
+            <Drawer.Screen name="ProfileMod" component={ProfileMod} options={{ headerShown: false }} />
           </Drawer.Navigator>
         </NavigationContainer>
       </MyContext.Provider>
