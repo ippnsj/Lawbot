@@ -101,15 +101,15 @@ export default class SideMenu extends Component {
         <ScrollView style={styles.contentContainer}>
           <View style={styles.favoriteContainer}>
             <Text style={styles.title}>즐겨찾기</Text>
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("FavCase")}>
               <Image source={require("../assets/caseFav.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>판례 즐겨찾기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("FavLawyer")}>
               <Image source={require("../assets/lawyerFav.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>변호사 즐겨찾기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("FavQA")}>
               <Image source={require("../assets/qnaFav2.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>Q&A 즐겨찾기</Text>
             </TouchableOpacity>
@@ -117,15 +117,15 @@ export default class SideMenu extends Component {
           </View>
           <View style={styles.boardContainer}>
             <Text style={styles.title}>게시판 관리</Text>
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("MyPosts")}>
               <Image source={require("../assets/myPost.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>내가 쓴 글</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("MyComments")}>
               <Image source={require("../assets/myComment.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>댓글 단 글</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("FavPosts")}>
               <Image source={require("../assets/scrap.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>스크랩</Text>
             </TouchableOpacity>
@@ -134,11 +134,11 @@ export default class SideMenu extends Component {
           <View style={styles.boardContainer}>
             <Text style={styles.title}>Q&A 관리</Text>
             {this.state.user.lawyer == 0 ?
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("MyQuestions")}>
               <Image source={require("../assets/qEmpty.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>내가 업로드한 질문</Text>
             </TouchableOpacity> :
-            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("Home")}>
+            <TouchableOpacity style={styles.naviContainer} onPress={() => this.props.navigation.navigate("MyAnswers")}>
               <Image source={require("../assets/aEmpty.png")} style={styles.favImage}/>
               <Text style={styles.subTitle}>내가 답변한 질문</Text>
             </TouchableOpacity>
