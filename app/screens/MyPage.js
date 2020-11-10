@@ -8,7 +8,9 @@ import {
   Platform,
   AsyncStorage,
   ScrollView,
-  Modal
+  Modal,
+  KeyboardAvoidingView,
+  ToastAndroid
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
@@ -248,8 +250,36 @@ export default class MyPage extends Component {
     }
   }
 
+  modifyIntroduction() {
+    const ctx = this.context;
+    const body = {};
+    body.introduction = this.state.introduction; 
+
+    fetch(`${ctx.API_URL}/user/profile/introduction`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "token": ctx.token
+        },
+        body: JSON.stringify(body)
+    }).then((res) => {
+        return res.json();
+    }).then((res) => {
+        if(res.success) {
+            ToastAndroid.show("소개글 수정에 성공하였습니다!", ToastAndroid.SHORT);
+            const { user } = this.state;
+            user.introduction = this.state.introduction;
+
+            this.setState({ user });
+            this.overlayClose();
+        }else {
+            ToastAndroid.show("소개글 수정에 실패하였습니다...", ToastAndroid.SHORT);
+        }
+    })
+  }
+
   overlayClose() {
-    this.setState({ introModVisible: false });
+    this.setState({ introModVisible: false, introduction: this.state.user.introduction });
   }
 
   render() {
@@ -274,9 +304,11 @@ export default class MyPage extends Component {
                 <TouchableOpacity style={styles.logoutButtonCont} onPress={() => this.logout()}>
                     <Text style={styles.logoutButtonText}>로그아웃</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.introCont} onPress={() => {this.setState({ introModVisible: true })}}>
-                    {this.state.user.introduction === null ? <Text style={styles.introText}>소개글이 없습니다.</Text> : <Text style={styles.introText}>{this.state.user.introduction}</Text>}
-                </TouchableOpacity>
+                <ScrollView style={styles.introCont}>
+                    <TouchableOpacity onPress={() => {this.setState({ introModVisible: true })}}>
+                        {this.state.user.introduction === null ? <Text style={styles.introText}>소개글이 없습니다.</Text> : <Text style={styles.introText}>{this.state.user.introduction}</Text>}
+                    </TouchableOpacity>
+                </ScrollView>
             </View>
             <TouchableOpacity style={styles.userImageCont} onPress={() => this.choosePicture()}>
                 <Image source={{ uri: this.state.user.photo} } style={styles.userImage} />
@@ -564,12 +596,15 @@ export default class MyPage extends Component {
             <TouchableOpacity style={styles.lawyerButton}>
                 <Text style={styles.lawyerButtonText}>변호사 홈페이지 가기</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={styles.lawyerButton}>
+                <Text style={styles.lawyerButtonText}>변호사 정보 수정</Text>
+            </TouchableOpacity>
         </View> }
         <Modal visible={this.state.introModVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
             <View style={styles.introModModal}>
-                <View style={styles.introModContainer}>
+                <KeyboardAvoidingView style={styles.introModContainer}>
                     <View style={styles.introModHeader}>
-                        <Text style={styles.introModModalText}>소개글 변경</Text>
+                        <Text style={styles.introModModalText}>소개글 수정</Text>
                     </View>
                     <ScrollView style={styles.introModCont}>
                         <TextInput 
@@ -578,11 +613,12 @@ export default class MyPage extends Component {
                             value={this.state.user.introduction !== "" ? this.state.introduction : null}
                             onChangeText={(introduction)=>this.setState({ introduction })}
                             multiline
+                            textAlignVertical={"top"}
                         />
                     </ScrollView>
-                </View>
+                </KeyboardAvoidingView>
                 <View style={styles.buttonCont}>
-                    <TouchableOpacity style={styles.introModSubmit} onPress={() => this.overlayClose()}>
+                    <TouchableOpacity style={styles.introModSubmit} onPress={() => this.modifyIntroduction()}>
                         <Text style={styles.introModSubmitText}>수정</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.introModCancel} onPress={() => this.overlayClose()}>
@@ -676,12 +712,12 @@ const styles = StyleSheet.create({
         top: 30,
         left: 0,
         width: "100%",
-        height: "70%",
-        paddingVertical: 10,
+        height: "60%",
+        marginTop: 10,
         paddingHorizontal: 30,
     },
     introText: {
-        fontSize: 12,
+        fontSize: 14,
         color: "#898989",
         fontFamily: "KPWDLight",
     },
@@ -783,7 +819,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     introModContainer: {
-        height: "35%",
+        height: 260,
         width: "80%",
         backgroundColor: "#fff",
         alignItems: "center",
@@ -797,9 +833,13 @@ const styles = StyleSheet.create({
     },
     introModCont: {
         width: "100%",
+        marginTop: 10,
     },
     intro: {
-        backgroundColor: "blue",
+        minHeight: 190,
+        fontFamily: "KPWDLight",
+        fontSize: 15,
+        paddingHorizontal: 10,
     },
     introModSubmit: {
         backgroundColor: colors.primary,
@@ -829,7 +869,7 @@ const styles = StyleSheet.create({
     },
     buttonCont: {
         flexDirection: "row",
-        height: "6%",
+        height: 50,
         width: "80%",
         alignSelf:"center",
     }

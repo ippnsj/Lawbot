@@ -100,10 +100,16 @@ export default class QaWrite extends Component {
           "token": ctx.token
         },
         body: JSON.stringify(body),
-      }).then((result) => {
+      }).then((res) => {
+        return res.json();
+      }).then((res) => {
+        if(res.success) {
+          ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+          this.props.navigation.navigate("QaUser");
+        }else {
+            ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+        }
       });
-
-      this.props.navigation.navigate("QaUser");
     }
 
     render() {
