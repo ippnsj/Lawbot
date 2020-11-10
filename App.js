@@ -44,7 +44,7 @@ export default class App extends Component {
     const token = await AsyncStorage.getItem('auth.accessToken');
     if(token) {
       fetch(`${this.state.url}/login/check`, {
-        method: "POST",
+        method: "GET",
         headers: {
           'token': token,
         }
