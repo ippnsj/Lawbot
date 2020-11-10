@@ -797,7 +797,6 @@ const styles = StyleSheet.create({
     },
     introModCont: {
         width: "100%",
-        backgroundColor: "red"
     },
     intro: {
         backgroundColor: "blue",
