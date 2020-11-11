@@ -36,9 +36,13 @@ export default class FavQA extends Component{
         });
         this.setState({ fontsLoaded: true });
     }
+    isFocused = () => {
+        this.read();
+    }
 
     async componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         let categoryList = [];
         await fetch(`${ctx.API_URL}/qna/category`, {
@@ -60,7 +64,7 @@ export default class FavQA extends Component{
         });
         this.setState({categories:categoryList, token: ctx.token});
 
-        fetch(`${ctx.API_URL}/user/favqna`, {
+        await fetch(`${ctx.API_URL}/user/favqna`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -74,6 +78,7 @@ export default class FavQA extends Component{
             let qnaCategoryList = [];
             let favCheckList = [];
             for (let i=0; i<res.length; i++){
+                // console.log(res[i]);
                 qnaList.push(res[i]);
                 favCheckList.push(true);
                 let indivCategoryList = [];
@@ -107,10 +112,10 @@ export default class FavQA extends Component{
             console.error(error);
         });
     }
-    componentDidUpdate(){
+    async componentDidUpdate(){
         const ctx = this.context;
         if(this.state.token != ctx.token && ctx.token != ''){
-            fetch(`${ctx.API_URL}/user/favqna`, {
+            await fetch(`${ctx.API_URL}/user/favqna`, {
                 method: "GET",
                 headers: {
                     "token": ctx.token
@@ -208,14 +213,17 @@ export default class FavQA extends Component{
         }
         this.setState({favCheck:favCheckList});
     }
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
+    }
 
     _onRefresh = ()=>{
         this.setState({refreshing: true}, ()=>this.read());
     }
 
-    read(){
+    async read(){
         const ctx = this.context;
-        fetch(`${ctx.API_URL}/user/favqna`, {
+        await fetch(`${ctx.API_URL}/user/favqna`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -265,6 +273,28 @@ export default class FavQA extends Component{
             console.error(error);
         });
     }
+    timeForToday(value) {
+        const today = new Date();
+        const timeValue = new Date(value);
+
+        const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+        if (betweenTime < 1) return '방금전';
+        if (betweenTime < 60) {
+            return `${betweenTime}분전`;
+        }
+
+        const betweenTimeHour = Math.floor(betweenTime / 60);
+        if (betweenTimeHour < 24) {
+            return `${betweenTimeHour}시간전`;
+        }
+
+        const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+        if (betweenTimeDay < 365) {
+            return `${betweenTimeDay}일전`;
+        }
+
+        return `${Math.floor(betweenTimeDay / 365)}년전`;
+    }
 
     render(){
         if (!this.state.fontsLoaded) {
@@ -288,9 +318,7 @@ export default class FavQA extends Component{
                                 return (
                                     <View key={idx} style = {styles.caseTopContainer}>
                                         <TouchableOpacity style = {styles.indivContainer} 
-                                        onPress={() => this.props.navigation.navigate("Home", {
-                                            
-                                        })}>
+                                        onPress={()=> this.props.navigation.navigate("QnaView", {post: qna.Question, categories: this.state.categories, date: this.timeForToday(qna.Question.writtenDate)})}>
                                             <View style = {styles.caseContainer}>
                                                 <Text style={styles.caseID}>{qna.Question.title}</Text>
                                                 {qna.Question.content.length>20 ?

@@ -33,9 +33,13 @@ export default class MyPosts extends Component{
         });
         this.setState({ fontsLoaded: true });
     }
+    isFocused = () => {
+        this.read();
+    }
 
     async componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         await fetch(`${ctx.API_URL}/user/posts`, {
             method: "GET",
@@ -102,6 +106,9 @@ export default class MyPosts extends Component{
             });
             
         }
+    }
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
     }
     _onRefresh = ()=>{
         this.setState({refreshing: true}, ()=>this.read());

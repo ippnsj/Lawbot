@@ -34,8 +34,12 @@ export default class FavCase extends Component{
         });
         this.setState({ fontsLoaded: true });
     }
+    isFocused = () => {
+        this.read();
+    }
     async componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         let caseList = [];
         await fetch(`${ctx.API_URL}/user/judgement`, {
@@ -165,11 +169,15 @@ export default class FavCase extends Component{
             this.state.caseURL = response.url;
             this.props.navigation.navigate('CaseView', {
                 caseURL: this.state.caseURL,
+                caseID: caseID,
             });
         })
         .catch((error) => {
             console.error(error);
         });
+    }
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
     }
 
     _onRefresh= ()=>{

@@ -35,8 +35,12 @@ export default class FavPosts extends Component{
         });
         this.setState({ fontsLoaded: true });
     }
+    isFocused = () => {
+        this.read();
+    }
     componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         this.setState({token: ctx.token});
 
@@ -161,6 +165,9 @@ export default class FavPosts extends Component{
             favCheckList.push(this.state.favCheck[j]);
         }
         this.setState({favCheck:favCheckList});
+    }
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
     }
     _onRefresh = ()=>{
         this.setState({refreshing: true}, ()=>this.read());

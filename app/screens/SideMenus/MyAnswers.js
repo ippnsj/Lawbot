@@ -34,12 +34,16 @@ export default class MyAnswers extends Component{
         });
         this.setState({ fontsLoaded: true });
     }
+    isFocused = () => {
+        this.read();
+    }
 
-    componentDidMount() {
+    async componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         let categoryList = [];
-        fetch(`${ctx.API_URL}/qna/category`, {
+        await fetch(`${ctx.API_URL}/qna/category`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -48,6 +52,7 @@ export default class MyAnswers extends Component{
             return res.json();
         }).then((res)=>{
             for (let j=0; j<res.length; j++){
+                // console.log(String(res[j].name));
                 categoryList.push(String(res[j].name));
             }
         })
@@ -56,7 +61,7 @@ export default class MyAnswers extends Component{
         });
         this.setState({categories:categoryList, token: ctx.token});
 
-        fetch(`${ctx.API_URL}/user/myquestion/answer`, {
+        await fetch(`${ctx.API_URL}/user/myquestion/answer`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -79,6 +84,7 @@ export default class MyAnswers extends Component{
                     for (ji=1; ji<=res[i].Question_has_Categories.length; ji++){
                         let j = ji-1;
                         let index = res[i].Question_has_Categories[j].Category_ID;
+                        // console.log(this.state.categories[index]);
                         indivCategory+= "#" +(this.state.categories[index])+ "   ";
                         if ((ji % 4 === 0)&&(ji !== 0)){
                             indivCategoryList.push(indivCategory);
@@ -101,11 +107,11 @@ export default class MyAnswers extends Component{
             console.error(error);
         });
     }
-    componentDidUpdate(){
+    async componentDidUpdate(){
         const ctx = this.context;
         if((this.state.token != ctx.token && ctx.token != '')){
             this.setState({token: ctx.token});
-            fetch(`${ctx.API_URL}/user/myquestion/answer`, {
+            await fetch(`${ctx.API_URL}/user/myquestion/answer`, {
                 method: "GET",
                 headers: {
                     "token": ctx.token
@@ -151,12 +157,15 @@ export default class MyAnswers extends Component{
             });
         }
     }
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
+    }
     _onRefresh = ()=>{
         this.setState({refreshing: true}, ()=>this.read());
     }
-    read(){
+    async read(){
         const ctx = this.context;
-        fetch(`${ctx.API_URL}/user/myquestion/answer`, {
+        await fetch(`${ctx.API_URL}/user/myquestion/answer`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -205,6 +214,28 @@ export default class MyAnswers extends Component{
             console.error(error);
         });
     }
+    timeForToday(value) {
+        const today = new Date();
+        const timeValue = new Date(value);
+
+        const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+        if (betweenTime < 1) return '방금전';
+        if (betweenTime < 60) {
+            return `${betweenTime}분전`;
+        }
+
+        const betweenTimeHour = Math.floor(betweenTime / 60);
+        if (betweenTimeHour < 24) {
+            return `${betweenTimeHour}시간전`;
+        }
+
+        const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+        if (betweenTimeDay < 365) {
+            return `${betweenTimeDay}일전`;
+        }
+
+        return `${Math.floor(betweenTimeDay / 365)}년전`;
+    }
     render(){
         if (!this.state.fontsLoaded) {
             return <View />;
@@ -227,9 +258,7 @@ export default class MyAnswers extends Component{
                                 return (
                                     <View key={idx} style = {styles.caseTopContainer}>
                                         <TouchableOpacity style = {styles.indivContainer} 
-                                        onPress={() => this.props.navigation.navigate("Home", {
-                                            
-                                        })}>
+                                        onPress={()=> this.props.navigation.navigate("QnaView", {post: qna, categories: this.state.categories, date: this.timeForToday(qna.writtenDate)})}>
                                             <View style = {styles.caseContainer}>
                                                 <Text style={styles.caseID}>{qna.title}</Text>
                                                 {qna.content.length>20 ?<Text style= {styles.caseName}>{qna.content.slice(0, 20)+"..."}</Text>
