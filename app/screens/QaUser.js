@@ -31,6 +31,7 @@ export default class QaUser extends Component {
         everySelected: true,
         AllPosts: {},
         posts: {},
+        needToReset: true,
         lawyers : [
             {
                 name: "김수지",
@@ -86,7 +87,11 @@ export default class QaUser extends Component {
     }
 
     isFocused = () => {
-        this.handleEveryButtons();
+        if(this.state.needToReset) {
+            this.handleEveryButtons();
+        }else {
+            this.setState({ needToReset: true });
+        }
 
         const ctx = this.context;
 
@@ -153,7 +158,7 @@ export default class QaUser extends Component {
             return result.json();
         }).then((result) => {
             for(var i = 0; i < result.length; i++) {
-                userInt[result[i].Category_ID].activate = 1;
+                userInt[result[i].Category_ID] = { "activate": 1, "selected": false };
             }
         });
 
@@ -189,7 +194,7 @@ export default class QaUser extends Component {
                     return result.json();
                 }).then((result) => {
                     for(var i = 0; i < result.length; i++) {
-                        userInt[result[i].Category_ID].activate = 1;
+                        userInt[result[i].Category_ID] = { "activate": 1, "selected": false };
                     }
                 });
             
@@ -528,13 +533,13 @@ export default class QaUser extends Component {
                                                 return(
                                                 <View key={idx} style={{ marginTop: 2, }}>
                                                     <View style={styles.interestQ_content_question_field}>
-                                                    {post.tags.map((tag, idx)=> {
+                                                    {post.Question_has_Categories.map((tag, idx)=> {
                                                         return(
                                                             <Text style={styles.interestQ_content_question_field_text} key={idx}>{this.state.categories[tag.Category_ID].name}</Text>
                                                             )
                                                         })}
                                                     </View>
-                                                    <TouchableOpacity onPress={()=> this.props.navigation.navigate("QnaView", {post: post, categories: this.state.categories, date: this.timeForToday(post.writtenDate)})}>
+                                                    <TouchableOpacity onPress={()=> {this.setState({ needToReset: false }); this.props.navigation.navigate("QnaView", {post: post, categories: this.state.categories, date: this.timeForToday(post.writtenDate)})}}>
                                                         <View style={{alignItems: "flex-start"}}>
                                                             <Text style={styles.interestQ_content_question_title}>{post.title}</Text>
                                                             <Text style={styles.interestQ_content_question_content} numberOfLines={3}>{post.content}</Text>

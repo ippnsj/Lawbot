@@ -31,6 +31,8 @@ export default class MyPage extends Component {
     introduction: "",
   };
 
+  
+
   async _loadFonts() {
     await Font.loadAsync({
       SCDream8: require("../assets/fonts/SCDream8.otf"),
@@ -44,6 +46,7 @@ export default class MyPage extends Component {
   }
 
   isFocused = () => {
+    // this.scroll.scrollTo({x: 0, y: 0, animated: true});
     const ctx = this.context;
     this.setState({ introModVisible: false });
 
@@ -60,6 +63,7 @@ export default class MyPage extends Component {
   async componentDidMount() {
     this._loadFonts();
     this.props.navigation.addListener('focus', this.isFocused);
+    this.scroll = React.createRef();
 
     const ctx = this.context;
     const { userInt } = this.state;
@@ -282,6 +286,22 @@ export default class MyPage extends Component {
     this.setState({ introModVisible: false, introduction: this.state.user.introduction });
   }
 
+//   goToLawyerHome() {
+//     const ctx = this.context;
+//     const answers = {};
+
+//     fetch(`${ctx.API_URL}/lawyer/answer/${this.state.user.ID}`, {
+//         method: "GET",
+//         headers: {
+//             'token': ctx.token,
+//         },
+//         }).then((res) => {
+//             return res.json();
+//         }).then((res) => {
+//             answers = res;
+//     });
+//   }
+
   render() {
     if (!this.state.fontsLoaded) {
       return <View />;
@@ -305,7 +325,7 @@ export default class MyPage extends Component {
                     <Text style={styles.logoutButtonText}>로그아웃</Text>
                 </TouchableOpacity>
                 <ScrollView style={styles.introCont}>
-                    <TouchableOpacity onPress={() => {this.setState({ introModVisible: true })}}>
+                    <TouchableOpacity onPress={() => {this.setState({ introModVisible: true })}} style={{ height: 75 }}>
                         {this.state.user.introduction === null ? <Text style={styles.introText}>소개글이 없습니다.</Text> : <Text style={styles.introText}>{this.state.user.introduction}</Text>}
                     </TouchableOpacity>
                 </ScrollView>
@@ -317,7 +337,7 @@ export default class MyPage extends Component {
         <View style={styles.bar}></View>
         <View style={styles.interestCont}>
             <Text style={styles.subTitle}>내 관심분야</Text>
-            <ScrollView>
+            <ScrollView ref={this.scroll}>
                 <View style={styles.fieldRow}>
                     <View style = {this.state.userInt[0] === -1 ? styles.fieldButtonContainerNonActive : styles.fieldButtonContainerActive}>
                         <TouchableOpacity style={styles.fieldButton} onPress={() => {this.fieldActivate(0)}}>
@@ -593,12 +613,12 @@ export default class MyPage extends Component {
         <View style={styles.lawyerInfoCont}>
             <Text style={styles.lawyerTitle}>변호사님! 도와주세요.</Text>
             <Text style={styles.lawyerExplanation}>변호사 홈으로 이동하여{"\n"}도움이 필요한 분들을 도와주세요.</Text> 
-            <TouchableOpacity style={styles.lawyerButton}>
+            <TouchableOpacity style={styles.lawyerButton} onPress={() => this.goToLawyerHome()}>
                 <Text style={styles.lawyerButtonText}>변호사 홈페이지 가기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.lawyerButton}>
+            {/* <TouchableOpacity style={styles.lawyerButton}>
                 <Text style={styles.lawyerButtonText}>변호사 정보 수정</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View> }
         <Modal visible={this.state.introModVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
             <View style={styles.introModModal}>

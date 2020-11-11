@@ -4,16 +4,11 @@ import {
     View,
     StyleSheet,
     Image,
-    TextInput,
-    KeyboardAvoidingView,
     TouchableOpacity,
     ScrollView,
-    Alert
   } from "react-native";
-import {Picker} from '@react-native-community/picker';
 import * as Font from "expo-font";
 import Constants from "expo-constants";
-import * as DocumentPicker from 'expo-document-picker';
 import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
@@ -195,7 +190,7 @@ export default class QnaView extends Component {
 
                             <View style={styles.question}>
                                 <View style={styles.question_field}>
-                                    {this.state.post.tags.map((tag, idx)=> {
+                                    {this.state.post.Question_has_Categories.map((tag, idx)=> {
                                         return(
                                             <Text style={styles.question_field_text} key={idx}>{this.state.categories[tag.Category_ID].name}</Text>
                                         )
