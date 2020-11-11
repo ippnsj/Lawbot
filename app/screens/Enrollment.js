@@ -33,6 +33,7 @@ export default class Enrollment extends Component {
     birthValid : false,
     phoneValid: false,
     phoneValidDone: false,
+    idRedundantDone : false,
   };
 
   async _loadFonts() {
@@ -48,14 +49,15 @@ export default class Enrollment extends Component {
     this._loadFonts();
   }
 
-  confirmID() {
+  async confirmID() {
     const ctx = this.context;
-    var body = {};
-    this.checkID();
+
+    await this.checkID();
     if (this.state.idValid){
+      let body = {};
       body.userID = this.state.id;
-      this.state.idValid = true;
-      fetch(`${ctx.API_URL}/register/check`, {
+      
+      await fetch(`${ctx.API_URL}/register/check`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,16 +70,19 @@ export default class Enrollment extends Component {
       }).then((json) => {
         if (json.success === true) {
           Keyboard.dismiss();
-          
+          this.setState({idRedundantDone: true});
           Alert.alert(
               "아이디 중복확인",
               "사용가능한 아이디입니다."
           );
+          
         } else {
+          this.setState({idRedundantDone: false});
           Alert.alert(
             "아이디 중복확인",
             "이미 존재하는 아이디입니다."
           );
+          
         }
       })
       .catch((error) => {
@@ -88,19 +93,20 @@ export default class Enrollment extends Component {
           "아이디 확인",
           "5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다."
       );
+      this.setState({idRedundantDone: false});
     }
   }
   confirmEnroll(){
-    this.checkID();
+    // this.checkID();
     this.checkPW();
     this.checkName();
     this.checkBirth();
     this.checkPhone();
 
-    if (!this.state.idValid){
+    if (!this.state.idRedundantDone){
       Alert.alert(
-          "아이디 확인",
-          "5~20자의 영문 소문자, 숫자와 특수기호(_),(-)만 사용 가능합니다."
+          "아이디 중복 확인",
+          "아이디 중복 확인이 필요합니다."
       );
     }else if (!this.state.pwValid){
       Alert.alert(
@@ -165,8 +171,9 @@ export default class Enrollment extends Component {
   }
   checkID(){
     let regEx = /^[A-Za-z0-9_-]*$/gm;
-    let idInRange = (this.state.id.length >= 2) && (this.state.id.length <= 20);
-    this.state.idValid = regEx.test(this.state.id) && idInRange;
+    let idInRange = (this.state.id.length >= 5) && (this.state.id.length <= 20);
+    let valid = regEx.test(this.state.id) && idInRange;
+    this.setState({idValid:valid});
   }
   checkPW(){
     let regEx = /^[A-Za-z0-9_-~!@#$%&*()-_+={}`[\];'"<,>\.?\/|]*$/gm;
@@ -219,10 +226,15 @@ export default class Enrollment extends Component {
             "인증번호 발송완료", 
             "인증번호가 발송되었습니다."
           );
-        }else {
+        }else if (result.msg === "이미 있는 휴대폰 번호입니다"){
           Alert.alert(
             "인증번호 발송실패", 
-            "인증번호 발송에 실패하였습니다. 전화번호를 다시 확인해주세요."
+            "이미 등록된 전화번호 입니다. 다른 번호를 등록해주시기 바랍니다."
+          );
+        }else{
+          Alert.alert(
+            "인증실패", 
+            "인증에 실패하였습니다. 다시 인증해주세요."
           );
         }
       });
@@ -265,6 +277,9 @@ export default class Enrollment extends Component {
       }
     });
   }
+  handleID(event) {
+    this.setState({id: event.target.value});
+  }
   
   render() {
     if (!this.state.fontsLoaded) {
@@ -284,11 +299,15 @@ export default class Enrollment extends Component {
                         <TextInput
                             placeholder="아이디를 입력해주세요."
                             style={styles.textInputForId}
-                            onChangeText={(id) => {this.setState({ id }); }}
-                            value={this.state.id}
+                            onChangeText = {(id) => {this.setState({id});}}
+                            value = {this.state.id}
                             maxLength={45}
+                            editable={!this.state.idRedundantDone}
                         />
-                        <TouchableOpacity style={styles.idconfirmButton} onPress={() => this.confirmID()} >
+                        <TouchableOpacity 
+                        style = {!this.state.idRedundantDone ? styles.idconfirmButton : styles2.idconfirmButton}
+                        onPress={() => this.confirmID()}
+                        disabled={this.state.idRedundantDone} >
                             <Text style={styles.idconfirmButtonText}>중복확인</Text>
                         </TouchableOpacity>
                     </View>

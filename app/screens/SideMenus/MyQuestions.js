@@ -227,9 +227,7 @@ export default class MyQuestions extends Component{
                                 return (
                                     <View key={idx} style = {styles.caseTopContainer}>
                                         <TouchableOpacity style = {styles.indivContainer} 
-                                        onPress={() => this.props.navigation.navigate("Home", {
-                                            
-                                        })}>
+                                        onPress={()=> this.props.navigation.navigate("QnaView", {post: qna, categories: this.state.categories, date: this.timeForToday(qna.writtenDate)})}>
                                             <View style = {styles.caseContainer}>
                                                 <Text style={styles.caseID}>{qna.title}</Text>
                                                 {qna.content.length>20 ?

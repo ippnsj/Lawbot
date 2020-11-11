@@ -72,6 +72,7 @@ export default class FavLawyer extends Component {
             let lawyerCategoryList = [];
             let favCheckList = [];
             for (let i=0; i<res.length; i++){
+                // console.log(res[i]);
                 lawyerList.push(res[i]);
                 favCheckList.push(true);
                 let indivCategoryList = [];
@@ -262,6 +263,24 @@ export default class FavLawyer extends Component {
             console.error(error);
         });
     }
+    // goToLawyerPage(lawyer){
+    //     const ctx = this.context;
+    //     let newAnswers;
+    //     fetch(`${ctx.API_URL}/lawyer/answer/1`, {
+    //         method: "GET",
+    //         headers: {
+    //             'token': ctx.token,
+    //         },
+    //     }).then((result) => {
+    //         return result.json();
+    //     }).then((result) => {
+    //         console.log(result);
+    //         newAnswers=result;
+    //         // this.setState({ token: ctx.token, user: result });
+    //     });
+        
+    //     this.props.navigation.navigate('Lawyer', {lawyer:newLawyer, answers: newAnswers});
+    // }
     render(){
         if (!this.state.fontsLoaded) {
             return <View />;
@@ -296,9 +315,7 @@ export default class FavLawyer extends Component {
                                 return (
                                     <View key={idx} style = {styles.caseTopContainer}>
                                             <TouchableOpacity style = {styles.indivContainer} 
-                                            onPress={() => this.props.navigation.navigate("Home", {
-                                                
-                                            })}>
+                                            onPress={() => this.props.navigation.navigate("Home")}>
                                             <Image source={{ uri: `${lawyer.Lawyer.User.photo}?random=${new Date()}`}}style={styles.lawyerImage} />
                                             <View style = {styles.caseContainer}>
                                                 <Text style={styles.caseID}>{lawyer.Lawyer.User.name+ " 변호사"}</Text>
