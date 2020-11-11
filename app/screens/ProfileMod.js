@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   Platform,
   TextInput,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Alert,
+  ToastAndroid,
+  Keyboard
 } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
@@ -14,6 +17,8 @@ import Constants from "expo-constants";
 import colors from "../config/colors";
 import { MyContext } from '../../context.js';
 import Header from "./Header.js";
+
+let errMessage = "";
 
 export default class ProfileMod extends Component {
   state = {
@@ -38,7 +43,8 @@ export default class ProfileMod extends Component {
   }
 
   isFocused = () => {
-    this.setState({ user: this.props.route.params.user });
+    errMessage = "";
+    this.setState({ user: this.props.route.params.user, prevPassword: "", newPassword: "", passwordAgain: "" });
   }
 
   async componentDidMount() {
@@ -50,8 +56,90 @@ export default class ProfileMod extends Component {
     this.props.navigation.removeListener('focus', this.isFocused);
   }
 
+  defaultPasswordCheck() {
+    if(this.state.prevPassword === "") {
+        errMessage = "기존 비밀번호를 입력해주세요.";
+        return false;
+    }else {
+        return true;
+    }
+  }
+
+  checkPW(){
+    let regEx = /^[A-Za-z0-9_-~!@#$%&*()-_+={}`[\];'"<,>\.?\/|]*$/gm;
+    let isInRange = (this.state.newPassword.length >= 8) && (this.state.newPassword.length <= 16);
+    return regEx.test(this.state.newPassword) && isInRange;
+  }
+
+  newPasswordCheck() {
+    if(this.state.newPassword === "") {
+        errMessage = "새 비밀번호를 입력해주세요.";
+        return false;
+    }else if(!this.checkPW()) {
+        errMessage = "8~16자 영문 대 소문자, 숫자, 특수문자를 사용하세요.";
+        return false;
+    }else if(this.state.passwordAgain === "") {
+        errMessage = "새 비밀번호를 다시 입력해주세요.";
+        return false;
+    }else if(this.state.newPassword !== this.state.passwordAgain) {
+        errMessage = "새 비밀번호가 일치하지 않습니다.";
+        return false;
+    }else {
+        return true;
+    }
+  }
+
   modifyPassword() {
-    
+    Keyboard.dismiss();
+    const defaultCheck = this.defaultPasswordCheck();
+
+    if(!defaultCheck) {
+        Alert.alert(
+            "기존 비밀번호 확인",
+            errMessage
+        );
+    }else {
+        const newCheck = this.newPasswordCheck();
+
+        if(!newCheck) {
+            Alert.alert(
+                "새 비밀번호 확인",
+                errMessage
+            );
+        }else {
+            const ctx = this.context;
+            const body = {
+                "prevPassword": "",
+                "newPassword": []
+            };
+
+            body.prevPassword = this.state.prevPassword;
+            body.newPassword[0] = this.state.newPassword;
+            body.newPassword[1] = this.state.passwordAgain;
+
+            fetch(`${ctx.API_URL}/user/profile/password`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": ctx.token
+                },
+                body: JSON.stringify(body)
+            }).then((res) => {
+                return res.json();
+            }).then((res) => {
+                if(res.success) {
+                    ToastAndroid.show("비밀번호 변경에 성공하였습니다!", ToastAndroid.SHORT);
+        
+                    this.props.navigation.goBack();
+                }else {
+                    Alert.alert(
+                        "비밀번호 변경 실패",
+                        res.msg
+                    );
+                }
+            });
+        }
+    }
   }
 
   render() {
@@ -101,7 +189,7 @@ export default class ProfileMod extends Component {
                         placeholder="기존 비밀번호를 입력해주세요."
                         style={styles.textInput}
                         onChangeText={(prevPassword) => {this.setState({ prevPassword }); }}
-                        value={this.state.password}
+                        value={this.state.prevPassword}
                         maxLength={45}
                     />
                 </View>
@@ -113,7 +201,7 @@ export default class ProfileMod extends Component {
                         placeholder="새 비밀번호를 입력해주세요."
                         style={styles.textInput}
                         onChangeText={(newPassword) => {this.setState({ newPassword }); }}
-                        value={this.state.password}
+                        value={this.state.newPassword}
                         maxLength={45}
                     />
                 </View>
@@ -137,7 +225,7 @@ export default class ProfileMod extends Component {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.cancelButtonContainer}>
-                    <TouchableOpacity style={styles.button} onPress = {()=>{this.props.navigation.goBack()}}>
+                    <TouchableOpacity style={styles.button} onPress = {()=>{ this.props.navigation.goBack() }}>
                         <Text style={styles.buttonText}>취소</Text>
                     </TouchableOpacity>
                 </View>

@@ -148,7 +148,7 @@ export default class QnaList extends Component {
         }
 
         return `${Math.floor(betweenTimeDay / 365)}년전`;
- }
+    }
 
     async searchQNA() {
         if(this.state.qna == "") {
@@ -268,7 +268,7 @@ export default class QnaList extends Component {
                                     <TouchableOpacity key={idx} style={styles.post} onPress={() => this.props.navigation.navigate("QnaView", {post: post, categories: this.state.categories, date: this.state.writtenDate[idx]})}>
                                         <View style={styles.tagContainer}>
                                             {
-                                                post.tags.map((tag, idx)=> {
+                                            post.Question_has_Categories.map((tag, idx)=> {
                                                     return(
                                                         <Text style={styles.tag} key={idx}>{this.state.categories[tag.Category_ID].name}</Text>
                                                     )
