@@ -39,13 +39,13 @@ export default class MyQuestions extends Component{
         this.read();
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this._loadFonts();
         this.props.navigation.addListener('focus', this.isFocused);
 
         const ctx = this.context;
         let categoryList = [];
-        fetch(`${ctx.API_URL}/qna/category`, {
+        await fetch(`${ctx.API_URL}/qna/category`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -62,7 +62,7 @@ export default class MyQuestions extends Component{
         });
         this.setState({categories:categoryList, token: ctx.token});
 
-        fetch(`${ctx.API_URL}/user/myquestion`, {
+        await fetch(`${ctx.API_URL}/user/myquestion`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -107,10 +107,10 @@ export default class MyQuestions extends Component{
             console.error(error);
         });
     }
-    componentDidUpdate(){
+    async componentDidUpdate(){
         const ctx = this.context;
         if((this.state.token != ctx.token && ctx.token != '')){
-            fetch(`${ctx.API_URL}/user/myquestion`, {
+            await fetch(`${ctx.API_URL}/user/myquestion`, {
                 method: "GET",
                 headers: {
                     "token": ctx.token
@@ -164,9 +164,9 @@ export default class MyQuestions extends Component{
     _onRefresh = ()=>{
         this.setState({refreshing: true}, ()=>this.read());
     }
-    read(){
+    async read(){
         const ctx = this.context;
-        fetch(`${ctx.API_URL}/user/myquestion`, {
+        await fetch(`${ctx.API_URL}/user/myquestion`, {
             method: "GET",
             headers: {
                 "token": ctx.token

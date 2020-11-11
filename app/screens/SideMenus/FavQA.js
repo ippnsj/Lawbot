@@ -64,7 +64,7 @@ export default class FavQA extends Component{
         });
         this.setState({categories:categoryList, token: ctx.token});
 
-        fetch(`${ctx.API_URL}/user/favqna`, {
+        await fetch(`${ctx.API_URL}/user/favqna`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -112,10 +112,10 @@ export default class FavQA extends Component{
             console.error(error);
         });
     }
-    componentDidUpdate(){
+    async componentDidUpdate(){
         const ctx = this.context;
         if(this.state.token != ctx.token && ctx.token != ''){
-            fetch(`${ctx.API_URL}/user/favqna`, {
+            await fetch(`${ctx.API_URL}/user/favqna`, {
                 method: "GET",
                 headers: {
                     "token": ctx.token
@@ -221,9 +221,9 @@ export default class FavQA extends Component{
         this.setState({refreshing: true}, ()=>this.read());
     }
 
-    read(){
+    async read(){
         const ctx = this.context;
-        fetch(`${ctx.API_URL}/user/favqna`, {
+        await fetch(`${ctx.API_URL}/user/favqna`, {
             method: "GET",
             headers: {
                 "token": ctx.token

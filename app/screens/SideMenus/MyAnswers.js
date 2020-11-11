@@ -38,12 +38,12 @@ export default class MyAnswers extends Component{
         this.read();
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this._loadFonts();
         this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         let categoryList = [];
-        fetch(`${ctx.API_URL}/qna/category`, {
+        await fetch(`${ctx.API_URL}/qna/category`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -52,6 +52,7 @@ export default class MyAnswers extends Component{
             return res.json();
         }).then((res)=>{
             for (let j=0; j<res.length; j++){
+                // console.log(String(res[j].name));
                 categoryList.push(String(res[j].name));
             }
         })
@@ -60,7 +61,7 @@ export default class MyAnswers extends Component{
         });
         this.setState({categories:categoryList, token: ctx.token});
 
-        fetch(`${ctx.API_URL}/user/myquestion/answer`, {
+        await fetch(`${ctx.API_URL}/user/myquestion/answer`, {
             method: "GET",
             headers: {
                 "token": ctx.token
@@ -83,6 +84,7 @@ export default class MyAnswers extends Component{
                     for (ji=1; ji<=res[i].Question_has_Categories.length; ji++){
                         let j = ji-1;
                         let index = res[i].Question_has_Categories[j].Category_ID;
+                        // console.log(this.state.categories[index]);
                         indivCategory+= "#" +(this.state.categories[index])+ "   ";
                         if ((ji % 4 === 0)&&(ji !== 0)){
                             indivCategoryList.push(indivCategory);
@@ -105,11 +107,11 @@ export default class MyAnswers extends Component{
             console.error(error);
         });
     }
-    componentDidUpdate(){
+    async componentDidUpdate(){
         const ctx = this.context;
         if((this.state.token != ctx.token && ctx.token != '')){
             this.setState({token: ctx.token});
-            fetch(`${ctx.API_URL}/user/myquestion/answer`, {
+            await fetch(`${ctx.API_URL}/user/myquestion/answer`, {
                 method: "GET",
                 headers: {
                     "token": ctx.token
@@ -161,9 +163,9 @@ export default class MyAnswers extends Component{
     _onRefresh = ()=>{
         this.setState({refreshing: true}, ()=>this.read());
     }
-    read(){
+    async read(){
         const ctx = this.context;
-        fetch(`${ctx.API_URL}/user/myquestion/answer`, {
+        await fetch(`${ctx.API_URL}/user/myquestion/answer`, {
             method: "GET",
             headers: {
                 "token": ctx.token

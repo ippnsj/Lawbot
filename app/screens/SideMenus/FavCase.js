@@ -169,6 +169,7 @@ export default class FavCase extends Component{
             this.state.caseURL = response.url;
             this.props.navigation.navigate('CaseView', {
                 caseURL: this.state.caseURL,
+                caseID: caseID,
             });
         })
         .catch((error) => {
