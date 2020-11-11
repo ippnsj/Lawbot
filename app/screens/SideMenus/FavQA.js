@@ -36,9 +36,13 @@ export default class FavQA extends Component{
         });
         this.setState({ fontsLoaded: true });
     }
+    isFocused = () => {
+        this.read();
+    }
 
     async componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         let categoryList = [];
         await fetch(`${ctx.API_URL}/qna/category`, {
@@ -208,6 +212,9 @@ export default class FavQA extends Component{
             favCheckList.push(this.state.favCheck[j]);
         }
         this.setState({favCheck:favCheckList});
+    }
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
     }
 
     _onRefresh = ()=>{

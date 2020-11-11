@@ -34,9 +34,13 @@ export default class MyAnswers extends Component{
         });
         this.setState({ fontsLoaded: true });
     }
+    isFocused = () => {
+        this.read();
+    }
 
     componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
         const ctx = this.context;
         let categoryList = [];
         fetch(`${ctx.API_URL}/qna/category`, {
@@ -150,6 +154,9 @@ export default class MyAnswers extends Component{
                 console.error(error);
             });
         }
+    }
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
     }
     _onRefresh = ()=>{
         this.setState({refreshing: true}, ()=>this.read());
