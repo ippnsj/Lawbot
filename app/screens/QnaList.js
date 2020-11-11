@@ -41,9 +41,14 @@ export default class QnaList extends Component {
       });
       this.setState({ fontsLoaded: true });
     }
+
+    isFocused = () => {
+        this.setState({ qnaKind: "키워드", qna: "" });
+    }
   
     async componentDidMount() {
         this._loadFonts();
+        this.props.navigation.addListener('focus', this.isFocused);
 
         this.props.route.params.posts.length <= 0 ? this.setState({listExist: false}) : this.setState({listExist: true, posts: this.props.route.params.posts});
         const ctx = this.context;
@@ -125,6 +130,10 @@ export default class QnaList extends Component {
             this.setState({writtenDate: date});
             this.setState({userids: userList});
         }
+    }
+
+    componentWillUnmount() {
+        this.props.navigation.removeListener('focus', this.isFocused);
     }
 
     timeForToday(value) {
