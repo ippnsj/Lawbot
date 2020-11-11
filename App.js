@@ -16,6 +16,7 @@ import SideMenu from "./app/screens/SideMenu";
 import MyPage from "./app/screens/MyPage";
 import ProfileMod from "./app/screens/ProfileMod";
 import Lawyer from "./app/screens/Lawyer";
+import LawyerModify from "./app/screens/LawyerModify";
 import LawyerRecommendation from "./app/screens/LawyerRecommendation";
 import FavCase from "./app/screens/SideMenus/FavCase";
 import FavLawyer from "./app/screens/SideMenus/FavLawyer";
@@ -107,6 +108,7 @@ export default class App extends Component {
             <Drawer.Screen name="MyPage" component={MyPage} options={{ headerShown: false }} />
             <Drawer.Screen name="ProfileMod" component={ProfileMod} options={{ headerShown: false }} />
             <Drawer.Screen name="Lawyer" component={Lawyer} options={{ headerShown: false }} />
+            <Drawer.Screen name="LawyerModify" component={LawyerModify} options={{ headerShown: false }} />
             <Drawer.Screen name="LawyerRecommendation" component={LawyerRecommendation} options={{ headerShown: false }} />
             <Drawer.Screen name="FavCase" component={FavCase} options={{headerShown:false}} />
             <Drawer.Screen name="FavLawyer" component={FavLawyer} options={{headerShown:false}} />

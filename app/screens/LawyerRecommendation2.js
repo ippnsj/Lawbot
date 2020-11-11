@@ -72,7 +72,6 @@ export default class LawyerRecommendation extends Component {
       ids: [],
       similarities: [],
       keywords: "",
-      list:[],
       caseURL: "",
       fields: "",
       category:[],
@@ -96,8 +95,6 @@ export default class LawyerRecommendation extends Component {
 
   componentDidMount() {
     this._loadFonts();
-    this.setState({list: this.props.route.params.list});
-
     // var keywords = this.props.route.params.keywords;
     // var keytags = "";
     // for(var idx in keywords) {
@@ -155,12 +152,12 @@ export default class LawyerRecommendation extends Component {
     console.log(category);
   }
 
-  async moveDetailPage(id){
+  async moveDetailPage(){
     console.log("hi");
     const ctx = this.context;
     var newLawyer;
     var newAnswers;
-    await fetch(`${ctx.API_URL}/lawyer/${id}`, {
+    await fetch(`${ctx.API_URL}/lawyer/1`, {
         method: "GET",
         headers: {
             'token': ctx.token,
@@ -169,13 +166,12 @@ export default class LawyerRecommendation extends Component {
       ).then((result) => {
         return result.json();
       }).then((result) => {
-          // console.log("999999999999999");
-          // console.log(result);
+          console.log("999999999999999");
             newLawyer=result[0];
             // console.log(newLawyer);
     });
 
-   await fetch(`${ctx.API_URL}/lawyer/answer/${id}`, {
+   await fetch(`${ctx.API_URL}/lawyer/answer/1`, {
     method: "GET",
     headers: {
         'token': ctx.token,
@@ -183,14 +179,14 @@ export default class LawyerRecommendation extends Component {
     }).then((result) => {
         return result.json();
     }).then((result) => {
-        // console.log(result);
+        console.log(result);
         newAnswers=result;
         // this.setState({ token: ctx.token, user: result });
     });
-    // console.log("this is recommend");
-    console.log(newLawyer);
+    console.log("this is recommend");
+    // console.log(newLawyer);
     // console.log(newAnswers);
-    this.props.navigation.navigate('Lawyer', {id: id, lawyer:newLawyer, answers: newAnswers});
+    this.props.navigation.navigate('Lawyer', {lawyer:newLawyer, answers: newAnswers});
   }
 
 
@@ -210,20 +206,20 @@ export default class LawyerRecommendation extends Component {
 
                 <View style={{margin: "5%"}}>
                     
-                    {this.state.list.map((ans, idx)=>{
+                    {answers.map((ans, idx)=>{
                         return(
-                            <TouchableOpacity onPress={()=>this.moveDetailPage(ans.User.ID)}>
-                                <View style={styles.answer}>
+                            <TouchableOpacity onPress={()=>this.moveDetailPage()}>
+                                <View style={styles.answer} key={idx}>
                                     <View style={styles.answer_lawyer}>
-                                        <Image style={styles.answer_lawyer_pic} source={{ uri: `${ans.User.photo}?random=${new Date()}` }} />
+                                        <Image style={styles.answer_lawyer_pic} source={ans.url} />
                                         <View style={{margin:"5%", width:"40%", justifyContent: "center"}}>
-                                            <Text style={styles.answer_lawyer_name}>{ans.User.name}</Text>
-                                            <Text style={styles.answer_lawyer_team}>{ans.companyName}</Text>
+                                            <Text style={styles.answer_lawyer_name}>{ans.name}</Text>
+                                            <Text style={styles.answer_lawyer_team}>{ans.team}</Text>
                                             <Text style={styles.lawyer_intro}>{ans.introduction}</Text>
                                             <View style={{flexDirection:"row"}}>
-                                                {ans.LawyerFields.map((t)=>{
+                                                {ans.tags.map((t)=>{
                                                     return(
-                                                        <Text style={{fontFamily:"KPWDBold", fontSize:11, color: colors.primary, marginRight:10}}>#{categories[t.Category_ID]}</Text>
+                                                        <Text style={{fontFamily:"KPWDBold", fontSize:11, color: colors.primary, marginRight:10}}>#{t}</Text>
                                                     )
                                                 })}
                                             </View>
