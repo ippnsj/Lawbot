@@ -16,13 +16,20 @@ import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
 import Header from "./Header.js";
+import { ScrollView } from 'react-native-gesture-handler';
+import Unorderedlist from 'react-native-unordered-list';
+
 
 export default class Home extends Component {
     state = {
         fontsLoaded: false,
         file: null,
         qna: "",
-        qnaKind: "키워드"
+        qnaKind: "키워드",
+        boardAContents: [],
+        boardBContents: [],
+        boardCContents: [],
+        boardLoaded: false,
     };
   
     async _loadFonts() {
@@ -57,10 +64,16 @@ export default class Home extends Component {
     componentDidMount() {
         this._loadFonts();
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        this.props.navigation.addListener('focus', this.isFocused);
     }
     
     componentWillUnmount() {
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+        this.props.navigation.removeListener('focus', this.isFocused);
+    }
+
+    isFocused = () => {
+        this.getBoardContents();
     }
 
     async terminologyExplanation() {
@@ -79,6 +92,36 @@ export default class Home extends Component {
             field: field,
             pageRerender: true,
         });
+    }
+
+    async getBoardContents() {
+        const ctx = this.context;
+        
+        fetch(`${ctx.API_URL}/boards/posts`, {
+            method: "GET",
+            headers: {
+                'token': ctx.token,
+            },
+        }).then((data) => {
+            return data.json();
+        }).then((result) => {
+            console.log(result.length);
+            let join1 = [];
+            let join2 = [];
+            let join3 = [];
+            result.map((content) => {
+                if (content.boardCategory == 1){
+                    join1 = join1.concat(content);
+                } else if (content.boardCategory == 2){
+                    join2 = join2.concat(content);
+                } else if (content.boardCategory == 3) {
+                    join3 = join3.concat(content);
+                }
+            })
+            this.setState({boardAContents: join1})
+            this.setState({boardBContents: join2})
+            this.setState({boardCContents: join3})
+        }).then(()=>this.setState({boardLoaded:true}))
     }
 
     render() {
@@ -189,17 +232,58 @@ export default class Home extends Component {
                             <Image style={styles.more} source={require("../assets/more.png")} />
                             
                         </View>
-                        <View style={styles.boardContent}>
-                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:1})}}>
-                                <Text style={styles.boardContentSubtitle}>어플 이용 후기 게시판</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:2})}}>
-                                <Text style={styles.boardContentSubtitle}>재판 후기 게시판</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:3})}}>
-                                <Text style={styles.boardContentSubtitle}>자유 게시판</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <ScrollView style={styles.boardContents}>
+                            <View style={styles.boardContent}>
+                                <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:1})}}>
+                                    <Text style={styles.boardContentSubtitle}>어플 이용 후기 게시판</Text>
+                                </TouchableOpacity>
+                                { this.state.boardLoaded &&
+                                <View style={styles.boardContentRows}>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[0].title}</Text></Unorderedlist>
+                                    </View>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[1].title}</Text></Unorderedlist>
+                                    </View>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[2].title}</Text></Unorderedlist>
+                                    </View>
+                                </View>
+                                }
+                                <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:2})}}>
+                                    <Text style={styles.boardContentSubtitle}>재판 후기 게시판</Text>
+                                </TouchableOpacity>
+                                { this.state.boardLoaded &&
+                                <View style={styles.boardContentRows}>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[0].title}</Text></Unorderedlist>
+                                    </View>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[1].title}</Text></Unorderedlist>
+                                    </View>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[2].title}</Text></Unorderedlist>
+                                    </View>
+                                </View>
+                                }
+                                <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:3})}}>
+                                    <Text style={styles.boardContentSubtitle}>자유 게시판</Text>
+                                </TouchableOpacity>
+                                { this.state.boardLoaded &&
+                                <View style={styles.boardContentRows}>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[0].title}</Text></Unorderedlist>
+                                    </View>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[1].title}</Text></Unorderedlist>
+                                    </View>
+                                    <View style={styles.boardcontentRow}>
+                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[2].title}</Text></Unorderedlist>
+                                    </View>
+                                </View>
+                                }
+                            </View>
+                        </ScrollView>
                     </View>
                   </KeyboardAvoidingView>
             </View>
@@ -370,25 +454,31 @@ const styles=StyleSheet.create({
         marginVertical: 5 
     },
 
+    boardContents: {
+        overflow: "scroll"
+    },
     boardContent: {
         marginTop: "5%",
     },
 
     boardContentSubtitle: {
         fontFamily: "KPWDBold",
-        fontSize: 13,
+        fontSize: 16,
         marginLeft: 15,
     },
 
     boardContentText: {
         fontFamily: "KPWDMedium",
         fontSize: 13,
-        marginLeft: 10
+        marginLeft: 10,
+        width: 200,
+    },
+    boardContentRows: {
+        marginLeft: "15%",
+        marginTop: 4
     },
     boardContentRow: {
         flexDirection:"row",
-        marginLeft: "15%",
-        marginTop: 4
     },
     boardContentBullet: {
         fontSize: 6,
