@@ -185,8 +185,8 @@ export default class MyComments extends Component{
                                             <Text style= {styles.date}>{post.writtenDate.slice(0, 10)+" "+post.writtenDate.slice(11,16)}</Text>
                                             {/* <Image source={require("../../assets/speech-bubble.png")} style={styles.lawyerImage} />
                                             <Text style= {styles.commentCount}>{(post.Replies.length)}</Text> */}
-                                            <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
-                                            <Text style= {styles.commentCount}>{(post.views)}</Text>
+                                            {/* <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
+                                            <Text style= {styles.commentCount}>{(post.views)}</Text> */}
                                         </View>
                                     </TouchableOpacity>
                                 );

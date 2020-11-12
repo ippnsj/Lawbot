@@ -246,8 +246,8 @@ export default class FavPosts extends Component{
                                                 :<Text style= {styles.caseName}>{post.Post.content.slice(0, 20)}</Text>}
                                                 <View style= {styles.commentContainer}>
                                                     <Text style= {styles.date}>{post.Post.writtenDate.slice(0, 10)+" "+post.Post.writtenDate.slice(11,16)}</Text>
-                                                    <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
-                                                    <Text style= {styles.commentCount}>{(post.Post.views)}</Text>
+                                                    {/* <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
+                                                    <Text style= {styles.commentCount}>{(post.Post.views)}</Text> */}
                                                 </View>
                                             </View>
                                         </TouchableOpacity>

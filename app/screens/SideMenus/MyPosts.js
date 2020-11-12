@@ -182,8 +182,8 @@ export default class MyPosts extends Component{
                                         :<Text style= {styles.caseName}>{post.content.slice(0, 20)}</Text>}
                                         <View style= {styles.commentContainer}>
                                             <Text style= {styles.date}>{post.writtenDate.slice(0, 10)+" "+post.writtenDate.slice(11,16)}</Text>
-                                            <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
-                                            <Text style= {styles.commentCount}>{(post.views)}</Text>
+                                            {/* <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
+                                            <Text style= {styles.commentCount}>{(post.views)}</Text> */}
                                         </View>
                                     </TouchableOpacity>
                                 );

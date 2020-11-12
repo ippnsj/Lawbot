@@ -333,8 +333,8 @@ export default class FavQA extends Component{
                                                 }
                                                 <View style= {styles.commentContainer}>
                                                     <Text style= {styles.date}>{qna.Question.writtenDate.slice(0,10)+" "+qna.Question.writtenDate.slice(11, 16)}</Text>
-                                                    <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
-                                                    <Text style= {styles.commentCount}>{(qna.Question.views)}</Text>
+                                                    {/* <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
+                                                    <Text style= {styles.commentCount}>{(qna.Question.views)}</Text> */}
                                                 </View>
                                             </View>
                                         </TouchableOpacity>

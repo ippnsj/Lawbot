@@ -272,8 +272,8 @@ export default class MyAnswers extends Component{
                                                 }
                                                 <View style= {styles.commentContainer}>
                                                     <Text style= {styles.date}>{qna.writtenDate.slice(0,10)+" "+qna.writtenDate.slice(11, 16)}</Text>
-                                                    <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
-                                                    <Text style= {styles.commentCount}>{(qna.views)}</Text>
+                                                    {/* <Image source={require("../../assets/view.png")} style={styles.lawyerImage} />
+                                                    <Text style= {styles.commentCount}>{(qna.views)}</Text> */}
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
