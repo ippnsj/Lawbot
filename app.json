@@ -4,7 +4,7 @@
     "slug": "Lawbot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/icon.png",
+    "icon": "./app/assets/icon4.png",
     "splash": {
       "image": "./app/assets/splash.png",
       "resizeMode": "contain",
@@ -21,7 +21,14 @@
       "favicon": "./app/assets/favicon.png"
     },
     "android":{
-      "permissions":["READ_EXTERNAL_STORAGE", "INTERNET"]
+      "permissions":["READ_EXTERNAL_STORAGE", "INTERNET"],
+      "versionCode": 1,
+      "package": "lawbotc.kr",
+      "icon": "./app/assets/logo4.png",
+      "adaptiveIcon": {
+        "backgroundColor": "#9E1A1A",
+        "foregroundImage": "./app/assets/logo4.png"
+      }
     }
   }
 }
