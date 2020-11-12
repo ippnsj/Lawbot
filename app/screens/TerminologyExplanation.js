@@ -186,7 +186,7 @@ export default class TerminologyExplanation extends Component {
                 console.error(error);
               });
             }else{
-              this.setState({explanation: "유효한 검색어가 아닙니다. 숫자로만 검색이 가능합니다."});
+              this.setState({explanation: "유효한 검색어가 아닙니다. 숫자로만 검색이 가능합니다.\n예시) (민법 102조의 경우) 102"});
             }
             
           }
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     paddingHorizontal: "2%",
-    paddingVertical: "3%",
+    // paddingVertical: "3%",
   },
   fieldSelectHeader:
   {
@@ -403,7 +403,8 @@ const styles = StyleSheet.create({
     alignSelf:"center",
     alignItems:"center",
     height: "30%",
-    justifyContent: "center"
+    justifyContent: "center",
+    marginTop: "0%",
   },
   fieldSelectCancel: {
     backgroundColor: colors.primary,

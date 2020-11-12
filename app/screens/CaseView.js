@@ -30,6 +30,7 @@ export default class CaseView extends Component {
     explanation: `검색결과를 알려드립니다.`,
     favSelected: false,
     caseID: "",
+    selectVisible:false
   };
 
   async _loadFonts() {
@@ -202,18 +203,13 @@ export default class CaseView extends Component {
                 },
               }).then(res => {
                 return res.text();
-              }).then(res => {
-              
-                //console.log(res);
-        
+              }).then(res => {        
                 var st = res.indexOf("<조문내용>");
                 var mid = res.indexOf(")");
                 var end = res.indexOf("</조문내용>");
                 var tit = res.substring(st+15,mid+1);
-                //console.log(tit);
                 var sub = res.substring(mid+1,end-3);
                 
-  
                 if(sub.length==0){
                   var cnt = 0;
                   var ref = res;
@@ -230,15 +226,13 @@ export default class CaseView extends Component {
                       }    
                     }
                 }
-  
                 this.setState({explanation: "민법 "+tit + "\n\n"+sub});
               }).catch((error) => {
                 console.error(error);
               });
             }else{
-              this.setState({explanation: "유효한 검색어가 아닙니다. 숫자로만 검색이 가능합니다."});
+              this.setState({explanation: "유효한 검색어가 아닙니다. 숫자로만 검색이 가능합니다.\n예시) (민법 102조의 경우) 102"});
             }
-            
           }
         })
    }
@@ -246,8 +240,6 @@ export default class CaseView extends Component {
    overlayClose() {
     this.setState({selectVisible: false});
   }
-
-
 
   render() {
     if (!this.state.fontsLoaded) {
@@ -267,7 +259,7 @@ export default class CaseView extends Component {
         </View>
         <KeyboardAvoidingView style={styles.body}>
           <View style={styles.wordContainer}>
-            <TouchableOpacity style={styles.terminologyButton} onPress={() => this.setState({selectVisible: true})}>
+            <TouchableOpacity style={styles.terminologyButton} onPress={() => this.setState({selectVisible: true,word:"",explanation:""})}>
               <Text style={styles.terminologyButtonText}>선택</Text>
             </TouchableOpacity>
             <TextInput 
@@ -300,12 +292,12 @@ export default class CaseView extends Component {
                     
                       <View style={styles.fieldRow}>
                         <View style={styles.fieldButtonContainer}>
-                          <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "법률용어"}); this.overlayClose();}}>
+                          <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "법률용어",explanation:"궁금한 법률 용어를 검색하세요."}); this.overlayClose();}}>
                           <Text style={styles.fieldText}>법률용어</Text>
                           </TouchableOpacity>
                         </View>
                         <View style={styles.fieldButtonContainer}>
-                          <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "관련조항"}); this.overlayClose();}}>
+                          <TouchableOpacity style={styles.fieldButton} onPress={() => {this.setState({field: "관련조항", explanation:"궁금한 민법 조문을 검색하세요.(숫자)"}); this.overlayClose();}}>
                           <Text style={styles.fieldText}>관련조항</Text>
                           </TouchableOpacity>
                         </View>
@@ -361,7 +353,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     width: "15%",
-    marginHorizontal: 5,
+    marginHorizontal: 10,
     borderColor: colors.primary,
     borderWidth: 2,
   },
@@ -418,7 +410,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     paddingHorizontal: "2%",
-    paddingVertical: "3%"
+    // paddingVertical: "3%"
   },
   fieldSelectCancel: {
     backgroundColor: colors.primary,
@@ -436,6 +428,7 @@ const styles = StyleSheet.create({
   fieldModalText: {
     fontSize: 20,
     fontFamily: "KPWDBold",
+    color:"#fff",
   },
   fieldRow: {
     flex: 5,
@@ -452,5 +445,16 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
+  },
+  fieldSelectHeader:
+  {
+    flex: 2,
+    backgroundColor: colors.primary,
+    flexDirection: "row",
+    width: "107%",
+    alignSelf:"center",
+    alignItems:"center",
+    height: "30%",
+    justifyContent: "center"
   },
 });

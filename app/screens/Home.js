@@ -168,13 +168,13 @@ export default class Home extends Component {
                     </View>
 
 
-                    {/* 법률용어해석 */}
+                    {/* 법률문서해석 */}
                     <View style={styles.termSection}>
                         <View style={styles.termHeader}>
-                            <Text style={styles.termSubtitle}>법률 용어 해석</Text>
+                            <Text style={styles.termSubtitle}>법률 문서 해석</Text>
                         </View>
                         <TouchableOpacity style={styles.termButton}  onPress={() => this.terminologyExplanation()}>
-                            <Text style={styles.termButtonText}>법률 문서 올리고 쉬운 해석 받아보기</Text>
+                            <Text style={styles.termButtonText}>법률 문서 보면서 용어 및 법령 검색하기</Text>
                         </TouchableOpacity>
                     </View>
 
