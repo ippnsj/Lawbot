@@ -153,6 +153,9 @@ export default class MyComments extends Component{
             console.error(error);
         });
     }
+    goToDetailPage(post){
+        this.props.navigation.navigate('BoardDetail', {post: post});
+    }
     render(){
         if (!this.state.fontsLoaded) {
             return <View />;
@@ -173,9 +176,7 @@ export default class MyComments extends Component{
                           }>
                             {this.state.postList.map((post, idx)=>{
                                 return (
-                                    <TouchableOpacity key={idx} style = {styles.caseContainer} onPress={() => this.props.navigation.navigate("Home", {
-                                            
-                                    })}>
+                                    <TouchableOpacity key={idx} style = {styles.caseContainer} onPress={() => this.goToDetailPage(post)}>
                                         <Text style= {styles.boardCategory}>{this.state.postCategory[idx]}</Text>
                                         <Text style= {styles.caseID}>{post.title}</Text>
                                         {post.content.length>20 ?<Text style= {styles.caseName}>{post.content.slice(0, 20)+"..."}</Text>

@@ -57,7 +57,7 @@ export default class BoardDetail extends Component {
 
 
     async getReplies() {
-        ctx = this.context;
+        const ctx = this.context;
 
         fetch(`${ctx.API_URL}/reply/${this.props.route.params.post.ID}`, {
             method: "GET",
@@ -67,7 +67,6 @@ export default class BoardDetail extends Component {
         }).then((data) => {
             return data.json();
         }).then((res) => {
-            console.log(res);
             this.setState({replies : res});
         });
     }
