@@ -32,94 +32,14 @@ import { DrawerContentScrollView } from "@react-navigation/drawer";
 
 
 const categories=[
-    "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방", "병역", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
+    "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방/병역", "학교", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
 ]
 
 const catImgList=[
     require("../assets/carAccident.png"), require("../assets/industrialAccident.png"), require("../assets/environment.png"),require("../assets/press.png"), require("../assets/intellectualProperty.png"),  require("../assets/medical.png"), require("../assets/construction.png"),require("../assets/government.png"), require("../assets/etc.png"), require("../assets/family.png"), require("../assets/divorce.png"), require("../assets/violence.png"), require("../assets/fraud.png"),require("../assets/sexualAssault.png"),  require("../assets/libel.png"), require("../assets/insult.png"), require("../assets/threat.png"), require("../assets/carAcci.png"), require("../assets/contract.png"), require("../assets/personalInformation.png"), require("../assets/inheritance.png"), require("../assets/burglary.png"),  require("../assets/trading.png"), require("../assets/labor.png"), require("../assets/debtCollection.png"), require("../assets/bankruptcy.png"), require("../assets/drug.png"), require("../assets/consumer.png"), require("../assets/millitary.png"), require("../assets/school.png"),require("../assets/housebreaking.png"),  require("../assets/service.png"), require("../assets/realEstate.png"), require("../assets/falseWitness.png"), require("../assets/falseAccusation.png"),require("../assets/juvenile.png"), require("../assets/lease.png"), require("../assets/loan.png"), require("../assets/online.png"), require("../assets/drunkDriving.png")
 ]
 
-
-const lawyer={
-    name: "이연수",
-    field: ["이혼", "성범죄"],
-    fieldImg: [require("../assets/divorce.png"), require("../assets/sexualAssault.png")],
-    career: "한국여성인권진흥원 인권보호본부",
-    team: "법률사무소 풀씨",
-    address: "서울특별시 서대문구 연세로 50",
-    qualification: "2016년 변호사자격 취득",
-    degree: "연세대학교 대학원 법학과 석사 졸업"
-};
-
-const career= [
-    {
-        periodstart: "2017",
-        periodend: "",
-        name: "한국여성인권진흥원 인권보호본부"
-    },
-    {
-        periodstart: "2018",
-        periodend: "",
-        name: "풀씨법률사무소 대표 변호사"
-    }
-];
-
-const qualification=[
-    {
-        periodstart: "2016",
-        periodend: "",
-        name: "변호사 자격증 취득"
-    }
-]
-
-const degree=[
-    {
-        periodstart: "2003",
-        periodend: "2009",
-        name: "연세대학교 대학원 법학과 석사"
-    }
-]
-
 const empty="     ";
-
-
-const field=[
-    {
-        name: "이혼",
-        img: require("../assets/divorce.png")
-    },
-    {
-        name: "성범죄",
-        img: require("../assets/sexualAssault.png")
-    }
-];
-
-const questions=[
-    {
-        field: ["자동차", "산업재해", "폭행"],
-        title: "음주운전 처벌수위와 대처가 궁급합니다.",
-        date: "2020.03.12",
-        content: "우선 과거 2016년도 음주운전 취소(수치 0.158)된적이 있고, 2017년 무면허 전과가있습니다."
-        
-    },
-    {
-        field: ["자동차",  "사기", "폭행"],
-        title: "자동차 주행중 돌이 날라와서 찍힘 사고가 발생했습니다",
-        date: "2020.06.17",
-
-        content: "자유로를 주행중에 돌빵을 당했습니다. 블랙박스를 수차례 돌려 보았지만 이게 앞차에서 날아온 돌은 아닌것 같고 갑자기 공중에서 생기더니 차에 맞았습니다. 주행도로 옆에는 항타기 공사중이었고 혹시나 그 현장에서 날아온건 아닐까 또 블랙박스를 돌려 보았지만 돌이 날아오는 방향은 기계와 반대입니다."
-    },
-    {
-        field: ["자동차", "모욕" ],
-        title: "음주교통사고 피해자입니다",
-        date: "2020.10.31",
-
-        content: "안녕하세요\n저는 음주교통사고 피해자차량의 동승자입니다.\n일주일전 운전자와 함께 차량으로 서행중에 뒤에서 음주차량이 저희차를 한번박고 세번을 추가로 더 박았습니다."
-    },
-
-    
-]
-
 
 export default class Lawyer extends Component {
     constructor(props) {
@@ -131,9 +51,9 @@ export default class Lawyer extends Component {
           home: true,
           info: false,
           qa: false,
-          id: this.props.route.params.id,
-          lawyer: this.props.route.params.lawyer,
-          answers: this.props.route.params.answers,
+          id: "",
+          lawyer: {},
+          answers: [],
           tabs: [
               {
                   name: "홈",
@@ -164,76 +84,47 @@ export default class Lawyer extends Component {
     this.setState({ fontsLoaded: true });
   }
 
-  isFocused = () => {
-    this.setState({id: this.props.route.params.id, lawyer: this.props.route.params.lawyer, answers: this.props.route.params.answers, home:true, info: false, qa:false});
-    
-    // const ctx = this.context;
-    
-    // // this.setState({ introModVisible: false });
+  async getLawyerData(id) {
+    const ctx = this.context;
+    // var newLawyer;
+    // var newAnswers;
+    this.setState({id: id, home:true, info: false, qa:false});
 
-    // if(ctx.token !== '' && this.state.token === ctx.token) {
-    //     fetch(`${ctx.API_URL}/lawyer/${this.props.route.params.id}`, {
-    //         method: "GET",
-    //         headers: {
-    //             // 'Content-Type': 'multipart/form-data',
-    //             // 'Accept': 'application/json',
-    //             'token': ctx.token,
-    //         },
-    //         }).then((result) => {
-    //         return result.json();
-    //         }).then((result) => {
-    //         this.setState({ token: ctx.token, lawyer: result[0] });
-    //         console.log("아ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅄㅄㅄㅄㅄ");
-    //         console.log(this.state.lawyer.User.name)
-    //     });
-        
-        // ctx.favCategoryUpdated = false;
-        // const { userInt } = this.state;
-        // for(var i = 0; i < this.state.userInt.length; i++) {
-        //     userInt[i] = ctx.userInt[i];
-        // }
-        // this.setState({ userInt });
-    // }
-}
+    await fetch(`${ctx.API_URL}/lawyer/${id}`, {
+        method: "GET",
+        headers: {
+            'token': ctx.token,
+        },
+      }
+      ).then((result) => {
+        return result.json();
+      }).then((result) => {
+        this.setState({ lawyer: result[0] });
+    });
+
+   await fetch(`${ctx.API_URL}/lawyer/answer/${id}`, {
+    method: "GET",
+    headers: {
+        'token': ctx.token,
+    },
+    }).then((result) => {
+        return result.json();
+    }).then((result) => {
+        this.setState({ answers: result });
+        // this.setState({ token: ctx.token, user: result });
+    });
+  }
+
+  isFocused = () => {
+    this.getLawyerData(this.props.route.params.id);
+  }
 
   componentDidMount() {
     this._loadFonts();
-    // console.log("ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏ")
     this.props.navigation.addListener('focus', this.isFocused);
-    this.setState({id: this.props.route.params.id, lawyer: this.props.route.params.lawyer, answers: this.props.route.params.answers});
-    // console.log(this.props.route.params.lawyer);
-    // const ctx = this.context;
-    // var newLawyer={};
-    // var obj;
-    // await fetch(`${ctx.API_URL}/lawyer/1`, {
-    //     method: "GET",
-    //     headers: {
-    //         'token': ctx.token,
-    //     },
-    //   }
-    //   ).then((result) => {
-    //     return result.json();
-    //   }).then((result) => {
-    //     //   console.log(result);
-    //     // console.log(result[0].User.ID);
-    //       newLawyer=result[0];
-    //     //   console.log(result[0]);
-    //     //   obj=JSON.stringify(result[0]);
-    //     // this.setState({ token: ctx.token, user: result });
-    //   });
-
-    //   console.log("hi");
-    // //   obj=JSON.parse(jsonStr);
-    // //   console.log(obj)
-    
-    //   this.setState({lawyer: newLawyer});
-    //   console.log(this.state.lawyer.User.birth);
-    // this.setState({lawyer: this.props.route.params.lawyer});
-    // this.setState({answers: this.props.route.params.answers});
   }
 
   componentWillUnmount() {
-      
     this.props.navigation.removeListener('focus', this.isFocused);
   }
 
@@ -255,27 +146,14 @@ export default class Lawyer extends Component {
 //     });
 // };
 
-  async componentDidUpdate() {
-    const ctx = this.context;
-    if(ctx.token !== '' && this.state.token === ctx.token) {
-        await fetch(`${ctx.API_URL}/lawyer/${this.props.route.params.id}`, {
-            method: "GET",
-            headers: {
-                // 'Content-Type': 'multipart/form-data',
-                // 'Accept': 'application/json',
-                'token': ctx.token,
-            },
-            }).then((result) => {
-            return result.json();
-            }).then((result) => {
-            this.setState({ token: ctx.token, lawyer: result[0] });
-            console.log("아ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅄㅄㅄㅄㅄ");
-            console.log(this.state.lawyer.User.name)
-        });
-    // this.getCategory();
-    // this.setState({lawyer: this.props.route.params.lawyer, answers: this.props.route.params.answers});
-  }
-}
+// async componentDidUpdate() {
+//     const ctx = this.context;
+//     if(this.props.route.params.id !== this.state.id) {
+//         this.getLawyerData();
+//     // this.getCategory();
+//     // this.setState({lawyer: this.props.route.params.lawyer, answers: this.props.route.params.answers});
+//   }
+// }
 
 //   async componentDidUpdate() {
 //     const ctx = this.context;
@@ -297,22 +175,22 @@ export default class Lawyer extends Component {
 //   }
 
 
-    getQA() {
-        const ctx = this.context;
-        console.log("hi");
-        fetch(`${ctx.API_URL}/lawyer/answer/1`, {
-            method: "GET",
-            headers: {
-                'token': ctx.token,
-            },
-        }
-        ).then((result) => {
-            return result.json();
-        }).then((result) => {
-            // console.log(result);
-            // this.setState({ token: ctx.token, user: result });
-        });
-    }
+    // getQA() {
+    //     const ctx = this.context;
+    //     console.log("hi");
+    //     fetch(`${ctx.API_URL}/lawyer/answer/1`, {
+    //         method: "GET",
+    //         headers: {
+    //             'token': ctx.token,
+    //         },
+    //     }
+    //     ).then((result) => {
+    //         return result.json();
+    //     }).then((result) => {
+    //         // console.log(result);
+    //         // this.setState({ token: ctx.token, user: result });
+    //     });
+    // }
 
     async handleTabs(which) {
         if (which==="home") {
@@ -367,7 +245,7 @@ export default class Lawyer extends Component {
                     </View>
                     <View style={{flexDirection:"row", margin:"1%"}}>
                         <Text style={styles.home_info_subtitle}>자격</Text>
-                        <Text style={styles.home_info_content}>{lawyer.qualification}</Text>
+                        <Text style={styles.home_info_content}>{this.state.lawyer.Qualifications && this.state.lawyer.Qualifications.length ? this.state.lawyer.Qualifications[0].detail : empty}</Text>
                     </View>
                     <View style={{flexDirection:"row", margin:"1%"}}>
                         <Text style={styles.home_info_subtitle}>학력</Text>
@@ -522,9 +400,9 @@ export default class Lawyer extends Component {
                     <View style={{borderLeftColor:"#9C9A9A", borderLeftWidth: 1.5, margin: "3%", paddingHorizontal:"5%"}}>
                                 {this.state.lawyer.Activities && this.state.lawyer.Activities.length ? this.state.lawyer.Activities.map((c, idx)=>{
                                     return(
-                                        <View style={{marginBottom:10}}>
+                                        <View style={{marginBottom:10}} key={idx}>
                                             <Text numberOfLines={1} style={styles.activity_text1}>{c.detail}</Text>
-                                        <View style={{flexDirection:"row"}}>
+                                            <View style={{flexDirection:"row"}}>
                                             <Text  numberOfLines={2} style={styles.activity_text2}>   {c.url}</Text>   
                                             <TouchableOpacity onPress={()=>this.activityDelete(c, idx)}>
                                                 <Text style={{color:colors.primary, fontFamily:"KPWDBold",alignSelf:"center", fontSize:11}}>삭제</Text>
@@ -575,9 +453,9 @@ export default class Lawyer extends Component {
         return(
             <ScrollView style={styles.body}>
 
-                {this.state.answers.length>0 ? this.state.answers.map((q)=>{
+                {this.state.answers.length>0 ? this.state.answers.map((q, idx)=>{
                     return(
-                        <View style={{marginHorizontal:"5%"}}>
+                        <View style={{marginHorizontal:"5%"}} key={idx}>
                             <TouchableOpacity onPress={()=>this.props.navigation.navigate('QaAnswer', {post:q})}>
                                 <View>
                                     <View style={styles.qa_detail_field}>
@@ -606,7 +484,7 @@ export default class Lawyer extends Component {
   
 
   render() {
-    if (!this.state.fontsLoaded) {
+    if (!this.state.fontsLoaded || Object.keys(this.state.lawyer).length === 0) {
       return <View />;
     }
 
@@ -615,7 +493,7 @@ export default class Lawyer extends Component {
         <Header2 {...this.props}/>
         <View >
             <ImageBackground style={styles.backgroundPic} source={{ uri: `${this.state.lawyer.User.photo}?random=${new Date()}` }}>
-        <Text style={styles.backgroundPicText}>{this.state.lawyer.introduction}</Text>
+                <Text style={styles.backgroundPicText}>{this.state.lawyer.introduction}</Text>
             </ImageBackground>
         </View>
         <View style={styles.fieldTab}>

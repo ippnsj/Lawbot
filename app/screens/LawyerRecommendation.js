@@ -157,40 +157,41 @@ export default class LawyerRecommendation extends Component {
 
   async moveDetailPage(id){
     // console.log("hi");
-    const ctx = this.context;
-    var newLawyer;
-    var newAnswers;
-    await fetch(`${ctx.API_URL}/lawyer/${id}`, {
-        method: "GET",
-        headers: {
-            'token': ctx.token,
-        },
-      }
-      ).then((result) => {
-        return result.json();
-      }).then((result) => {
-          // console.log("999999999999999");
-          // console.log(result);
-            newLawyer=result[0];
-            // console.log(newLawyer);
-    });
+  //   const ctx = this.context;
+  //   var newLawyer;
+  //   var newAnswers;
+  //   await fetch(`${ctx.API_URL}/lawyer/${id}`, {
+  //       method: "GET",
+  //       headers: {
+  //           'token': ctx.token,
+  //       },
+  //     }
+  //     ).then((result) => {
+  //       return result.json();
+  //     }).then((result) => {
+  //         // console.log("999999999999999");
+  //         // console.log(result);
+  //           newLawyer=result[0];
+  //           // console.log(newLawyer);
+  //   });
 
-   await fetch(`${ctx.API_URL}/lawyer/answer/${id}`, {
-    method: "GET",
-    headers: {
-        'token': ctx.token,
-    },
-    }).then((result) => {
-        return result.json();
-    }).then((result) => {
-        // console.log(result);
-        newAnswers=result;
-        // this.setState({ token: ctx.token, user: result });
-    });
+  //  await fetch(`${ctx.API_URL}/lawyer/answer/${id}`, {
+  //   method: "GET",
+  //   headers: {
+  //       'token': ctx.token,
+  //   },
+  //   }).then((result) => {
+  //       return result.json();
+  //   }).then((result) => {
+  //       // console.log(result);
+  //       newAnswers=result;
+  //       // this.setState({ token: ctx.token, user: result });
+  //   });
     // console.log("this is recommend");
     // console.log(newLawyer);
     // console.log(newAnswers);
-    this.props.navigation.navigate('Lawyer', {id: id, lawyer:newLawyer, answers: newAnswers});
+    // this.props.navigation.navigate('Lawyer', {id: id, lawyer:newLawyer, answers: newAnswers});
+    this.props.navigation.navigate('Lawyer', {id: id});
   }
 
 

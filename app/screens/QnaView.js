@@ -228,15 +228,13 @@ export default class QnaView extends Component {
                                 {this.state.answers.length !== undefined ? this.state.answers.map((ans, idx)=>{
                                     return(
                                         <View style={styles.answer} key={idx}>
-                                            <View style={styles.answer_lawyer}>
+                                            <TouchableOpacity style={styles.answer_lawyer} onPress={() => this.props.navigation.navigate("Lawyer", { id: ans.Lawyer_ID })}>
                                                 <Image style={styles.answer_lawyer_pic} source={{ uri: ans.Lawyer.User.photo }} />
                                                 <View style={{justifyContent: "center"}}>
                                                     <Text style={styles.answer_lawyer_name}>{ans.Lawyer.User.name}</Text>
                                                     <Text style={styles.answer_lawyer_team}>{ans.Lawyer.companyName}</Text>
-                                                </View>
-
-                                                
-                                            </View>
+                                                </View>    
+                                            </TouchableOpacity>
                                             <Text style={styles.answer_content}>{ans.content}</Text>
                                             <View style={styles.answer_footer}>
                                                 <Text style={styles.answer_footer_date}>{this.timeForToday(ans.writtenDate)}</Text>

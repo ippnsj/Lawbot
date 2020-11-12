@@ -286,22 +286,6 @@ export default class MyPage extends Component {
     this.setState({ introModVisible: false, introduction: this.state.user.introduction });
   }
 
-//   goToLawyerHome() {
-//     const ctx = this.context;
-//     const answers = {};
-
-//     fetch(`${ctx.API_URL}/lawyer/answer/${this.state.user.ID}`, {
-//         method: "GET",
-//         headers: {
-//             'token': ctx.token,
-//         },
-//         }).then((res) => {
-//             return res.json();
-//         }).then((res) => {
-//             answers = res;
-//     });
-//   }
-
   render() {
     if (!this.state.fontsLoaded) {
       return <View />;
@@ -613,7 +597,7 @@ export default class MyPage extends Component {
         <View style={styles.lawyerInfoCont}>
             <Text style={styles.lawyerTitle}>변호사님! 도와주세요.</Text>
             <Text style={styles.lawyerExplanation}>변호사 홈으로 이동하여{"\n"}도움이 필요한 분들을 도와주세요.</Text> 
-            <TouchableOpacity style={styles.lawyerButton} onPress={() => {}}>
+            <TouchableOpacity style={styles.lawyerButton} onPress={() => this.props.navigation.navigate("Lawyer", { id: this.state.user.ID })}>
                 <Text style={styles.lawyerButtonText}>변호사 홈페이지 가기</Text>
             </TouchableOpacity>
             {/* <TouchableOpacity style={styles.lawyerButton}>

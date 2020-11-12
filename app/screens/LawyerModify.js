@@ -32,17 +32,14 @@ import { DrawerContentScrollView } from "@react-navigation/drawer";
 
 
 const categories=[
-    "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방", "병역", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
+    "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방/병역", "학교", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
 ]
 
 const catImgList=[
     require("../assets/carAccident.png"), require("../assets/industrialAccident.png"), require("../assets/environment.png"),require("../assets/press.png"), require("../assets/intellectualProperty.png"),  require("../assets/medical.png"), require("../assets/construction.png"),require("../assets/government.png"), require("../assets/etc.png"), require("../assets/family.png"), require("../assets/divorce.png"), require("../assets/violence.png"), require("../assets/fraud.png"),require("../assets/sexualAssault.png"),  require("../assets/libel.png"), require("../assets/insult.png"), require("../assets/threat.png"), require("../assets/carAcci.png"), require("../assets/contract.png"), require("../assets/personalInformation.png"), require("../assets/inheritance.png"), require("../assets/burglary.png"),  require("../assets/trading.png"), require("../assets/labor.png"), require("../assets/debtCollection.png"), require("../assets/bankruptcy.png"), require("../assets/drug.png"), require("../assets/consumer.png"), require("../assets/millitary.png"), require("../assets/school.png"),require("../assets/housebreaking.png"),  require("../assets/service.png"), require("../assets/realEstate.png"), require("../assets/falseWitness.png"), require("../assets/falseAccusation.png"),require("../assets/juvenile.png"), require("../assets/lease.png"), require("../assets/loan.png"), require("../assets/online.png"), require("../assets/drunkDriving.png")
 ]
 
-
-
 const empty="     ";
-
 
 export default class LawyerModify extends Component {
     constructor(props) {
@@ -757,7 +754,7 @@ export default class LawyerModify extends Component {
                         <View style={{borderLeftColor:"#9C9A9A", borderLeftWidth: 1.5, margin: "3%", paddingHorizontal:"5%"}}>
                                 {this.state.lawyer.Careers && this.state.lawyer.Careers.length ? this.state.lawyer.Careers.map((c,idx)=>{
                                     return(
-                                        <View style={{flexDirection:"row"}}>
+                                        <View style={{flexDirection:"row"}} key={idx}>
                                             <Text style={styles.info_career_text1}>{c.startYear} ~ {c.endYear===null ? empty : c.endYear}</Text>
                                             <Text numberOfLines={1}  style={styles.info_career_text2}>  -  {c.detail}</Text>   
                                             <TouchableOpacity onPress={()=>this.careerDelete(c,idx)}>
@@ -792,7 +789,7 @@ export default class LawyerModify extends Component {
                         <View style={{borderLeftColor:"#9C9A9A", borderLeftWidth: 1.5, margin: "3%", paddingHorizontal:"5%"}}>
                                 {this.state.lawyer.Qualifications && this.state.lawyer.Qualifications.length ? this.state.lawyer.Qualifications.map((c, idx)=>{
                                     return(
-                                        <View style={{flexDirection:"row"}}>
+                                        <View style={{flexDirection:"row"}} key={idx}>
                                             <Text style={styles.info_career_text1}>{c.startYear} ~ {c.endYear===null ? empty : c.endYear}</Text>
                                             <Text numberOfLines={1}  style={styles.info_career_text2}>  -  {c.detail}</Text>   
                                             <TouchableOpacity onPress={()=>this.qualificationDelete(c, idx)}>
@@ -819,7 +816,7 @@ export default class LawyerModify extends Component {
                         <View style={{borderLeftColor:"#9C9A9A", borderLeftWidth: 1.5, margin: "3%", paddingHorizontal:"5%"}}>
                                 {this.state.lawyer.Education && this.state.lawyer.Education.length ? this.state.lawyer.Education.map((c, idx)=>{
                                     return(
-                                        <View style={{flexDirection:"row"}}>
+                                        <View style={{flexDirection:"row"}} key={idx}>
                                             <Text style={styles.info_career_text1}>{c.startYear} ~ {c.endYear===null ? empty : c.endYear}</Text>
                                             <Text numberOfLines={1} style={styles.info_career_text2}>  -  {c.detail}</Text>   
                                             <TouchableOpacity onPress={()=>this.eduDelete(c, idx)}>
@@ -852,14 +849,14 @@ export default class LawyerModify extends Component {
                         <View style={{borderLeftColor:"#9C9A9A", borderLeftWidth: 1.5, margin: "3%", paddingHorizontal:"5%"}}>
                                 {this.state.lawyer.Activities && this.state.lawyer.Activities.length ? this.state.lawyer.Activities.map((c, idx)=>{
                                     return(
-                                        <View style={{marginBottom:10}}>
+                                        <View style={{marginBottom:10}} key={idx}>
                                             <Text numberOfLines={1} style={styles.activity_text1}>{c.detail}</Text>
-                                        <View style={{flexDirection:"row"}}>
-                                            <Text  numberOfLines={2} style={styles.activity_text2}>   {c.url}</Text>   
-                                            <TouchableOpacity onPress={()=>this.activityDelete(c, idx)}>
-                                                <Text style={{color:colors.primary, fontFamily:"KPWDBold",alignSelf:"center", fontSize:11}}>삭제</Text>
-                                            </TouchableOpacity>
-                                        </View>
+                                            <View style={{flexDirection:"row"}}>
+                                                <Text  numberOfLines={2} style={styles.activity_text2}>   {c.url}</Text>   
+                                                <TouchableOpacity onPress={()=>this.activityDelete(c, idx)}>
+                                                    <Text style={{color:colors.primary, fontFamily:"KPWDBold",alignSelf:"center", fontSize:11}}>삭제</Text>
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
                                     )
                                 }) : <View>
