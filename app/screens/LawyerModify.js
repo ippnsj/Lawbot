@@ -18,10 +18,7 @@ import {
 import {vw, vh, vmin, vmax} from 'react-native-expo-viewport-units';
 import * as Font from "expo-font";
 import Constants from "expo-constants";
-import * as Permissions from "expo-permissions";
-import { Camera } from "expo-camera";
-import * as MediaLibrary from "expo-media-library";
-import * as ImageManipulator from "expo-image-manipulator";
+import {Picker} from '@react-native-community/picker';
 import { MyContext } from "../../context.js";
 
 import colors from "../config/colors";
@@ -31,9 +28,9 @@ import { DrawerContentScrollView } from "@react-navigation/drawer";
 
 
 
-const categories=[
-    "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방/병역", "학교", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
-]
+// const categories=[
+//     "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방/병역", "학교", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/청소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
+// ]
 
 const catImgList=[
     require("../assets/carAccident.png"), require("../assets/industrialAccident.png"), require("../assets/environment.png"),require("../assets/press.png"), require("../assets/intellectualProperty.png"),  require("../assets/medical.png"), require("../assets/construction.png"),require("../assets/government.png"), require("../assets/etc.png"), require("../assets/family.png"), require("../assets/divorce.png"), require("../assets/violence.png"), require("../assets/fraud.png"),require("../assets/sexualAssault.png"),  require("../assets/libel.png"), require("../assets/insult.png"), require("../assets/threat.png"), require("../assets/carAcci.png"), require("../assets/contract.png"), require("../assets/personalInformation.png"), require("../assets/inheritance.png"), require("../assets/burglary.png"),  require("../assets/trading.png"), require("../assets/labor.png"), require("../assets/debtCollection.png"), require("../assets/bankruptcy.png"), require("../assets/drug.png"), require("../assets/consumer.png"), require("../assets/millitary.png"), require("../assets/school.png"),require("../assets/housebreaking.png"),  require("../assets/service.png"), require("../assets/realEstate.png"), require("../assets/falseWitness.png"), require("../assets/falseAccusation.png"),require("../assets/juvenile.png"), require("../assets/lease.png"), require("../assets/loan.png"), require("../assets/online.png"), require("../assets/drunkDriving.png")
@@ -54,32 +51,36 @@ export default class LawyerModify extends Component {
           companyName:"",
           intro:"",
           address:"",
-            companyModify:false,
-            addressModify:false,
-            introModify:false,
-            qualificationAdd:false,
-            careerAdd:false,
-            eduAdd:false,
-            activityAdd:false,
-    
-            career:{
-                startYear:"",
-                endYear:"",
-                detail:"",
-            },
-            qualification:{
-                startYear:"",
-                endYear:"",
-                detail:"",
-            },
-            education:{
-                startYear:"",
-                endYear:"",
-                detail:"",
-            },
-            activity:{
-                url:"",
-                detail:"",            },
+        companyModify:false,
+        addressModify:false,
+        introModify:false,
+        qualificationAdd:false,
+        careerAdd:false,
+        eduAdd:false,
+        activityAdd:false,
+
+        career:{
+            startYear:"",
+            endYear:"",
+            detail:"",
+        },
+        qualification:{
+            startYear:"",
+            endYear:"",
+            detail:"",
+        },
+        education:{
+            startYear:"",
+            endYear:"",
+            detail:"",
+        },
+        activity:{
+            url:"",
+            detail:"",            
+        },
+        addField: false,
+        categoryID: 0,
+        categories: {},
         };
     }
 
@@ -98,20 +99,20 @@ export default class LawyerModify extends Component {
   };
 
   isFocused = () => {
-    this.setState({id: this.props.route.params.id, lawyer: this.props.route.params.lawyer });
+    this.setState({id: this.props.route.params.id, lawyer: this.props.route.params.lawyer, categories: this.props.route.params.categories });
 };
 
   componentDidMount() {
     this._loadFonts();
     this.props.navigation.addListener('focus', this.isFocused);
-    this.setState({id: this.props.route.params.id, lawyer: this.props.route.params.lawyer});
+    // this.setState({id: this.props.route.params.id, lawyer: this.props.route.params.lawyer});
   };
   componentWillUnmount() {
     this.props.navigation.removeListener('focus', this.isFocused);
   };
 
   overlayClose() {
-      this.setState({introModify:false, companyModify:false, qualificationAdd:false, addressModify:false, careerAdd: false, eduAdd:false})
+      this.setState({introModify:false, companyModify:false, qualificationAdd:false, addressModify:false, careerAdd: false, eduAdd:false, addField: false})
   };
 
     async handleTabs(which) {
@@ -187,13 +188,13 @@ export default class LawyerModify extends Component {
             if(result.success) {
                 console.log("succedd!!!!!!!!");
 
-                ToastAndroid.show("소개글 수정에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("소속법인 수정에 성공하였습니다!", ToastAndroid.SHORT);
                 const { lawyer } = this.state;
                 lawyer.companyName = this.state.companyName;
                 this.setState({ lawyer });
             }else {
                 console.log("failed!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                ToastAndroid.show("소개글 수정에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("소속법인 수정에 실패하였습니다...", ToastAndroid.SHORT);
             }
             // console.log(result);
             // this.setState({ token: ctx.token, user: result });
@@ -222,13 +223,13 @@ export default class LawyerModify extends Component {
             if(result.success) {
                 console.log("succedd!!!!!!!!");
 
-                ToastAndroid.show("소개글 수정에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("주소 수정에 성공하였습니다!", ToastAndroid.SHORT);
                 const { lawyer } = this.state;
                 lawyer.address1 = this.state.address;
                 this.setState({ lawyer });
             }else {
                 console.log("failed!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                ToastAndroid.show("소개글 수정에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("주소 수정에 실패하였습니다...", ToastAndroid.SHORT);
             }
             // console.log(result);
             // this.setState({ token: ctx.token, user: result });
@@ -258,6 +259,62 @@ export default class LawyerModify extends Component {
         console.log(newLawyer);
       }
 
+      async addFields() {
+        console.log(this.state.categoryID);
+        this.setState({addField:false})
+        const ctx = this.context;
+        let body = {};
+
+        body.Category_ID = this.state.categoryID;
+
+        await fetch(`${ctx.API_URL}/user/interests/lawyer`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "token": ctx.token
+            },
+            body: JSON.stringify(body),
+          }).then((res) => {
+            return res.json();
+          }).then((res) => {
+              if(res.success) {
+                const {lawyer}=this.state;
+                lawyer.LawyerFields.push({ "Category_ID": this.state.categoryID, "Lawyer_ID": this.state.lawyer.ID });
+                this.setState({lawyer})
+                ToastAndroid.show("주요분야 추가에 성공하였습니다!", ToastAndroid.SHORT);
+            }else {
+                ToastAndroid.show("주요분야 추가에 실패하였습니다...", ToastAndroid.SHORT);
+            }
+          });
+      }
+
+      async deleteFields(idx, categoryID) {
+        const ctx = this.context;
+        let body = {};
+
+        body.Category_ID = categoryID;
+
+        await fetch(`${ctx.API_URL}/user/interests/lawyer`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "token": ctx.token
+            },
+            body: JSON.stringify(body),
+          }).then((res) => {
+            return res.json();
+          }).then((res) => {
+              if(res.success) {
+                const {lawyer}=this.state;
+                lawyer.LawyerFields.splice(idx,1);
+                this.setState({lawyer})
+                ToastAndroid.show("주요분야 삭제에 성공하였습니다!", ToastAndroid.SHORT);
+            }else {
+                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
+                ToastAndroid.show("주요분야 삭제에 실패하였습니다...", ToastAndroid.SHORT);
+            }
+          });
+      }
 
       async careerOverlayClose() {
         this.setState({careerAdd:false})
@@ -293,10 +350,10 @@ export default class LawyerModify extends Component {
                 lawyer.Careers.push(this.state.career);
                 this.setState({lawyer})
                 console.log(this.state.lawyer)
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("경력 추가에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
                 console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("경력 추가에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -332,10 +389,10 @@ export default class LawyerModify extends Component {
                 const {lawyer}=this.state;
                 lawyer.Careers.splice(idx,1);
                 this.setState({lawyer})
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("경력 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
                 console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("경력 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -369,9 +426,9 @@ export default class LawyerModify extends Component {
                 const {lawyer}=this.state;
                 lawyer.Education.push(this.state.education);
                 this.setState({lawyer})
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("학력 추가에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("학력 추가에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -406,10 +463,10 @@ export default class LawyerModify extends Component {
                 const {lawyer}=this.state;
                 lawyer.Education.splice(idx,1);
                 this.setState({lawyer})
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("학력 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
                 console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("학력 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -449,10 +506,10 @@ export default class LawyerModify extends Component {
                 lawyer.Qualifications.push(this.state.qualification);
                 this.setState({lawyer})
                 console.log(this.state.lawyer)
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("자격 추가에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
                 console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("자격 추가에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -490,10 +547,10 @@ export default class LawyerModify extends Component {
                 lawyer.Qualifications.splice(idx,1);
                 this.setState({lawyer})
                 console.log(this.state.lawyer)
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("자격 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
                 console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("자격 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -609,9 +666,9 @@ export default class LawyerModify extends Component {
                 const {lawyer}=this.state;
                 lawyer.Activities.push(this.state.activity);
                 this.setState({lawyer})
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("활동사항 추가에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("활동사항 추가에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -645,10 +702,10 @@ export default class LawyerModify extends Component {
                 const {lawyer}=this.state;
                 lawyer.Activities.splice(idx,1);
                 this.setState({lawyer})
-                ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
+                ToastAndroid.show("활동사항 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
                 console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-                ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                ToastAndroid.show("활동사항 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
@@ -666,9 +723,9 @@ export default class LawyerModify extends Component {
             <Text style={{margin:"5%", fontFamily:"KPWDBold", fontSize:20, }}>변호사 정보 수정</Text> 
 
                 <View style={{marginHorizontal:"5%"}}>
-                    <TouchableOpacity onPress={()=>this.test()}>
+                    {/* <TouchableOpacity onPress={()=>this.test()}>
                         <Text>변화 확인</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={styles.info_subtitle}>기본 정보</Text>
                     <View style={{marginTop:"3%"}}>
                         <View style={{flexDirection:"row"}}>
@@ -703,19 +760,15 @@ export default class LawyerModify extends Component {
                 
                 <View style={styles.thinUnderline}/>
 
-                {/* <View style={{marginHorizontal:"5%"}}>
+                <View style={{marginHorizontal:"5%"}}>
                     <Text style={styles.info_subtitle}>주요분야</Text>
-                   
-
-
-
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{flexDirection: "row"}}>
                         {this.state.lawyer.LawyerFields && this.state.lawyer.LawyerFields.length ? this.state.lawyer.LawyerFields.map((f, idx)=> {
                             return(
-                                <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
+                                <View style={{alignItems: 'center', marginRight:40, marginTop: 10}} key={idx}>
                                     <Image style={styles.info_field_img} source={catImgList[f.Category_ID]}/>
-                                    <Text style={styles.info_field_text}>{categories[f.Category_ID]}</Text>
-                                    <TouchableOpacity onPress={()=>this.deleteFields()}>
+                                    <Text style={styles.info_field_text}>{this.state.categories[f.Category_ID].name}</Text>
+                                    <TouchableOpacity onPress={()=>this.deleteFields(idx, f.Category_ID)}>
                                         <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:11}} >삭제</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -724,24 +777,24 @@ export default class LawyerModify extends Component {
                     : 
                     <View>
                         <Text>전문 분야가 없습니다.</Text>
-                        <TouchableOpacity onPress={()=>this.addFields()}>
+                        <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
                             <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
-                                <Image style={styles.info_field_img} source={require("../assets/addIcon.png")}/>
+                                <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
                                 <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:14}}>추가</Text>
                             </View>
                         </TouchableOpacity>
                         </View>
                 }
-                        <TouchableOpacity onPress={()=>this.addFields()}>
+                        <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
                             <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
-                                <Image style={styles.info_field_img} source={require("../assets/addIcon.png")}/>
+                                <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
                                 <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:14}}>추가</Text>
                             </View>
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
 
-                <View style={styles.thinUnderline}/> */}
+                <View style={styles.thinUnderline}/>
 
 
                 <View style={{marginHorizontal:"5%"}}>
@@ -872,9 +925,9 @@ export default class LawyerModify extends Component {
                 </View>
                 <View style={styles.thinUnderline}/>
 
-                <View style={styles.moreButton}>
-                    <TouchableOpacity>
-                        <View style={{flexDirection: "row", marginBottom:"5%"}}>
+                <View style={[styles.moreButton, {marginBottom:"5%"}]}>
+                    <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+                        <View style={{flexDirection: "row"}}>
                             <Text style={styles.moreButton_text}>변호사 정보 수정 완료</Text>
                             <Image  source={require("../assets/lawyerMoreButton.png")} />
                         </View>
@@ -964,6 +1017,38 @@ export default class LawyerModify extends Component {
                                 </View>
                                 <View style={styles.modalButton}>
                                     <TouchableOpacity onPress={()=>this.addressOverlayClose()}>
+                                        <Text style={styles.modalText}>확인</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>                     
+                    </View>
+                </View>
+           </Modal>
+
+           {/* field modify */}
+           <Modal visible={this.state.addField} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
+                <View style={styles.fieldSelectModal}>
+                    <View style={styles.fieldSelectContainer}>
+                        <Text style={{fontFamily:"KPWDBold", fontSize:20, marginBottom:"5%"}}>주요분야 수정</Text>
+                        {/* <View style={styles.textInputContainer}> */}
+                        <Picker
+                            selectedValue={this.state.categoryID}
+                            style={{ width: 200 }}
+                            onValueChange={(itemValue, itemIndex) => this.setState({categoryID: itemIndex})}
+                        >
+                            {this.state.categories.map((cat, idx) => {
+                                return(<Picker.Item label={cat.name} value={idx} key={idx}/>)
+                            })}
+                        </Picker>
+                        {/* </View> */}
+                            <View style={{flexDirection:"row", marginTop:"10%", justifyContent:"space-between"}}>
+                                <View  style={styles.modalButton}>
+                                    <TouchableOpacity onPress={()=>this.overlayClose()}>
+                                        <Text style={styles.modalText}>취소</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.modalButton}>
+                                    <TouchableOpacity onPress={()=>this.addFields()}>
                                         <Text style={styles.modalText}>확인</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -1110,7 +1195,7 @@ export default class LawyerModify extends Component {
                         </View>
                         {/* <View style={styles.textInputContainer}> */}
                             <TextInput
-                                placeholder="학력 내용을 입력하세요."
+                                placeholder="자격 내용을 입력하세요."
                                 style={styles.textInputForId}
                                 onChangeText={(detail) => { const {qualification} =this.state; qualification.detail=detail; this.setState({qualification}); }}
                                 value={this.state.qualification.detail}

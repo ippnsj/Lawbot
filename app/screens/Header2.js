@@ -37,12 +37,12 @@ export default class Header2 extends Component {
           return (
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => {this.props.navigation.openDrawer()}}>
-                    <Image source={require("../assets/menu.png")} style={styles.menu} />
+                    <Image source={require("../assets/menuWhite.png")} style={styles.menu} />
                 </TouchableOpacity>
                 <Text style={styles.logoTitle} onPress={() => {this.props.navigation.navigate("Home")}} >LAWBOT</Text>
                 <TouchableOpacity onPress={() => {this.props.navigation.navigate("MyPage")}}>
                     <Image
-                        source={require("../assets/profile.png")}
+                        source={require("../assets/profileWhite.png")}
                         style={styles.profile}
                     />
                 </TouchableOpacity>
@@ -56,8 +56,8 @@ const styles=StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingLeft: "5%",
-        paddingRight: "5%",
+        paddingLeft: "3%",
+        paddingRight: "3%",
         minHeight: 50,
         backgroundColor: colors.primary,
         zIndex: 1,
@@ -68,11 +68,11 @@ const styles=StyleSheet.create({
         color: "white"
     },
     menu: {
-        width: 20,
-        height: 20,
+        width: 35,
+        height: 35,
     },
     profile: {
-        width: 20,
-        height: 20,
+        width: 30,
+        height: 30,
     },
 });

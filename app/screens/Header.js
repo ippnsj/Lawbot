@@ -56,8 +56,8 @@ const styles=StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingLeft: "5%",
-        paddingRight: "5%",
+        paddingLeft: "4%",
+        paddingRight: "4%",
         minHeight: 50,
         backgroundColor: "#fff",
         zIndex: 1,
@@ -67,11 +67,11 @@ const styles=StyleSheet.create({
         fontFamily: "SCDream8",
     },
     menu: {
-        width: 20,
-        height: 20,
+        width: 35,
+        height: 35,
     },
     profile: {
-        width: 20,
-        height: 20,
+        width: 22,
+        height: 22,
     },
 });

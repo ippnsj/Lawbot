@@ -793,10 +793,10 @@ const styles = StyleSheet.create({
     lawyerTitle: {
         fontFamily: "KPBBold",
         fontSize: 20,
-        marginTop: 30,
+        marginTop: 28,
     },
     lawyerExplanation: {
-        marginTop: 15,
+        marginTop: 12,
         width: 200,
         fontFamily: "KPBLight",
         fontSize: 12,
