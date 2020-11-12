@@ -112,24 +112,26 @@ export default class Board extends Component {
             let check = true;
             let checkList=[];
             for (let i=0; i < this.state.Contents.length; i++){
+                check = true;
                 for (let idx = 0; idx < res.length; idx++){
-                    if (this.state.Contents[i].Board_ID == res[idx].Board_ID){
+                    if (this.state.Contents[i].ID == res[idx].Board_ID){
                         checkList.push(true);
                         check = false;
                         break;
                     } 
                 }
+
                 if (check){
                     checkList.push(false);
                 }
             }
 
-            this.setState({favCheck:checkList}, () => {console.log(this.state.Contents);console.log(this.state.favCheck)})
+            this.setState({favCheck:checkList})
         })
     }
 
     async onAddFav (boardID, idx) {
-        const ctx = utils.context;
+        const ctx = this.context;
         let data = {Board_ID: boardID};
         
         if (this.state.favCheck[idx]){
@@ -171,7 +173,7 @@ export default class Board extends Component {
                 console.error(error);
             });
         }
-        this.setState({favCheck : [...this.state.favCheck.slice(0,idx), !this.state.favCheck[idx],...this.state.favCheck.slice(idx+1,this.state.favCheck.length-1)]})
+        this.setState(prevState => {favCheck : [...this.state.favCheck.slice(0,idx), !prevState.favCheck[idx],...this.state.favCheck.slice(idx+1,this.state.favCheck.length-1)]})
     }
     
     searchSwitch = () => {

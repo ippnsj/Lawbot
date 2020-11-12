@@ -4,7 +4,7 @@
     "slug": "Lawbot",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./app/assets/icon4.png",
+    "icon": "./app/assets/logo4.png",
     "splash": {
       "image": "./app/assets/splash.png",
       "resizeMode": "contain",
