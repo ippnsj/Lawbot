@@ -164,70 +164,6 @@ export default class Lawyer extends Component {
     return `${Math.floor(betweenTimeDay / 365)}년전`;
 }
 
-//    async getCategory() {
-//     const ctx = this.context;
-//     console.log("hi");
-//      fetch(`${ctx.API_URL}/qna/category`, {
-//         method: "GET",
-//         headers: {
-//             'token': ctx.token,
-//         },
-//     }
-//     ).then((result) => {
-//         return result.json();
-//     }).then((result) => {
-//         // console.log(result);
-//         fields=result;
-//         // this.setState({ token: ctx.token, user: result });
-//     });
-// };
-
-// async componentDidUpdate() {
-//     const ctx = this.context;
-//     if(this.props.route.params.id !== this.state.id) {
-//         this.getLawyerData();
-//     // this.getCategory();
-//     // this.setState({lawyer: this.props.route.params.lawyer, answers: this.props.route.params.answers});
-//   }
-// }
-
-//   async componentDidUpdate() {
-//     const ctx = this.context;
-//     if(this.state.token != ctx.token && ctx.token != '') {
-//       await fetch(`${ctx.API_URL}/lawyer/1`, {
-//         method: "GET",
-//         headers: {
-//             // 'Content-Type': 'multipart/form-data',
-//             // 'Accept': 'application/json',
-//             'token': ctx.token,
-//         },
-//       }).then((result) => {
-//         return result.json();
-//       }).then((result) => {
-//         this.setState({ token: ctx.token, lawyer: result[0] });
-//         console.log(this.state.lawyer.User.name)
-//       });
-//     }
-//   }
-
-
-    // getQA() {
-    //     const ctx = this.context;
-    //     console.log("hi");
-    //     fetch(`${ctx.API_URL}/lawyer/answer/1`, {
-    //         method: "GET",
-    //         headers: {
-    //             'token': ctx.token,
-    //         },
-    //     }
-    //     ).then((result) => {
-    //         return result.json();
-    //     }).then((result) => {
-    //         // console.log(result);
-    //         // this.setState({ token: ctx.token, user: result });
-    //     });
-    // }
-
     async handleTabs(which) {
         if (which==="home") {
             this.setState({home:true, info:false, qa: false})
@@ -245,10 +181,7 @@ export default class Lawyer extends Component {
 
     home() {
         return(
-            <ScrollView style={styles.body}>  
-            {/* {console.log("9034912380491238401830398")} */}
-            {/* {console.log(this.state.lawyer.LawyerFields[0].Category_ID)}  */}
-            {/* {console.log(this.state.lawyer['User']['birth'])} */}
+            <ScrollView style={styles.body}>
             {/* home info */}
             <View >
                 <View style={{alignItems:"center"}}>
@@ -497,7 +430,6 @@ export default class Lawyer extends Component {
                                         })}
                                         </View>
                                     <Text numberOfLines={2} style={styles.qa_detail_title}>{q.Question.title}</Text>
-                                    {/* {console.log(q.Question.writtenDate.substring(0,2))} */}
                                     <Text style={styles.qa_question_date}>{q.Question.writtenDate.substring(0,10)}</Text>                            
                                 </View>
                             </TouchableOpacity>

@@ -98,8 +98,8 @@ export default class SimilarCaseAnalysis extends Component {
     ).then((res) => {
       return res.json();
     }).then((res) => {
-      this.props.navigation.navigate('LawyerRecommendation', {list: res})
-      // console.log(res);
+      console.log(res);
+      this.props.navigation.navigate('LawyerRecommendation', { list: res, categories: this.state.categories })
     });
   }
 
@@ -270,7 +270,7 @@ export default class SimilarCaseAnalysis extends Component {
               </TouchableOpacity>
             </View>
           </View>
-          <Modal visible={this.state.tagSelectVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
+          <Modal visible={this.state.tagSelectVisible} onRequestClose={() => this.setState({ tagSelectVisible: false })} transparent={true} animationType={"fade"}>
                 <View style={styles.fieldSelectModal}>
                     <View style={styles.fieldSelectContainer}>
                         <View style={styles.fieldSelectHeader}>

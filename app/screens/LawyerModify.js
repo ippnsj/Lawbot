@@ -136,7 +136,6 @@ export default class LawyerModify extends Component {
         const body = {};
         body.introduction = this.state.intro; 
 
-        console.log("changing introduction");
         fetch(`${ctx.API_URL}/user/profile/lawyer/introduction`, {
             method: "PUT",
             body: JSON.stringify(body),
@@ -146,23 +145,16 @@ export default class LawyerModify extends Component {
             },
         }
         ).then((result) => {
-            console.log("wtfwtf!@#$1242341234123413")
-            // console.log(result.json())
             return result.json();
         }).then((result) => {
             if(result.success) {
-                console.log("succedd!!!!!!!!");
-
                 ToastAndroid.show("소개글 수정에 성공하였습니다!", ToastAndroid.SHORT);
                 const { lawyer } = this.state;
                 lawyer.introduction = this.state.intro;
                 this.setState({ lawyer });
             }else {
-                console.log("failed!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 ToastAndroid.show("소개글 수정에 실패하였습니다...", ToastAndroid.SHORT);
             }
-            // console.log(result);
-            // this.setState({ token: ctx.token, user: result });
         });
     }
 
@@ -172,7 +164,6 @@ export default class LawyerModify extends Component {
         const body = {};
         body.companyName = this.state.companyName; 
 
-        console.log("changing companyName");
         fetch(`${ctx.API_URL}/user/profile/lawyer/companyname`, {
             method: "PUT",
             body: JSON.stringify(body),
@@ -182,22 +173,16 @@ export default class LawyerModify extends Component {
             },
         }
         ).then((result) => {
-            console.log("wtfwtf!@#$1242341234123413")
             return result.json();
         }).then((result) => {
             if(result.success) {
-                console.log("succedd!!!!!!!!");
-
                 ToastAndroid.show("소속법인 수정에 성공하였습니다!", ToastAndroid.SHORT);
                 const { lawyer } = this.state;
                 lawyer.companyName = this.state.companyName;
                 this.setState({ lawyer });
             }else {
-                console.log("failed!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 ToastAndroid.show("소속법인 수정에 실패하였습니다...", ToastAndroid.SHORT);
             }
-            // console.log(result);
-            // this.setState({ token: ctx.token, user: result });
         });
     }
 
@@ -207,7 +192,6 @@ export default class LawyerModify extends Component {
         const body = {};
         body.address = this.state.address; 
 
-        console.log("changing address");
         fetch(`${ctx.API_URL}/user/profile/lawyer/address`, {
             method: "PUT",
             body: JSON.stringify(body),
@@ -217,50 +201,20 @@ export default class LawyerModify extends Component {
             },
         }
         ).then((result) => {
-            console.log("wtfwtf!@#$1242341234123413")
             return result.json();
         }).then((result) => {
             if(result.success) {
-                console.log("succedd!!!!!!!!");
-
                 ToastAndroid.show("주소 수정에 성공하였습니다!", ToastAndroid.SHORT);
                 const { lawyer } = this.state;
                 lawyer.address1 = this.state.address;
                 this.setState({ lawyer });
             }else {
-                console.log("failed!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 ToastAndroid.show("주소 수정에 실패하였습니다...", ToastAndroid.SHORT);
             }
-            // console.log(result);
-            // this.setState({ token: ctx.token, user: result });
         });
     }
 
-  
-
-      async test() {
-        console.log("hi");
-        const ctx = this.context;
-        var newLawyer;
-        await fetch(`${ctx.API_URL}/lawyer/${this.state.id}`, {
-            method: "GET",
-            headers: {
-                'token': ctx.token,
-            },
-          }
-          ).then((result) => {
-            return result.json();
-          }).then((result) => {
-              // console.log("999999999999999");
-              // console.log(result);
-                newLawyer=result[0];
-                // console.log(newLawyer);
-        });
-        console.log(newLawyer);
-      }
-
       async addFields() {
-        console.log(this.state.categoryID);
         this.setState({addField:false})
         const ctx = this.context;
         let body = {};
@@ -310,7 +264,6 @@ export default class LawyerModify extends Component {
                 this.setState({lawyer})
                 ToastAndroid.show("주요분야 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
                 ToastAndroid.show("주요분야 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
@@ -323,14 +276,11 @@ export default class LawyerModify extends Component {
           endYear: "",
           startYear:"",
           detail:"",
-        //   Lawyer_ID:this.state.lawyer.ID,
         };
 
         body.endYear=this.state.career.endYear;
         body.startYear=this.state.career.startYear;
         body.detail=this.state.career.detail;
-        console.log("22222222222222222222")
-        // console.log(body)
 
         await fetch(`${ctx.API_URL}/user/profile/lawyer/career`, {
             method: "POST",
@@ -343,16 +293,12 @@ export default class LawyerModify extends Component {
           }).then((res) => {
             return res.json();
           }).then((res) => {
-              console.log("89888888888888888888888")
               if(res.success) {
-                console.log("답변 등록 성공~~~~~~~~")
                 const {lawyer}=this.state;
                 lawyer.Careers.push(this.state.career);
                 this.setState({lawyer})
-                console.log(this.state.lawyer)
                 ToastAndroid.show("경력 추가에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
                 ToastAndroid.show("경력 추가에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
@@ -365,19 +311,15 @@ export default class LawyerModify extends Component {
           endYear: "",
           startYear:"",
           detail:"",
-        //   Lawyer_ID:this.state.lawyer.ID,
         };
 
         body.endYear=target.endYear;
         body.startYear=target.startYear;
         body.detail=target.detail;
-        console.log("22222222222222222222")
-        // console.log(body)
 
         await fetch(`${ctx.API_URL}/user/profile/lawyer/career`, {
             method: "DELETE",
             headers: {
-            //   "Accept": "application/json",
               "Content-Type": "application/json",
               "token": ctx.token
             },
@@ -391,7 +333,6 @@ export default class LawyerModify extends Component {
                 this.setState({lawyer})
                 ToastAndroid.show("경력 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
                 ToastAndroid.show("경력 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
@@ -440,18 +381,15 @@ export default class LawyerModify extends Component {
           endYear: "",
           startYear:"",
           detail:"",
-        //   Lawyer_ID:this.state.lawyer.ID,
         };
 
         body.endYear=target.endYear;
         body.startYear=target.startYear;
         body.detail=target.detail;
-        // console.log(body)
 
         await fetch(`${ctx.API_URL}/user/profile/lawyer/education`, {
             method: "DELETE",
             headers: {
-            //   "Accept": "application/json",
               "Content-Type": "application/json",
               "token": ctx.token
             },
@@ -465,7 +403,6 @@ export default class LawyerModify extends Component {
                 this.setState({lawyer})
                 ToastAndroid.show("학력 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
                 ToastAndroid.show("학력 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
@@ -485,8 +422,6 @@ export default class LawyerModify extends Component {
         body.endYear=this.state.qualification.endYear;
         body.startYear=this.state.qualification.startYear;
         body.detail=this.state.qualification.detail;
-        console.log("22222222222222222222")
-        // console.log(body)
 
         await fetch(`${ctx.API_URL}/user/profile/lawyer/qualification`, {
             method: "POST",
@@ -499,16 +434,12 @@ export default class LawyerModify extends Component {
           }).then((res) => {
             return res.json();
           }).then((res) => {
-              console.log("89888888888888888888888")
               if(res.success) {
-                console.log("답변 등록 성공~~~~~~~~")
                 const {lawyer}=this.state;
                 lawyer.Qualifications.push(this.state.qualification);
                 this.setState({lawyer})
-                console.log(this.state.lawyer)
                 ToastAndroid.show("자격 추가에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
                 ToastAndroid.show("자격 추가에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
@@ -527,13 +458,10 @@ export default class LawyerModify extends Component {
         body.endYear=target.endYear;
         body.startYear=target.startYear;
         body.detail=target.detail;
-        console.log("22222222222222222222")
-        // console.log(body)
 
         await fetch(`${ctx.API_URL}/user/profile/lawyer/qualification`, {
             method: "DELETE",
             headers: {
-            //   "Accept": "application/json",
               "Content-Type": "application/json",
               "token": ctx.token
             },
@@ -542,114 +470,26 @@ export default class LawyerModify extends Component {
             return res.json();
           }).then((res) => {
               if(res.success) {
-                console.log("삭제 성공~~~~~~~~")
                 const {lawyer}=this.state;
                 lawyer.Qualifications.splice(idx,1);
                 this.setState({lawyer})
-                console.log(this.state.lawyer)
                 ToastAndroid.show("자격 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
                 ToastAndroid.show("자격 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
       }
 
-    //   async activityOverlayClose() {
-    //     this.setState({activityAdd:false})
-    //     const ctx = this.context;
-    //     let body = {
-    //       endYear: "",
-    //       startYear:"",
-    //       detail:"",
-    //     //   Lawyer_ID:this.state.lawyer.ID,
-    //     };
-
-    //     body.endYear=this.state.activity.endYear;
-    //     body.startYear=this.state.activity.startYear;
-    //     body.detail=this.state.activity.detail;
-    //     console.log("22222222222222222222")
-    //     // console.log(body)
-
-    //     await fetch(`${ctx.API_URL}/user/profile/lawyer/activity`, {
-    //         method: "POST",
-    //         headers: {
-    //           "Accept": "application/json",
-    //           "Content-Type": "application/json",
-    //           "token": ctx.token
-    //         },
-    //         body: JSON.stringify(body),
-    //       }).then((res) => {
-    //         return res.json();
-    //       }).then((res) => {
-    //           console.log("89888888888888888888888")
-    //           if(res.success) {
-    //             console.log("답변 등록 성공~~~~~~~~")
-    //             const {lawyer}=this.state;
-    //             lawyer.Activities.push(this.state.activity);
-    //             this.setState({lawyer})
-    //             console.log(this.state.lawyer)
-    //             ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
-    //         }else {
-    //             console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-    //             ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
-    //         }
-    //       });
-    //   }
-
-    //   async activityDelete(target, idx) {
-    //     // this.setState({careerAdd:false})
-    //     const ctx = this.context;
-    //     let body = {
-    //       endYear: "",
-    //       startYear:"",
-    //       detail:"",
-    //     //   Lawyer_ID:this.state.lawyer.ID,
-    //     };
-
-    //     body.endYear=target.endYear;
-    //     body.startYear=target.startYear;
-    //     body.detail=target.detail;
-    //     console.log("22222222222222222222")
-    //     // console.log(body)
-
-    //     await fetch(`${ctx.API_URL}/user/profile/lawyer/activity`, {
-    //         method: "DELETE",
-    //         headers: {
-    //         //   "Accept": "application/json",
-    //           "Content-Type": "application/json",
-    //           "token": ctx.token
-    //         },
-    //         body: JSON.stringify(body),
-    //       }).then((res) => {
-    //         return res.json();
-    //       }).then((res) => {
-    //           if(res.success) {
-    //             console.log("삭제 성공~~~~~~~~")
-    //             const {lawyer}=this.state;
-    //             lawyer.Activities.splice(idx,1);
-    //             this.setState({lawyer})
-    //             console.log(this.state.lawyer)
-    //             ToastAndroid.show("답변 등록에 성공하였습니다!", ToastAndroid.SHORT);
-    //         }else {
-    //             console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
-    //             ToastAndroid.show("답변 등록에 실패하였습니다...", ToastAndroid.SHORT);
-    //         }
-    //       });
-    //   }
     async activityOverlayClose() {
         this.setState({activityAdd:false})
         const ctx = this.context;
         let body = {
           url:"",
           detail:"",
-        //   Lawyer_ID:this.state.lawyer.ID,
         };
 
         body.url=this.state.activity.url;
         body.detail=this.state.activity.detail;
-        console.log("22222222222222222222")
-        // console.log(body)
 
         await fetch(`${ctx.API_URL}/user/profile/lawyer/activity`, {
             method: "POST",
@@ -674,23 +514,18 @@ export default class LawyerModify extends Component {
       }
 
       async activityDelete(target, idx) {
-        // this.setState({careerAdd:false})
         const ctx = this.context;
         let body = {
           url:"",
           detail:"",
-        //   Lawyer_ID:this.state.lawyer.ID,
         };
 
         body.url=target.url;
         body.detail=target.detail;
-        console.log("22222222222222222222")
-        // console.log(body)
 
         await fetch(`${ctx.API_URL}/user/profile/lawyer/activity`, {
             method: "DELETE",
             headers: {
-            //   "Accept": "application/json",
               "Content-Type": "application/json",
               "token": ctx.token
             },
@@ -704,7 +539,6 @@ export default class LawyerModify extends Component {
                 this.setState({lawyer})
                 ToastAndroid.show("활동사항 삭제에 성공하였습니다!", ToastAndroid.SHORT);
             }else {
-                console.log("실패!!!!!!!!!!!!!!!!!!!!!!!!")
                 ToastAndroid.show("활동사항 삭제에 실패하였습니다...", ToastAndroid.SHORT);
             }
           });
@@ -723,9 +557,6 @@ export default class LawyerModify extends Component {
             <Text style={{margin:"5%", fontFamily:"KPWDBold", fontSize:20, }}>변호사 정보 수정</Text> 
 
                 <View style={{marginHorizontal:"5%"}}>
-                    {/* <TouchableOpacity onPress={()=>this.test()}>
-                        <Text>변화 확인</Text>
-                    </TouchableOpacity> */}
                     <Text style={styles.info_subtitle}>기본 정보</Text>
                     <View style={{marginTop:"3%"}}>
                         <View style={{flexDirection:"row"}}>
