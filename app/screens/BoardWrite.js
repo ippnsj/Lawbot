@@ -130,7 +130,7 @@ export default class BoardWrite extends Component {
                         <Picker.Item label="자유 게시판" value={3} />
                     </Picker>
                 </View>
-                    <TouchableOpacity style={styles.Button}  onPress={() => {console.log(this.state.BoardCategory); this.createArticle()}}>
+                    <TouchableOpacity style={styles.Button}  onPress={this.createArticle}>
                         <Text style={styles.ButtonText}>글 등록하기</Text>
                     </TouchableOpacity>
             </KeyboardAvoidingView>

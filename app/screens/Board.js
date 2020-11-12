@@ -108,7 +108,7 @@ export default class Board extends Component {
             return res.json();
         }).then((res) =>{
             if (res.length == 0){
-                console.log("no fav");
+                console.error("no favorite Post");
                 return;
             }
             let check = true;
@@ -177,7 +177,6 @@ export default class Board extends Component {
                 console.error(error);
             });
         }
-        // console.log(this.state.favCheck);
     }
     
     searchSwitch = () => {
@@ -194,7 +193,6 @@ export default class Board extends Component {
             var body = {};
             body.kind = this.state.searchCategory;
             body.content = this.state.search;
-            console.log(body);
             
             await fetch(`${ctx.API_URL}/boards/posts/search`, {
                 method: "POST",
@@ -208,7 +206,6 @@ export default class Board extends Component {
             .then((res) => {
                 return res.json();
             }).then((res) => {
-                console.log(res);
                 this.setState({Contents: res})
             }).catch((error) =>{
                 console.error(error);

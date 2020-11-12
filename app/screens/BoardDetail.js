@@ -167,19 +167,19 @@ export default class BoardDetail extends Component {
                             <View style={styles.body}>
                                 <View style={styles.writerInfo}>
                                     <View style={styles.writerProfile}>
-                                        {/* <Image source={{ uri: this.state.Content.User.photo} } style={styles.writerImage} /> */}
+                                        <Image source={{ uri: this.state.Content.User.photo} } style={styles.writerImage} />
                                     </View>
                                     <View style={styles.writerInfoDetail}>
-                                        {/* <Text style={styles.writerID}> {this.state.Content.User.userID} </Text> */}
-                                        {/* <Text style={styles.writtenDate}> {utils.dateAgo(this.state.Content.writtenDate)} </Text> */}
+                                        <Text style={styles.writerID}> {this.state.Content.User.userID} </Text>
+                                        <Text style={styles.writtenDate}> {utils.dateAgo(this.state.Content.writtenDate)} </Text>
                                     </View>
                                 </View>
                             </View>
                             <View style={styles.underLine} />
                             <View style={styles.body}>
                                 <View style={styles.content}>
-                                    {/* <Text style={styles.contentTitle}>{this.state.Content.title}</Text> */}
-                                    {/* <Text style={styles.contentBody}>{this.state.Content.content}</Text> */}
+                                    <Text style={styles.contentTitle}>{this.state.Content.title}</Text>
+                                    <Text style={styles.contentBody}>{this.state.Content.content}</Text>
                                 </View>
                                 <View style={styles.contentInfo}>
                                     <View style={styles.leftContentInfo}>

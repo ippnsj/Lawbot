@@ -105,7 +105,6 @@ export default class Home extends Component {
         }).then((data) => {
             return data.json();
         }).then((result) => {
-            console.log(result.length);
             let join1 = [];
             let join2 = [];
             let join3 = [];
