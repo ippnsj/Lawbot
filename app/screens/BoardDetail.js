@@ -23,7 +23,7 @@ import { TextInput } from "react-native-gesture-handler";
 export default class BoardDetail extends Component {
     state = {
         Content: {},
-        replies: [{text:0}, {text:2}, {text:0}, {text:2}],
+        replies: [], 
     };
 
     async _loadFonts() {
@@ -112,22 +112,17 @@ export default class BoardDetail extends Component {
                 <View style={[styles.underLine]} />
                 <View style={styles.body}>
                     <ScrollView showsVerticalScrollIndicator={true} style={styles.replies}>
-                        {this.state.replies.map((reply, idx) => {
-                            return(
-                                <View style={styles.reply} key={idx}>
-                                    <View style={styles.replyID}>
-                                        <Text style={styles.replyID}>{reply.User_ID}</Text>
-
+                        <View>
+                            {this.state.replies.map((reply, idx) => {
+                                return(
+                                    <View style={styles.reply} key={idx}>
+                                        <Text style={styles.replyID}> {utils.nameHide(reply.User.userID)} </Text>
+                                        <Text style={styles.replybody}> {reply.content} </Text>
+                                        <View style={styles.underLine} />
                                     </View>
-                                    <View style={styles.replybody}>
-                                        <Text style={styles.replybody}>{reply.content}</Text>
-
-                                    </View>
-                                    <View style={styles.underLine}></View>
-                                </View>
-                            )
-                        })
-                        }
+                                ); 
+                            })}
+                        </View>
                     </ScrollView>
                     <TextInput style={styles.writeReply}
 
@@ -250,11 +245,14 @@ const styles=StyleSheet.create({
         marginBottom: 10,
     },
     replyID: {
+        color: "#EDEDED",
        marginTop: 10,
        marginBottom: 10,
     },
     replybody: {
         marginBottom: 20,
+        fontFamily: "KPWDMedium",
+        fontSize: 16,
     },
     replyIDText: {
         fontFamily: "KPWDBold",

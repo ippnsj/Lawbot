@@ -180,17 +180,13 @@ export default class Board extends Component {
                                 />
                             }
                         </View>
-                        {/* <View style={styles.boardHead}>
-                            <Text style={styles.boardTitle}>{this.state.BoardName}</Text>
-                                <Image source={require("../assets/search.png")} style={styles.search} />
-                        </View> */}
                     </View>
                 </View>
                 <ScrollView style={styles.boardContents}>
                     {this.state.Contents.map((content, idx) => {
                         return(
                             <View style={styles.content} key={idx}>
-                                <TouchableOpacity key={idx} onPress={() => this.contentDetail(content)}>
+                                <TouchableOpacity onPress={() => this.contentDetail(content)}>
                                     <Text style={styles.contentTitle}>{content.title} </Text>
                                     <Text style={styles.contentBody}> {content.content} </Text>
                                 </TouchableOpacity>
@@ -198,16 +194,12 @@ export default class Board extends Component {
                                     <View style={styles.writerInfo}>
                                         <Text style={styles.writeDate}> {utils.dateAgo(content.writtenDate)} </Text>
                                         <Text style={styles.writer}> {utils.nameHide(content.User.userID)} </Text>
-                                        <Image source={{ uri: content.User.photo} } />
                                     </View>
-                                    <TouchableOpacity onPress={() => {utils.onAddFav(content.ID)}}>
-                                        <View style={styles.viewInfo}>
-                                            <Image source={require("../assets/scrap.png")} style={styles.viewImage} />
-                                            <Text style={styles.viewNumber}> {content.views} </Text>
-                                        </View>
+                                    <TouchableOpacity style={styles.scrapViewInfo} onPress={() => {utils.onAddFav(content.ID)}}>
+                                        <Image source={require("../assets/scrap.png")} style={styles.scrapImage} />
+                                        <Text style={styles.viewNumber}> {content.views} </Text>
                                     </TouchableOpacity>
                                 </View>
-
                                 <View style={styles.thinUnderline}></View>
                             </View>
                         )
@@ -261,8 +253,8 @@ const styles=StyleSheet.create({
     },
     boardContents: {
         overflow: "scroll",
-        paddingLeft: "10%",
-        paddingRight: "10%",
+        paddingLeft: "5%",
+        paddingRight: "5%",
     },
     content: {
         paddingLeft: "3%",
@@ -271,37 +263,33 @@ const styles=StyleSheet.create({
     },
     contentBody: {
         fontFamily: "KPWDMedium",
-        fontSize: 10,
+        fontSize: 12,
         color: "#BCBCBC",
         overflow: "hidden",
         height: 48,
         marginBottom: 5,
-        
     },
     contentInfo: {
-        flex: 5,
         flexDirection: "row",
         justifyContent: "space-between",
     },
     writerInfo: {
         flexDirection: "row",
     },
-    viewInfo: {
+    scrapViewInfo: {
         flexDirection: "row",
     },
     writeDate: {
-        flex: 1,
         fontFamily: "SCDream8",
         fontSize: 12,
         color: "#EDEDED",
     },
     writer: {
-        // flex: 3,
         fontFamily: "SCDream8",
         fontSize: 12,
         color: "#EDEDED",
     },
-    viewImage: {
+    scrapImage: {
         width: 15,
         height: 15,
         opacity: 0.8,
