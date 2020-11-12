@@ -13,7 +13,7 @@ import * as Font from "expo-font";
 import { MyContext } from "../../context.js";
 import Constants from "expo-constants";
 import utils from "./Utils.js";
-import {StyleOverride} from "./Utils.js";
+import {Picker} from '@react-native-community/picker';
 
 import colors from "../config/colors";
 import Header from "./Header.js";
@@ -29,6 +29,8 @@ export default class Board extends Component {
         Contents: [],
         isSearching: false,
         favCheck: [],
+        search: "",
+        searchCategory: "제목",
     };
 
     async _loadFonts() {
@@ -148,6 +150,7 @@ export default class Board extends Component {
             })
             .then((res)=>{
                 ToastAndroid.show("즐겨찾기 취소했습니다.", ToastAndroid.SHORT);
+                this.getFavPost();
             })
             .catch((error) => {
                 ToastAndroid.show("즐겨찾기 취소에 실패하였습니다...", ToastAndroid.SHORT);
@@ -167,59 +170,54 @@ export default class Board extends Component {
             })
             .then((res)=>{
                 ToastAndroid.show("즐겨찾기에 등록했습니다.", ToastAndroid.SHORT);
+                this.getFavPost();
             })
             .catch((error) => {
                 ToastAndroid.show("즐겨찾기 등록에 실패하였습니다...", ToastAndroid.SHORT);
                 console.error(error);
             });
         }
-        this.setState(prevState => {favCheck : [...this.state.favCheck.slice(0,idx), !prevState.favCheck[idx],...this.state.favCheck.slice(idx+1,this.state.favCheck.length-1)]})
+        // console.log(this.state.favCheck);
     }
     
     searchSwitch = () => {
-        this.setState(prevState => ({isSearching: !prevState.isSearching}), () =>{ToastAndroid.show("Searching " +  `${this.state.isSearching}` , ToastAndroid.SHORT)});
+        this.setState(prevState => ({isSearching: !prevState.isSearching}), () =>{});
     }
 
+    // POST	/boards/question/search	검색 기능을 제공하는 api입니다.	{ kind : string , content : string }
+    
     async searchBoard() {
         if(this.state.serach == "") {
             Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
         }else {
             const ctx = this.context;
             var body = {};
-            body.category = this.state.category;
-            // this.props.route.params.category = "";
-            // if(this.state.qnaKind === "키워드") {
-            //     body.content = -1;
-            //     for(var i = 0; i < this.state.categories.length; i++) {
-            //         if(this.state.categories[i].name === this.state.qna) {
-            //             body.content = this.state.categories[i].ID;
-            //             this.props.route.params.category = "#"+this.state.categories[i].name;
-            //             break;
-            //         }
-            //     }
-            // }else {
-            //     body.content = this.state.search;
-            // }
-
-            // await fetch(`${ctx.API_URL}/qna/question/search`, {
-            //     method: "POST",
-            //     headers: {
-            //         "Accept": "application/json",
-            //         "Content-Type": "application/json",
-            //         "token": ctx.token
-            //     },
-            //     body: JSON.stringify(body),
-            // })
-            // .then((res) => {
-            //     return res.json();
-            // }).then((res) => {
-            //     this.searchAgain(res.posts);
-            // })
+            body.kind = this.state.searchCategory;
+            body.content = this.state.search;
+            console.log(body);
+            
+            await fetch(`${ctx.API_URL}/boards/posts/search`, {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "token": ctx.token
+                },
+                body: JSON.stringify(body),
+            })
+            .then((res) => {
+                return res.json();
+            }).then((res) => {
+                console.log(res);
+                this.setState({Contents: res})
+            }).catch((error) =>{
+                console.error(error);
+            })
         }
     }
 
-    async contentDetail(content) {
-        this.props.navigation.navigate("BoardDetail", {post: content});
+    async contentDetail(content, idx) {
+        this.props.navigation.navigate("BoardDetail", {post: content, fav:this.state.favCheck[idx]});
     }
 
     render() {
@@ -239,35 +237,48 @@ export default class Board extends Component {
                 <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('BoardWrite', {category: this.state.category})} >                       
                         <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
                 </TouchableOpacity>
-                <View style={styles.body}>
-                    <View style={styles.board}>
-                        <View style={boardHead}>
-                            { !this.state.isSearching &&
+                <View style={styles.board}>
+                    <View style={styles.boardHeader}>
+                        { !this.state.isSearching ?
+                            <View style={{flexDirection:"row", justifyContent:"space-between", alignItems:"center"}}>
                                 <Text style={styles.boardTitle}>{this.state.BoardName}</Text> 
-                            }
-                            <TouchableOpacity onPress={() => {this.searchSwitch()}}>
-                                <Image source={require("../assets/search.png")} style={styles.search} />
-                            </TouchableOpacity>
-                            
-                            { this.state.isSearching &&
-                                <TextInput 
-                                placeholder="검색어를 입럭하세요"
-                                style={styles.textInput}
-                                value={this.state.search}
-                                onChangeText={(search) => this.setState({ search })}
-                                onSubmitEditing={() => {this.searchBoard()}}
-                                returnKeyType="search"
-                                style={{left:10,}}
-                                />
-                            }
-                        </View>
+                                <TouchableOpacity onPress={() => {this.searchSwitch()}}>
+                                    <Image source={require("../assets/search.png")} style={styles.search} />
+                                </TouchableOpacity>
+                            </View> :
+                            <View style= {{flexDirection:"row", alignItems: "center"}}>
+                                <TouchableOpacity style={{flex:1}} onPress={() => {this.searchSwitch()}}>
+                                    <Image source={require("../assets/search.png")} style={styles.search} />
+                                </TouchableOpacity>
+                                <View style={{flexDirection:"row", flex:5, justifyContent:"space-between"}}>
+                                    <TextInput 
+                                    placeholder="검색어를 입럭하세요"
+                                    style={[styles.textInput, {left: 10, paddingRight:10, borderWidth:3, borderRadius:5, borderStyle:"solid", borderColor: '#ffffff'}]}
+                                    value={this.state.search}
+                                    onChangeText={(search) => this.setState({ search })}
+                                    onSubmitEditing={() => {this.searchBoard()}}
+                                    returnKeyType="search"
+                                    onBlur={e => {this.searchBoard()}}
+                                    />
+                                    <Picker
+                                    mode='dropdown'
+                                    selectedValue={this.state.searchCategory}
+                                    style={{width:100}}
+                                    onValueChange={(itemValue, itemIndex) => this.setState({searchCategory: itemValue}, ()=>this.searchBoard())}>
+                                        <Picker.Item label="제목" value={"제목"} />
+                                        <Picker.Item label="내용" value={"내용"} />
+                                    </Picker>
+                                </View>
+
+                            </View>
+                        }
                     </View>
                 </View>
                 <ScrollView style={styles.boardContents}>
                     {this.state.Contents.map((content, idx) => {
                         return(
                             <View style={styles.content} key={idx}>
-                                <TouchableOpacity onPress={() => this.contentDetail(content)}>
+                                <TouchableOpacity onPress={() => this.contentDetail(content ,idx)}>
                                     <Text style={styles.contentTitle}>{content.title} </Text>
                                     <Text style={styles.contentBody}> {content.content} </Text>
                                 </TouchableOpacity>
@@ -277,20 +288,16 @@ export default class Board extends Component {
                                         <Text style={styles.writer}> {utils.nameHide(content.User.userID)} </Text>
                                     </View>
                                     {
-                                        !this.state.favCheck[idx] ? 
-                                        <TouchableOpacity style={styles.scrapViewInfo} onPress={()=>this.onAddFav(content.ID, idx)}>
-                                            <Image source={require("../assets/graystar.png")} style={styles.scrapImage} />
-                                            <Text style={styles.viewNumber}> {content.views} </Text>
-                                        </TouchableOpacity> :
+                                        this.state.favCheck[idx] ? 
                                         <TouchableOpacity style={styles.scrapViewInfo} onPress={()=>this.onAddFav(content.ID, idx)}>
                                             <Image source={require("../assets/yellowStar.png")} style={styles.scrapImage} />
                                             <Text style={styles.viewNumber}> {content.views} </Text>
-                                        </TouchableOpacity>
+                                        </TouchableOpacity> :
+                                        <TouchableOpacity style={styles.scrapViewInfo} onPress={()=>this.onAddFav(content.ID, idx)}>
+                                            <Image source={require("../assets/graystar.png")} style={styles.scrapImage} />
+                                            <Text style={styles.viewNumber}> {content.views} </Text>
+                                        </TouchableOpacity> 
                                     }
-                                    {/* <TouchableOpacity style={styles.scrapViewInfo} onPress={() => {this.onAddFav(content.ID, idx)}}>
-                                        <Image source={require("../assets/scrap.png")} style={styles.scrapImage} />
-                                        <Text style={styles.viewNumber}> {content.views} </Text>
-                                    </TouchableOpacity> */}
                                 </View>
                                 <View style={styles.thinUnderline}></View>
                             </View>
@@ -314,18 +321,15 @@ const styles=StyleSheet.create({
         backgroundColor: "#fff",
     },
     board: {
-        paddingLeft: "5%",
-        paddingRight: "5%",
+        paddingLeft: "7%",
+        paddingRight: "7%",
         paddingTop: "10%",
     },
-    boardHead: {
-        flexDirection:"row",
-        marginBottom: "10%",
-        justifyContent: "space-between",
-        marginBottom: 20,
+    boardHeader: {
+        marginBottom: 40,
         height: 30,
     },
-    boardHeadSearching: {
+    boardHeaderSearching: {
         flexDirection:"row",
         marginBottom: "10%",
         marginBottom: 20,
@@ -415,7 +419,7 @@ const styles=StyleSheet.create({
         fontFamily: "KPWDBold",
         fontWeight: "400",
         color: "#8D8D8D",
-        width: 180,
+        // width: 180,
     },
     starImage: {
         width: 30,

@@ -9,6 +9,8 @@ import {
   ToastAndroid,
   
   ScrollView,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import * as Font from "expo-font";
 import { MyContext } from "../../context.js";
@@ -21,12 +23,12 @@ import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { documentDirectory } from "expo-file-system";
 import { TextInput } from "react-native-gesture-handler";
 
-
 export default class BoardDetail extends Component {
     state = {
         Content: {},
         replies: [], 
         favCheck: false,
+        search: "",
     };
 
     async _loadFonts() {
@@ -43,7 +45,9 @@ export default class BoardDetail extends Component {
     }
 
     isFocused = () => {
-        this.setState({Content : this.props.route.params.post}, () => {this.getFavPost()})
+        this.setState({Content : this.props.route.params.post})
+        this.setState({favCheck : this.props.route.params.fav})
+        this.setState({search: ""})
         this.getReplies();
     }
     
@@ -74,36 +78,11 @@ export default class BoardDetail extends Component {
         });
     }
 
-    async getFavPost () {
-        const ctx = this.context;
-        
-        fetch(`${ctx.API_URL}/user/favpost`, {
-            method: "GET",
-            headers: {
-                "token": ctx.token
-            },
-        })
-        .then((res) => {
-            return res.json();
-        }).then((res) =>{
-            // console.log(res);
-            // console.log(this.state.Contents.length)
-            if (res.length == 0){
-                console.log("no fav");
-                return;
-            }
-            for (let i=0; i < res.length; i++){
-                if (this.state.Content.Board_ID === res[i].Board_ID){
-                    this.setState({favCheck : true});
-                } 
-            }
-        }).then(() => {console.log(this.state.favCheck)})
-    }
     async onAddFav (boardID, idx) {
-        const ctx = utils.context;
+        const ctx = this.context;
         let data = {Board_ID: boardID};
         
-        if (this.state.favCheck[idx]){
+        if (this.state.favCheck){
             fetch(`${ctx.API_URL}/user/favpost`,{
                 method: "DELETE",
                 headers: {
@@ -116,7 +95,7 @@ export default class BoardDetail extends Component {
                 return res.json();
             })
             .then((res)=>{
-                ToastAndroid.show("즐겨찾기 취소했습니다.", ToastAndroid.SHORT);
+                this.setState({favCheck: false}, () => ToastAndroid.show("즐겨찾기 취소했습니다.", ToastAndroid.SHORT));
             })
             .catch((error) => {
                 ToastAndroid.show("즐겨찾기 취소에 실패하였습니다...", ToastAndroid.SHORT);
@@ -135,13 +114,43 @@ export default class BoardDetail extends Component {
                 return res.json();
             })
             .then((res)=>{
-                ToastAndroid.show("즐겨찾기에 등록했습니다.", ToastAndroid.SHORT);
-            })
-            .catch((error) => {
+                this.setState({favCheck: true}, () => ToastAndroid.show("즐겨찾기에 등록했습니다.", ToastAndroid.SHORT))
+            }).catch((error) => {
                 ToastAndroid.show("즐겨찾기 등록에 실패하였습니다...", ToastAndroid.SHORT);
                 console.error(error);
             });
         }
+    }
+
+
+    async writeReply() {
+        const ctx = this.context;
+        let body ={};
+        body.content = this.state.search;
+        body.Post_ID = this.state.Content.ID;
+
+        if (body.content == ""){
+            Alert.alert( "오류", "검색어를 입력해주세요.", [ { text: "알겠습니다."} ]);
+            return;
+        }
+
+        fetch(`${ctx.API_URL}/reply/write`,{
+            method: "POST",
+            headers: {
+                "token": ctx.token,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        }).then((res)=>{
+            return res.json();
+        }).then((res) => {
+            ToastAndroid.show("댓글을 등록하였습니다.", ToastAndroid.SHORT);
+            this.setState({search:""});
+            this.getReplies();
+        }).catch((error) => {
+            ToastAndroid.show("댓글 등록에 실패하였습니다...", ToastAndroid.SHORT);
+            console.error(error);
+        })
     }
 
     render() {
@@ -150,62 +159,86 @@ export default class BoardDetail extends Component {
         }
       
         return (
-            <View style={styles.container}>
-                <Header {...this.props}/>
-                <View style={styles.body}>
-                    <View style={styles.writerInfo}>
-                        <View style={styles.writerProfile}>
-                            <Image source={{ uri: this.state.Content.User.photo} } style={styles.writerImage} />
-                        </View>
-                        <View style={styles.writerInfoDetail}>
-                            <Text style={styles.writerID}> {this.state.Content.User.userID} </Text>
-                            <Text style={styles.writtenDate}> {utils.dateAgo(this.state.Content.writtenDate)} </Text>
-                        </View>
-                    </View>
-                </View>
-                <View style={styles.underLine} />
-                <View style={styles.body}>
-                    <View style={styles.content}>
-                        <Text style={styles.contentTitle}>{this.state.Content.title}</Text>
-                        <Text style={styles.contentBody}>{this.state.Content.content}</Text>
-                    </View>
-                    <View style={styles.contentInfo}>
-                        <View style={styles.leftContentInfo}>
-                            <Text style={styles.replyNum}>댓글 {this.state.replies.length} </Text>
-                            <Text style={styles.views}>조회수 {this.state.Content.views}</Text>
-                        </View>
-                        {
-                            !this.state.favCheck ? 
-                            <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
-                                <Image source={require("../assets/graystar.png")} style={styles.favImg} />
-                                <Text style={styles.fav}>스크랩</Text>
-                            </TouchableOpacity> :
-                            <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
-                                <Image source={require("../assets/yellowStar.png")} style={styles.favImg} />
-                                <Text style={styles.fav}>스크랩</Text>
-                            </TouchableOpacity>
-                        }
-                    </View>
-                </View>
-                <View style={[styles.underLine]} />
-                <View style={styles.body}>
-                    <ScrollView showsVerticalScrollIndicator={true} style={styles.replies}>
-                        <View>
-                            {this.state.replies.map((reply, idx) => {
-                                return(
-                                    <View style={styles.reply} key={idx}>
-                                        <Text style={styles.replyID}> {utils.nameHide(reply.User.userID)} </Text>
-                                        <Text style={styles.replybody}> {reply.content} </Text>
-                                        <View style={styles.underLine} />
+            <View  style={styles.container} behavior={Platform.OS == "ios" ? "padding" : "height"}>
+                <Header {...this.props} style={{flex:1}} />
+                <View style={styles.bigBody}>
+                    <View style={{flex:3}}>
+                        <ScrollView>
+                            <View style={styles.body}>
+                                <View style={styles.writerInfo}>
+                                    <View style={styles.writerProfile}>
+                                        {/* <Image source={{ uri: this.state.Content.User.photo} } style={styles.writerImage} /> */}
                                     </View>
-                                ); 
-                            })}
-                        </View>
-                    </ScrollView>
-                    <TextInput style={styles.writeReply}
+                                    <View style={styles.writerInfoDetail}>
+                                        {/* <Text style={styles.writerID}> {this.state.Content.User.userID} </Text> */}
+                                        {/* <Text style={styles.writtenDate}> {utils.dateAgo(this.state.Content.writtenDate)} </Text> */}
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={styles.underLine} />
+                            <View style={styles.body}>
+                                <View style={styles.content}>
+                                    {/* <Text style={styles.contentTitle}>{this.state.Content.title}</Text> */}
+                                    {/* <Text style={styles.contentBody}>{this.state.Content.content}</Text> */}
+                                </View>
+                                <View style={styles.contentInfo}>
+                                    <View style={styles.leftContentInfo}>
+                                        <Text style={styles.replyNum}>댓글 {this.state.replies.length} </Text>
+                                        <Text style={styles.views}>조회수 {this.state.Content.views}</Text>
+                                    </View>
+                                    {
+                                        this.state.favCheck ? 
+                                        <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
+                                            <Image source={require("../assets/yellowStar.png")} style={styles.favImg} />
+                                            <Text style={styles.fav}>스크랩</Text>
+                                        </TouchableOpacity> :
+                                        <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
+                                            <Image source={require("../assets/graystar.png")} style={styles.favImg} />
+                                            <Text style={styles.fav}>스크랩</Text>
+                                        </TouchableOpacity>
+                                    }
+                                </View>
+                            </View>
+                            <View style={styles.underLine} />
+                            <View style={styles.body}>
+                                <View style={{marginTop: 30}}>
+                                    {this.state.replies.map((reply, idx) => {
+                                        return(
+                                            <View style={styles.reply} key={idx}>
+                                                <Text style={styles.replyID}> {utils.nameHide(reply.User.userID)} </Text>
+                                                <Text style={styles.replybody}> {reply.content} </Text>
+                                                <View style={styles.underLine} />
+                                            </View>
+                                        ); 
+                                    })}
+                                </View>
+                            </View>
+                        </ScrollView>
+                    </View>
+                    <View style={[styles.writeReplyBox]} >
+                        <KeyboardAvoidingView>
+                            <TextInput style={styles.writeReply}
+                                placeholder="댓글"
+                                value={this.state.search}
+                                onChangeText={(search) => this.setState({ search })}
+                                // onSubmitEditing={() => {
+                                //     if (!this.state.postText.endsWith("\n")) {
+                                //     let postText = this.state.postText;
+                                //     postText = postText + "\n";
+                                //     this.setState({ postText: postText })
+                                //     }
+                                //     }}
+                                // onSubmitEditing={() => {this.writeReply()}}
+                                returnKeyType="search"
+                                multiline={true}
+                            >
+                            </TextInput>
 
-                    >
-                    </TextInput>
+                        </KeyboardAvoidingView>
+                        <TouchableOpacity style={styles.button} onPress={()=>this.writeReply()} >                       
+                            <Text style={styles.submitText}>댓글 달기</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         );
@@ -214,12 +247,18 @@ export default class BoardDetail extends Component {
 BoardDetail.contextType = MyContext;
 
 const styles=StyleSheet.create({
+    bigBody: {
+        flexDirection: "column",
+        bottom: 0,
+        flex:1,
+        justifyContent : "space-between",
+    },
     body: {
         paddingLeft:"5%",
         paddingRight:"5%",
-      },
+    },
     container: {
-        flex: 1,
+        flex:1,
         marginTop: Platform.OS === `ios` ? 0 : Constants.statusBarHeight,
         backgroundColor: "#fff",
     },
@@ -317,14 +356,13 @@ const styles=StyleSheet.create({
         paddingRight: "3%",
         paddingLeft: "3%",
         overflow: "scroll",
+        // backgroundColor: "black",
     },
     reply: {
-        marginTop: 10,
         marginBottom: 10,
     },
     replyID: {
-        color: "#EDEDED",
-       marginTop: 10,
+        color: "#DBDBDB",
        marginBottom: 10,
     },
     replybody: {
@@ -352,10 +390,37 @@ const styles=StyleSheet.create({
     scroll: {
         overflow:"hidden",
     },
-    writeReply: {
-        position: 'absolute',
-        bottom: 0,
-        right: 0,
-        zIndex: 1,
+    writeReplyBox: {
+        // backgroundColor: "#EEEEEE",
+        marginTop:20,
+        flex:1,
+        justifyContent: "space-between",
     },
+    writeReply: {
+        paddingLeft: "7%",
+        paddingRight: "7%",
+        // backgroundColor: "red",
+        height: 40,
+    },
+    writeReplyText: {
+        fontFamily: "KPWDLight",
+        fontSize: 25,
+
+    },
+    button: {
+        bottom: "5%",
+        borderColor: colors.primary,
+        backgroundColor: "white",
+        borderRadius: 6,
+        borderWidth: 2,
+        paddingVertical: 3,
+        paddingHorizontal: 60,
+        alignSelf: "center",
+    }, 
+    submitText: {
+        color: colors.primary,
+        alignSelf: "center",
+        fontFamily: "KPWDBold",
+        fontSize: 15,
+    }
 });
