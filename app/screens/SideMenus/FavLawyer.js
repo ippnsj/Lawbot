@@ -270,10 +270,11 @@ export default class FavLawyer extends Component {
             console.error(error);
         });
     }
-    goToLawyerPage(lawyer){
+    async goToLawyerPage(lawyer){
         const ctx = this.context;
+        // console.log(lawyer);
         let newAnswers;
-        fetch(`${ctx.API_URL}/lawyer/answer/1`, {
+        await fetch(`${ctx.API_URL}/lawyer/answer/${lawyer.Lawyer_ID}`, {
             method: "GET",
             headers: {
                 'token': ctx.token,
@@ -281,12 +282,12 @@ export default class FavLawyer extends Component {
         }).then((result) => {
             return result.json();
         }).then((result) => {
-            console.log(result);
+            // console.log(result);
             newAnswers=result;
             // this.setState({ token: ctx.token, user: result });
         });
         
-        this.props.navigation.navigate('Lawyer', {lawyer:lawyer, answers: newAnswers});
+        this.props.navigation.navigate('Lawyer', {id : lawyer.Lawyer_ID, lawyer:lawyer.Lawyer, answers: newAnswers});
     }
     render(){
         if (!this.state.fontsLoaded) {

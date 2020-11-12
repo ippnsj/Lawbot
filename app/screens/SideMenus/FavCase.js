@@ -158,7 +158,7 @@ export default class FavCase extends Component{
         };
         var url = 'http://www.law.go.kr/DRF/lawService.do?OC='+ main.OC+'&target='+main.target+
             '&ID='+main.ID+'&type='+main.type+'&mobileYn='+main.mobileYn;
-        
+        // console.log(url);
         fetch(url, {
             method: "GET",
             headers: {
