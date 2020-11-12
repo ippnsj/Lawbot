@@ -26,6 +26,9 @@ import MyComments from "./app/screens/SideMenus/MyComments";
 import MyQuestions from "./app/screens/SideMenus/MyQuestions";
 import MyAnswers from "./app/screens/SideMenus/MyAnswers";
 import FavPosts from "./app/screens/SideMenus/FavPosts";
+import Board from "./app/screens/Board";
+import BoardDetail from "./app/screens/BoardDetail";
+import BoardWrite from "./app/screens/BoardWrite";
 
 import { NavigationContainer } from '@react-navigation/native';
 // import { createStackNavigator } from '@react-navigation/stack';
@@ -118,6 +121,9 @@ export default class App extends Component {
             <Drawer.Screen name="MyQuestions" component={MyQuestions} options={{headerShown:false}} />
             <Drawer.Screen name="MyAnswers" component={MyAnswers} options={{headerShown:false}} />
             <Drawer.Screen name="FavPosts" component={FavPosts} options={{headerShown:false}} />
+            <Drawer.Screen name="Board" component={Board} options={{ headerShown: false }} />
+            <Drawer.Screen name="BoardDetail" component={BoardDetail} options={{ headerShown: false }} />
+            <Drawer.Screen name="BoardWrite" component={BoardWrite} options={{ headerShown: false }} />
           </Drawer.Navigator>
         </NavigationContainer>
       </MyContext.Provider>
