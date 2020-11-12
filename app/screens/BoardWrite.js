@@ -2,13 +2,11 @@ import React, {Component}from 'react';
 import {
     Text,
     View,
-    Modal,
     StyleSheet,
-    Image,
     TextInput,
     KeyboardAvoidingView,
+    ToastAndroid,
     TouchableOpacity,
-    Alert,
   } from "react-native";
 import * as Font from "expo-font";
 import Constants from "expo-constants";
@@ -18,7 +16,6 @@ import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
 import Header from "./Header.js";
-import { ScrollView } from 'react-native-gesture-handler';
 
 export default class BoardWrite extends Component {
     state = {
@@ -26,9 +23,15 @@ export default class BoardWrite extends Component {
         BoardCategory:3,
         User: {},
     };
+
+    // BoardCategory
+    // 1 : 앱 이용 후기
+    // 2 : 재판 후기
+    // 3 : 자유
   
     isFocused = () => {
         this.setState({ title: "", content: "" });
+        this.setState({BoardCategory: this.props.route.params.category});
     }
 
     async _loadFonts() {
@@ -47,8 +50,6 @@ export default class BoardWrite extends Component {
     componentDidMount() {
         this._loadFonts();
         this.props.navigation.addListener('focus', this.isFocused);
-
-        this.setState({BoardCategory: this.props.route.params.category});
     }
 
     componentWillUnmount() {
@@ -61,14 +62,13 @@ export default class BoardWrite extends Component {
 
     async createArticle() {
       const ctx = this.context;
-      let body = {
-      };
+      let body = {};
       body.title = this.state.title;
       body.content = this.state.content;
       body.boardCategory = this.state.BoardCategory;
-    //   body.User_ID = this.state.
 
-      await fetch(`${ctx.API_URL}/board/write`, {
+
+      await fetch(`${ctx.API_URL}/boards/write`, {
         method: "POST",
         headers: {
           "Accept": "application/json",
@@ -121,25 +121,16 @@ export default class BoardWrite extends Component {
                 <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
                 <View>
                     <Picker
+                        mode='dropdown'
                         selectedValue={this.state.BoardCategory}
                         style={{ width: 150 }}
-                        onValueChange={(itemValue, itemIndex) => this.setState({BoardCategory: itemValue})}
-                    >
+                        onValueChange={(itemValue, itemIndex) => this.setState({BoardCategory: itemValue})}>
                         <Picker.Item label="앱 이용 후기" value={1} />
                         <Picker.Item label="재판 후기" value={2} />
                         <Picker.Item label="자유 게시판" value={3} />
                     </Picker>
-
-                    {/* <View style={{height: 0.5, backgroundColor: "lightgray"}}></View> */}
-                    
-                    {/* <TouchableOpacity >
-                        <View style={{flexDirection: "row"}}>
-                            <Image style={styles.icon} source={require("../assets/attachIcon.png")} />
-                            <Text style={styles.attach}>첨부파일 등록</Text>
-                        </View>
-                    </TouchableOpacity> */}
                 </View>
-                    <TouchableOpacity style={styles.Button}  onPress={() => this.createArticle()}>
+                    <TouchableOpacity style={styles.Button}  onPress={() => {console.log(this.state.BoardCategory); this.createArticle()}}>
                         <Text style={styles.ButtonText}>글 등록하기</Text>
                     </TouchableOpacity>
             </KeyboardAvoidingView>

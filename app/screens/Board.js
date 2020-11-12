@@ -28,6 +28,7 @@ export default class Board extends Component {
         category: 0,
         Contents: [],
         isSearching: false,
+        favCheck: [],
     };
 
     async _loadFonts() {
@@ -66,7 +67,7 @@ export default class Board extends Component {
 
     async getBoardContents() {
         const ctx = this.context;
-
+        
         if (this.props.route.params.BoardCategory == 0){
             fetch(`${ctx.API_URL}/boards/posts`, {
                 method: "GET",
@@ -76,7 +77,7 @@ export default class Board extends Component {
             }).then((data) => {
                 return data.json();
             }).then((result) => {
-                this.setState({Contents : result});
+                this.setState({Contents : result}, () => {this.getFavPost()});
             });
         } else{
             fetch(`${ctx.API_URL}/boards/${this.props.route.params.BoardCategory}`, {
@@ -87,11 +88,92 @@ export default class Board extends Component {
             }).then((data) => {
                 return data.json();
             }).then((result) => {
-                this.setState({Contents : result});
+                this.setState({Contents : result}, () => {this.getFavPost()});
             });
         }
     }
 
+    async getFavPost () {
+        const ctx = this.context;
+        
+        fetch(`${ctx.API_URL}/user/favpost`, {
+            method: "GET",
+            headers: {
+                "token": ctx.token
+            },
+        })
+        .then((res) => {
+            return res.json();
+        }).then((res) =>{
+            if (res.length == 0){
+                console.log("no fav");
+                return;
+            }
+            let check = true;
+            let checkList=[];
+            for (let i=0; i < this.state.Contents.length; i++){
+                for (let idx = 0; idx < res.length; idx++){
+                    if (this.state.Contents[i].Board_ID == res[idx].Board_ID){
+                        checkList.push(true);
+                        check = false;
+                        break;
+                    } 
+                }
+                if (check){
+                    checkList.push(false);
+                }
+            }
+
+            this.setState({favCheck:checkList}, () => {console.log(this.state.Contents);console.log(this.state.favCheck)})
+        })
+    }
+
+    async onAddFav (boardID, idx) {
+        const ctx = utils.context;
+        let data = {Board_ID: boardID};
+        
+        if (this.state.favCheck[idx]){
+            fetch(`${ctx.API_URL}/user/favpost`,{
+                method: "DELETE",
+                headers: {
+                    "token": ctx.token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then((res)=>{
+                return res.json();
+            })
+            .then((res)=>{
+                ToastAndroid.show("즐겨찾기 취소했습니다.", ToastAndroid.SHORT);
+            })
+            .catch((error) => {
+                ToastAndroid.show("즐겨찾기 취소에 실패하였습니다...", ToastAndroid.SHORT);
+                console.error(error);
+            });
+        }else{
+            fetch(`${ctx.API_URL}/user/favpost`,{
+                method: "POST",
+                headers: {
+                    "token": ctx.token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then((res)=>{
+                return res.json();
+            })
+            .then((res)=>{
+                ToastAndroid.show("즐겨찾기에 등록했습니다.", ToastAndroid.SHORT);
+            })
+            .catch((error) => {
+                ToastAndroid.show("즐겨찾기 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                console.error(error);
+            });
+        }
+        this.setState({favCheck : [...this.state.favCheck.slice(0,idx), !this.state.favCheck[idx],...this.state.favCheck.slice(idx+1,this.state.favCheck.length-1)]})
+    }
+    
     searchSwitch = () => {
         this.setState(prevState => ({isSearching: !prevState.isSearching}), () =>{ToastAndroid.show("Searching " +  `${this.state.isSearching}` , ToastAndroid.SHORT)});
     }
@@ -152,10 +234,7 @@ export default class Board extends Component {
         return (
             <View style={styles.container}>
                 <Header {...this.props}/>
-                {/* <StyleOverride text={"ddddddd"} style={styles.contentBody}>
-
-                </StyleOverride> */}
-                <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('BoardWrite', this.state.category)}  >                       
+                <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('BoardWrite', {category: this.state.category})} >                       
                         <Image style={styles.writebuttonimg} source={require("../assets/writeButton.png")} />
                 </TouchableOpacity>
                 <View style={styles.body}>
@@ -195,10 +274,21 @@ export default class Board extends Component {
                                         <Text style={styles.writeDate}> {utils.dateAgo(content.writtenDate)} </Text>
                                         <Text style={styles.writer}> {utils.nameHide(content.User.userID)} </Text>
                                     </View>
-                                    <TouchableOpacity style={styles.scrapViewInfo} onPress={() => {utils.onAddFav(content.ID)}}>
+                                    {
+                                        !this.state.favCheck[idx] ? 
+                                        <TouchableOpacity style={styles.scrapViewInfo} onPress={()=>this.onAddFav(content.ID, idx)}>
+                                            <Image source={require("../assets/graystar.png")} style={styles.scrapImage} />
+                                            <Text style={styles.viewNumber}> {content.views} </Text>
+                                        </TouchableOpacity> :
+                                        <TouchableOpacity style={styles.scrapViewInfo} onPress={()=>this.onAddFav(content.ID, idx)}>
+                                            <Image source={require("../assets/yellowStar.png")} style={styles.scrapImage} />
+                                            <Text style={styles.viewNumber}> {content.views} </Text>
+                                        </TouchableOpacity>
+                                    }
+                                    {/* <TouchableOpacity style={styles.scrapViewInfo} onPress={() => {this.onAddFav(content.ID, idx)}}>
                                         <Image source={require("../assets/scrap.png")} style={styles.scrapImage} />
                                         <Text style={styles.viewNumber}> {content.views} </Text>
-                                    </TouchableOpacity>
+                                    </TouchableOpacity> */}
                                 </View>
                                 <View style={styles.thinUnderline}></View>
                             </View>
@@ -313,8 +403,6 @@ const styles=StyleSheet.create({
         bottom: 0,
         right: 0,
         zIndex: 1,
-    
-        // backgroundColor: "yellow",
     }, 
     writebuttonimg: {
         width: 100,
@@ -327,11 +415,12 @@ const styles=StyleSheet.create({
         color: "#8D8D8D",
         width: 180,
     },
-    testButton: {
-        backgroundColor: colors.secondary,
-        borderRadius: 8,
-        alignSelf: "center",
-        paddingVertical: 3,
-        paddingHorizontal: 10,
-    },    
+    starImage: {
+        width: 30,
+        height: 30,
+        alignSelf:"center",
+        padding: 0,
+        margin: "1%",
+        marginTop: "70%",
+    },
 });

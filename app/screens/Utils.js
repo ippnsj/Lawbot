@@ -4,6 +4,7 @@ import {
   View,
   StyleSheet,
   ViewPropTypes,
+  ToastAndroid,
   
 } from "react-native";
 import moment from 'moment';
@@ -31,30 +32,6 @@ const utils = {
       id += "*";
     }
     return id;
-  },
-  onAddFav: function (boardID) {
-    const ctx = utils.context;
-    let body = {
-    };
-    body.Precedent_ID = boardID;
-
-    fetch(`${ctx.API_RUL}/user/judgement`, {
-      method: "POST",
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "token": ctx.token
-      },
-      body: JSON.stringify(body),
-  }).then((res) => {
-    return res.json();
-  }).then((res) => {
-    if(res.success) {
-      ToastAndroid.show("즐겨찾기 등록에 성공하였습니다!", ToastAndroid.SHORT);
-    }else {
-        ToastAndroid.show("즐겨찾기 등록에 실패하였습니다...", ToastAndroid.SHORT);
-    }
-  });
   },
 }
 utils.context = MyContext

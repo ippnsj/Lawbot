@@ -6,6 +6,8 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  ToastAndroid,
+  
   ScrollView,
 } from "react-native";
 import * as Font from "expo-font";
@@ -24,6 +26,7 @@ export default class BoardDetail extends Component {
     state = {
         Content: {},
         replies: [], 
+        favCheck: false,
     };
 
     async _loadFonts() {
@@ -40,7 +43,7 @@ export default class BoardDetail extends Component {
     }
 
     isFocused = () => {
-        this.setState({Content : this.props.route.params.post})
+        this.setState({Content : this.props.route.params.post}, () => {this.getFavPost()})
         this.getReplies();
     }
     
@@ -71,6 +74,76 @@ export default class BoardDetail extends Component {
         });
     }
 
+    async getFavPost () {
+        const ctx = this.context;
+        
+        fetch(`${ctx.API_URL}/user/favpost`, {
+            method: "GET",
+            headers: {
+                "token": ctx.token
+            },
+        })
+        .then((res) => {
+            return res.json();
+        }).then((res) =>{
+            // console.log(res);
+            // console.log(this.state.Contents.length)
+            if (res.length == 0){
+                console.log("no fav");
+                return;
+            }
+            for (let i=0; i < res.length; i++){
+                if (this.state.Content.Board_ID === res[i].Board_ID){
+                    this.setState({favCheck : true});
+                } 
+            }
+        }).then(() => {console.log(this.state.favCheck)})
+    }
+    async onAddFav (boardID, idx) {
+        const ctx = utils.context;
+        let data = {Board_ID: boardID};
+        
+        if (this.state.favCheck[idx]){
+            fetch(`${ctx.API_URL}/user/favpost`,{
+                method: "DELETE",
+                headers: {
+                    "token": ctx.token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then((res)=>{
+                return res.json();
+            })
+            .then((res)=>{
+                ToastAndroid.show("즐겨찾기 취소했습니다.", ToastAndroid.SHORT);
+            })
+            .catch((error) => {
+                ToastAndroid.show("즐겨찾기 취소에 실패하였습니다...", ToastAndroid.SHORT);
+                console.error(error);
+            });
+        }else{
+            fetch(`${ctx.API_URL}/user/favpost`,{
+                method: "POST",
+                headers: {
+                    "token": ctx.token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then((res)=>{
+                return res.json();
+            })
+            .then((res)=>{
+                ToastAndroid.show("즐겨찾기에 등록했습니다.", ToastAndroid.SHORT);
+            })
+            .catch((error) => {
+                ToastAndroid.show("즐겨찾기 등록에 실패하였습니다...", ToastAndroid.SHORT);
+                console.error(error);
+            });
+        }
+    }
+
     render() {
         if (!this.state.fontsLoaded) {
             return <View />;
@@ -82,31 +155,36 @@ export default class BoardDetail extends Component {
                 <View style={styles.body}>
                     <View style={styles.writerInfo}>
                         <View style={styles.writerProfile}>
-                            {/* <Image source={{ uri: this.state.Content.User.photo} } style={styles.writerImage} /> */}
+                            <Image source={{ uri: this.state.Content.User.photo} } style={styles.writerImage} />
                         </View>
                         <View style={styles.writerInfoDetail}>
-                            {/* <Text style={styles.writerID}> {this.state.Content.User.userID} </Text> */}
-                            {/* <Text style={styles.writtenDate}> {utils.dateAgo(this.state.Content.writtenDate)} </Text> */}
+                            <Text style={styles.writerID}> {this.state.Content.User.userID} </Text>
+                            <Text style={styles.writtenDate}> {utils.dateAgo(this.state.Content.writtenDate)} </Text>
                         </View>
                     </View>
                 </View>
                 <View style={styles.underLine} />
                 <View style={styles.body}>
                     <View style={styles.content}>
-                        {/* <Text style={styles.contentTitle}>{this.state.Content.title}</Text> */}
-                        {/* <Text style={styles.contentBody}>{this.state.Content.content}</Text> */}
+                        <Text style={styles.contentTitle}>{this.state.Content.title}</Text>
+                        <Text style={styles.contentBody}>{this.state.Content.content}</Text>
                     </View>
                     <View style={styles.contentInfo}>
                         <View style={styles.leftContentInfo}>
                             <Text style={styles.replyNum}>댓글 {this.state.replies.length} </Text>
                             <Text style={styles.views}>조회수 {this.state.Content.views}</Text>
                         </View>
-                        <TouchableOpacity onPress={() => {utils.onAddFav(this.state.Content.ID)}}>
-                            <View style={styles.rightContentInfo}>
-                                    <Image source={require("../assets/scrap.png")} style={styles.favImg}/>
-                                    <Text style={styles.fav}>스크랩</Text>
-                            </View>
-                        </TouchableOpacity>
+                        {
+                            !this.state.favCheck ? 
+                            <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
+                                <Image source={require("../assets/graystar.png")} style={styles.favImg} />
+                                <Text style={styles.fav}>스크랩</Text>
+                            </TouchableOpacity> :
+                            <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
+                                <Image source={require("../assets/yellowStar.png")} style={styles.favImg} />
+                                <Text style={styles.fav}>스크랩</Text>
+                            </TouchableOpacity>
+                        }
                     </View>
                 </View>
                 <View style={[styles.underLine]} />
