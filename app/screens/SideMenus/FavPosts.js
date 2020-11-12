@@ -58,6 +58,7 @@ export default class FavPosts extends Component{
             let postCategoryList = [];
             let favCheckList = [];
             for (let i=0; i<res.length; i++){
+                // console.log(res[i]);
                 postList.push(res[i]);
                 favCheckList.push(true);
                 if (res[i].Post.boardCategory === 1){
