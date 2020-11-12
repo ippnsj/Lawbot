@@ -613,7 +613,7 @@ export default class MyPage extends Component {
         <View style={styles.lawyerInfoCont}>
             <Text style={styles.lawyerTitle}>변호사님! 도와주세요.</Text>
             <Text style={styles.lawyerExplanation}>변호사 홈으로 이동하여{"\n"}도움이 필요한 분들을 도와주세요.</Text> 
-            <TouchableOpacity style={styles.lawyerButton} onPress={() => this.goToLawyerHome()}>
+            <TouchableOpacity style={styles.lawyerButton} onPress={() => {}}>
                 <Text style={styles.lawyerButtonText}>변호사 홈페이지 가기</Text>
             </TouchableOpacity>
             {/* <TouchableOpacity style={styles.lawyerButton}>
