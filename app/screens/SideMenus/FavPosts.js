@@ -213,6 +213,9 @@ export default class FavPosts extends Component{
             console.error(error);
         });
     }
+    goToDetailPage(post){
+        this.props.navigation.navigate('BoardDetail', {post: post.Post});
+    }
     render(){
         if (!this.state.fontsLoaded) {
             return <View />;
@@ -235,9 +238,7 @@ export default class FavPosts extends Component{
                                 return (
                                     <View key={idx} style = {styles.caseTopContainer}>
                                         <TouchableOpacity style = {styles.indivContainer} 
-                                        onPress={() => this.props.navigation.navigate("Home", {
-                                            
-                                        })}>
+                                        onPress={() => this.goToDetailPage(post)}>
                                             <View style = {styles.caseContainer}>
                                                 <Text style= {styles.boardCategory}>{this.state.postCategoryList[idx]}</Text>
                                                 <Text style= {styles.caseID}>{post.Post.title}</Text>

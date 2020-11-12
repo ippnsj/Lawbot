@@ -76,7 +76,6 @@ export default class FavLawyer extends Component {
             let lawyerCategoryList = [];
             let favCheckList = [];
             for (let i=0; i<res.length; i++){
-                // console.log(res[i]);
                 lawyerList.push(res[i]);
                 favCheckList.push(true);
                 let indivCategoryList = [];
@@ -270,24 +269,8 @@ export default class FavLawyer extends Component {
             console.error(error);
         });
     }
-    async goToLawyerPage(lawyer){
-        const ctx = this.context;
-        // console.log(lawyer);
-        let newAnswers;
-        await fetch(`${ctx.API_URL}/lawyer/answer/${lawyer.Lawyer_ID}`, {
-            method: "GET",
-            headers: {
-                'token': ctx.token,
-            },
-        }).then((result) => {
-            return result.json();
-        }).then((result) => {
-            // console.log(result);
-            newAnswers=result;
-            // this.setState({ token: ctx.token, user: result });
-        });
-        
-        this.props.navigation.navigate('Lawyer', {id : lawyer.Lawyer_ID, lawyer:lawyer.Lawyer, answers: newAnswers});
+    async goToLawyerPage(lawyer){   
+        this.props.navigation.navigate('Lawyer', {id : lawyer.Lawyer_ID});
     }
     render(){
         if (!this.state.fontsLoaded) {

@@ -183,36 +183,24 @@ export default class Home extends Component {
                     <View style={styles.boardSection}>
                         <View style={styles.boardHeader}>
                             <Text style={styles.boardSubTitle}>법률 게시판</Text>
-                            <TouchableOpacity  onPress={() => this.setState({fieldSelectVisible: true})}>
+                            <TouchableOpacity  onPress={() => this.props.navigation.navigate("Board", {BoardCategory:0})}>
                                 <Text style={styles.boardHeaderText}>전체 보기</Text>
                             </TouchableOpacity>
                             <Image style={styles.more} source={require("../assets/more.png")} />
                             
                         </View>
                         <View style={styles.boardContent}>
-                            <Text style={styles.boardContentSubtitle}>재판 후기 게시판</Text>
-                                <View style={styles.boardContentRow}>
-                                    <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
-                                    <Text style={styles.boardContentText}>폭력 남편과 2년 공방 끝에 이혼했습니다.</Text>
-                                </View>
-                                <View style={styles.boardContentRow}>
-                                    <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
-                                    <Text style={styles.boardContentText}>음주운전 살인미수범 공판 후기</Text>
-                                </View>
-                                <View style={styles.boardContentRow}>
-                                    <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
-                                    <Text style={styles.boardContentText}>성추행 현행범으로 체포되었다가 풀려났네요...</Text>
-                                </View>
-                                <Text></Text>
-                                
-                            <Text style={styles.boardContentSubtitle}>어플 이용 후기 게시판</Text>
-                                {/* <View style={styles.boardContentRow}>
-                                    <Text style={styles.boardContentBullet}>{'\u2B24'}</Text>
-                                    <Text style={styles.boardContentText}>와! 로봇 최고다!</Text>
-                                </View> */}
+                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:1})}}>
+                                <Text style={styles.boardContentSubtitle}>어플 이용 후기 게시판</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:2})}}>
+                                <Text style={styles.boardContentSubtitle}>재판 후기 게시판</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:3})}}>
+                                <Text style={styles.boardContentSubtitle}>자유 게시판</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
-
                   </KeyboardAvoidingView>
             </View>
           )
