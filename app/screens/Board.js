@@ -277,7 +277,7 @@ export default class Board extends Component {
                             <View style={styles.content} key={idx}>
                                 <TouchableOpacity onPress={() => this.contentDetail(content ,idx)}>
                                     <Text style={styles.contentTitle}>{content.title} </Text>
-                                    <Text style={styles.contentBody}> {content.content} </Text>
+                                    <Text style={styles.contentBody} numberOfLines={3}> {content.content} </Text>
                                 </TouchableOpacity>
                                 <View style={styles.contentInfo}>
                                     <View style={styles.writerInfo}>
@@ -339,6 +339,7 @@ const styles=StyleSheet.create({
     contentTitle: {
         fontFamily: "KPWDMedium",
         fontSize: 16,
+        marginBottom: 2,
     },
     search : {
         width:30,
@@ -359,7 +360,6 @@ const styles=StyleSheet.create({
         fontSize: 12,
         color: "#BCBCBC",
         overflow: "hidden",
-        height: 48,
         marginBottom: 5,
     },
     contentInfo: {

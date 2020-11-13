@@ -131,7 +131,7 @@ export default class Home extends Component {
               <View style={styles.container}>
                     <Header {...this.props}/>
                   {/* QA bar */}
-                  <KeyboardAvoidingView style={styles.body}>
+                  <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
 
                     <View style={styles.searchSection}>
                         <View style={styles.searchBar}>
@@ -284,7 +284,7 @@ export default class Home extends Component {
                             </View>
                         </ScrollView>
                     </View>
-                  </KeyboardAvoidingView>
+                  </ScrollView>
             </View>
           )
     };
@@ -297,7 +297,8 @@ const styles=StyleSheet.create({
         flex: 1,
         overflow: "scroll",
         paddingLeft:"5%",
-        paddingRight:"5%"
+        paddingRight:"5%",
+        marginBottom:"5%",
       },
     container: {
         flex: 1,
