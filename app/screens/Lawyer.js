@@ -18,10 +18,6 @@ import { MyContext } from "../../context.js";
 import colors from "../config/colors";
 import Header2 from "./Header2.js";
 
-// const categories=[
-//     "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방/병역", "학교", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/청소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
-// ]
-
 const catImgList=[
     require("../assets/carAccident.png"), require("../assets/industrialAccident.png"), require("../assets/environment.png"),require("../assets/press.png"), require("../assets/intellectualProperty.png"),  require("../assets/medical.png"), require("../assets/construction.png"),require("../assets/government.png"), require("../assets/etc.png"), require("../assets/family.png"), require("../assets/divorce.png"), require("../assets/violence.png"), require("../assets/fraud.png"),require("../assets/sexualAssault.png"),  require("../assets/libel.png"), require("../assets/insult.png"), require("../assets/threat.png"), require("../assets/carAcci.png"), require("../assets/contract.png"), require("../assets/personalInformation.png"), require("../assets/inheritance.png"), require("../assets/burglary.png"),  require("../assets/trading.png"), require("../assets/labor.png"), require("../assets/debtCollection.png"), require("../assets/bankruptcy.png"), require("../assets/drug.png"), require("../assets/consumer.png"), require("../assets/millitary.png"), require("../assets/school.png"),require("../assets/housebreaking.png"),  require("../assets/service.png"), require("../assets/realEstate.png"), require("../assets/falseWitness.png"), require("../assets/falseAccusation.png"),require("../assets/juvenile.png"), require("../assets/lease.png"), require("../assets/loan.png"), require("../assets/online.png"), require("../assets/drunkDriving.png")
 ]
@@ -76,8 +72,6 @@ export default class Lawyer extends Component {
 
   async getLawyerData(id) {
     const ctx = this.context;
-    // var newLawyer;
-    // var newAnswers;
     this.setState({id: id, home:true, info: false, qa:false});
 
     await fetch(`${ctx.API_URL}/lawyer/${id}`, {
@@ -89,6 +83,7 @@ export default class Lawyer extends Component {
       ).then((result) => {
         return result.json();
       }).then((result) => {
+        result[0].User.photo = `${result[0].User.photo}?random=${new Date()}`
         this.setState({ lawyer: result[0] });
     });
 
@@ -244,12 +239,17 @@ export default class Lawyer extends Component {
             <View >
                 <View style={{alignItems:"center"}}>
                     <Text style={styles.home_info_name}>{this.state.lawyer.User.name} 변호사</Text>
+                    <TouchableOpacity style={styles.favCont} onPress={() => this.favSelected()}>
+                        {this.state.favSelected ? <Image source={require("../assets/star.png")}  style={styles.favStar} /> :
+                        <Image source={require("../assets/starEmpty.png")} style={styles.favStar} />}
+                        {/* <Text style={styles.favText}>즐겨찾기</Text> */}
+                    </TouchableOpacity>
                     <View style={{flexDirection:"row", flexWrap: "wrap", justifyContent: "center"}}>
-                            {this.state.lawyer.LawyerFields.map((f, id)=>{
-                                return(
-                                <Text key = {id} style={styles.home_info_field}>#{this.state.categories[f.Category_ID].name}</Text>
-                                )
-                            })}
+                        {this.state.lawyer.LawyerFields.map((f, id)=>{
+                            return(
+                            <Text key = {id} style={styles.home_info_field}>#{this.state.categories[f.Category_ID].name}</Text>
+                            )
+                        })}
                     </View>
                     <Text  style={styles.home_info_team}>{this.state.lawyer.companyName!=null? this.state.lawyer.companyName : "등록 된 소속 사무소가 없습니다."}</Text>
                     <Text style={styles.home_info_address}>{this.state.lawyer.address1!=null ? this.state.lawyer.address1 : "등록 된 주소가 없습니다."}</Text>
@@ -513,13 +513,8 @@ export default class Lawyer extends Component {
       <View style={styles.container}>
         <Header2 {...this.props}/>
         <View >
-            <ImageBackground style={styles.backgroundPic} source={{ uri: `${this.state.lawyer.User.photo}?random=${new Date()}` }}>
+            <ImageBackground style={styles.backgroundPic} source={{ uri: this.state.lawyer.User.photo }}>
                 <Text style={styles.backgroundPicText}>{this.state.lawyer.introduction}</Text>
-                <TouchableOpacity style={styles.favCont} onPress={() => this.favSelected()}>
-                    {this.state.favSelected ? <Image source={require("../assets/star.png")}  style={styles.favStar} /> :
-                    <Image source={require("../assets/starEmpty.png")} style={styles.favStar} />}
-                    {/* <Text style={styles.favText}>즐겨찾기</Text> */}
-                </TouchableOpacity>
             </ImageBackground>
         </View>
         <View style={styles.fieldTab}>
@@ -780,14 +775,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         position: "absolute",
-        right: 0,
+        right: 20,
     },
     favStar: {
-        width: 30,
-        height: 30,
-        marginTop:"5%",
-        marginRight:"5%",
+        width: 20,
+        height: 20,
     },
-
-
 });
