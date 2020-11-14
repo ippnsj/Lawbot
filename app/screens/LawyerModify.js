@@ -594,7 +594,8 @@ export default class LawyerModify extends Component {
                 <View style={{marginHorizontal:"5%"}}>
                     <Text style={styles.info_subtitle}>주요분야</Text>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{flexDirection: "row"}}>
-                        {this.state.lawyer.LawyerFields && this.state.lawyer.LawyerFields.length ? this.state.lawyer.LawyerFields.map((f, idx)=> {
+                        {this.state.lawyer.LawyerFields && this.state.lawyer.LawyerFields.length ? 
+                        this.state.lawyer.LawyerFields.map((f, idx)=> {
                             return(
                                 <View style={{alignItems: 'center', marginRight:40, marginTop: 10}} key={idx}>
                                     <Image style={styles.info_field_img} source={catImgList[f.Category_ID]}/>
@@ -606,16 +607,16 @@ export default class LawyerModify extends Component {
                             )
                         })
                     : 
-                    <View>
-                        <Text>전문 분야가 없습니다.</Text>
-                        <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
-                            <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
-                                <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
-                                <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:14}}>추가</Text>
-                            </View>
-                        </TouchableOpacity>
+                        <View>
+                            <Text>전문 분야가 없습니다.</Text>
+                            {/* <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
+                                <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
+                                    <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
+                                    <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:14}}>추가</Text>
+                                </View>
+                            </TouchableOpacity> */}
                         </View>
-                }
+                        }
                         <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
                             <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
                                 <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
