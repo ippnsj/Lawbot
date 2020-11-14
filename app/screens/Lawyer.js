@@ -56,7 +56,8 @@ export default class Lawyer extends Component {
                   selected: false
               }
           ],
-          categories: {}
+          categories: {},
+          favSelected: false,
         };
     }
 
@@ -117,6 +118,63 @@ export default class Lawyer extends Component {
 
   isFocused = () => {
     this.getLawyerData(this.props.route.params.id);
+    const ctx = this.context;
+    let body = {};
+    body.Lawyer_ID = this.props.route.params.id;
+    fetch(`${ctx.API_URL}/user/favlawyer/check`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "token": ctx.token
+        },
+        body: JSON.stringify(body)
+    }).then((res) => {
+        return res.json();
+    }).then((res) => {
+        this.setState({ favSelected: res.success });
+    });
+  }
+  favSelected() {
+    const ctx = this.context;
+    let body = {};
+    body.Lawyer_ID = this.props.route.params.id;
+
+    if(this.state.favSelected) {
+        fetch(`${ctx.API_URL}/user/favlawyer`,{
+            method: "DELETE",
+            headers: {
+                "token": ctx.token,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        })
+        .then((res)=>{
+            return res.json();
+        })
+        .then((json)=>{
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }else {
+        fetch(`${ctx.API_URL}/user/favlawyer`,{
+            method: "POST",
+            headers: {
+                "token": ctx.token,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        })
+        .then((res)=>{
+            return res.json();
+        })
+        .then((json)=>{
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+    this.setState({ favSelected: !this.state.favSelected });
   }
 
   async componentDidMount() {
@@ -130,11 +188,11 @@ export default class Lawyer extends Component {
             "Content-Type": "application/json",
             "token": ctx.token
         },
-        }).then((res) => {
-            return res.json();
-        }).then((res) => {
-            this.setState({categories: res});
-        });
+    }).then((res) => {
+        return res.json();
+    }).then((res) => {
+        this.setState({categories: res});
+    });
   }
 
   componentWillUnmount() {
@@ -162,7 +220,7 @@ export default class Lawyer extends Component {
     }
 
     return `${Math.floor(betweenTimeDay / 365)}년전`;
-}
+  }
 
     async handleTabs(which) {
         if (which==="home") {
@@ -203,7 +261,7 @@ export default class Lawyer extends Component {
                         <View style={{flexDirection:"row"}}>
                             {this.state.lawyer.LawyerFields.map((f, id)=>{
                                 return(
-                                    <Text key = {id} style={styles.home_info_content}>{this.state.categories[f.Category_ID].name} </Text>
+                                    <Text key = {id} style={styles.home_info_content}>{this.state.categories[f.Category_ID].name}</Text>
                                 )
                             })}
                         </View>
@@ -457,6 +515,11 @@ export default class Lawyer extends Component {
         <View >
             <ImageBackground style={styles.backgroundPic} source={{ uri: `${this.state.lawyer.User.photo}?random=${new Date()}` }}>
                 <Text style={styles.backgroundPicText}>{this.state.lawyer.introduction}</Text>
+                <TouchableOpacity style={styles.favCont} onPress={() => this.favSelected()}>
+                    {this.state.favSelected ? <Image source={require("../assets/star.png")}  style={styles.favStar} /> :
+                    <Image source={require("../assets/starEmpty.png")} style={styles.favStar} />}
+                    {/* <Text style={styles.favText}>즐겨찾기</Text> */}
+                </TouchableOpacity>
             </ImageBackground>
         </View>
         <View style={styles.fieldTab}>
@@ -557,21 +620,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginVertical: "5%"
     },
-
-
-
     home_info_name: {
         fontFamily: "KPBBold",
         fontSize: 20
     },
-
     home_info_field: {
         fontFamily: "KPWDMedium",
         fontSize: 13,
-        color: "#5c5353",
+        color: colors.primary,
         marginRight: 15
     },
-
     home_info_team: {
         marginTop: 10,
         fontFamily: "KPBBold",
@@ -718,8 +776,18 @@ const styles = StyleSheet.create({
         marginRight: "5%",
         fontSize: 10,
     },
-    
-    
+    favCont: {
+        flexDirection: "row",
+        alignItems: "center",
+        position: "absolute",
+        right: 0,
+    },
+    favStar: {
+        width: 30,
+        height: 30,
+        marginTop:"5%",
+        marginRight:"5%",
+    },
 
 
 });

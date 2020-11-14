@@ -220,8 +220,8 @@ export default class Board extends Component {
         }
     }
 
-    async contentDetail(content, idx) {
-        this.props.navigation.navigate("BoardDetail", {post: content, fav:this.state.favCheck[idx]});
+    async contentDetail(content) {
+        this.props.navigation.navigate("BoardDetail", {post: content});
     }
 
     render() {
@@ -282,7 +282,7 @@ export default class Board extends Component {
                     {this.state.Contents.map((content, idx) => {
                         return(
                             <View style={styles.content} key={idx}>
-                                <TouchableOpacity onPress={() => this.contentDetail(content ,idx)}>
+                                <TouchableOpacity onPress={() => this.contentDetail(content )}>
                                     <Text style={styles.contentTitle}>{content.title} </Text>
                                     <Text style={styles.contentBody} numberOfLines={3}> {content.content} </Text>
                                 </TouchableOpacity>

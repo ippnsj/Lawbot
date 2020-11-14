@@ -30,7 +30,7 @@ export default class Home extends Component {
         boardBContents: [],
         boardCContents: [],
         boardLoaded: false,
-        favCheck: [],
+        // favCheck: [],
     };
   
     async _loadFonts() {
@@ -121,213 +121,176 @@ export default class Home extends Component {
             this.setState({boardAContents: join1})
             this.setState({boardBContents: join2})
             this.setState({boardCContents: join3})
-        }).then(()=>this.setState({boardLoaded:true}, this.getFavPost))
+        }).then(()=>this.setState({boardLoaded:true}))
     }
-
-    async getFavPost () {
-        const ctx = this.context;
-        
-        fetch(`${ctx.API_URL}/user/favpost`, {
-            method: "GET",
-            headers: {
-                "token": ctx.token
-            },
-        })
-        .then((res) => {
-            return res.json();
-        }).then((res) =>{
-            if (res.length == 0){
-                console.error("no favorite Post");
-                return;
-            }
-            let resList = [];
-            for (let i = 0 ; i < res.length; i++){
-                resList.push(res[i].Board_ID);
-            }
-            let checkList=[];
-            if (resList.includes(this.state.boardAContents[0].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardAContents[1].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardAContents[2].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardBContents[0].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardBContents[1].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardBContents[2].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardCContents[0].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardCContents[1].ID)){checkList.push(true)} else{checkList.push(false)}
-            if (resList.includes(this.state.boardCContents[2].ID)){checkList.push(true)} else{checkList.push(false)}
-            this.setState({favCheck:checkList})
-        })
-    }
-
-
-    async boardDetail(content, idx) {
-        this.props.navigation.navigate("BoardDetail", {post: content, fav:this.state.favCheck[idx]});
+ 
+    async boardDetail(content) {
+        this.props.navigation.navigate("BoardDetail", {post: content});
     }
 
     render() {
         if (!this.state.fontsLoaded) {
             return <View />;
-          }
-          return (
-              <View style={styles.container}>
-                    <Header {...this.props}/>
-                  {/* QA bar */}
-                  <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
+        }
+        return (
+            <View style={styles.container}>
+                <Header {...this.props}/>
+                {/* QA bar */}
+                <ScrollView style={styles.body} showsVerticalScrollIndicator={false}>
 
-                    <View style={styles.searchSection}>
-                        <View style={styles.searchBar}>
-                            <Image source={require("../assets/search.png")} style={styles.search} />
-                            <TouchableOpacity onPress={()=>this.props.navigation.navigate('QaUser')}>
-                                <Text style={styles.textInput}>궁금한 법률 내용 검색! 법률 Q&A</Text> 
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.underline}></View>
+                <View style={styles.searchSection}>
+                    <View style={styles.searchBar}>
+                        <Image source={require("../assets/search.png")} style={styles.search} />
+                        <TouchableOpacity onPress={()=>this.props.navigation.navigate('QaUser')}>
+                            <Text style={styles.textInput}>궁금한 법률 내용 검색! 법률 Q&A</Text> 
+                        </TouchableOpacity>
                     </View>
-        
-                    {/* 분석 */}
-                    <View style={styles.selectSection}>
-                        <View style={styles.selectHeader}>
-                            <Text style={styles.selectSubtitle}>유사 판례 분석</Text>
-                            <TouchableOpacity style={styles.selectEtc} onPress={() => this.writePettition("손해배상(기)")}>
-                                <Text style={styles.selectEtcText}>기타 분야</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={styles.selectContent}> 
-                            <View style={styles.fieldRow}>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(자)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/carAccident.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>자동차</Text>
-                                </View>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(산)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/industrialAccident.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>산업재해</Text>
-                                </View>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(환)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/environment.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>환경</Text>
-                                </View>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(언)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/press.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>언론보도</Text>
-                                </View>
-                            </View>
-
-                            <View style={styles.fieldRow}>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(지)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/intellectualProperty.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>지식재산권</Text>
-                                </View>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(의)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/medical.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>의료</Text>
-                                </View>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(건)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/construction.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>건설</Text>
-                                </View>
-                                <View style={styles.fieldButtonContainer}>
-                                <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(국)"); }}>
-                                    <Image style={styles.fieldImage} source={require("../assets/government.png")} />
-                                </TouchableOpacity>
-                                <Text style={styles.fieldText}>국가</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-
-
-                    {/* 법률문서해석 */}
-                    <View style={styles.termSection}>
-                        <View style={styles.termHeader}>
-                            <Text style={styles.termSubtitle}>법률 문서 해석</Text>
-                        </View>
-                        <TouchableOpacity style={styles.termButton}  onPress={() => this.terminologyExplanation()}>
-                            <Text style={styles.termButtonText}>법률 문서 보면서 용어 및 법령 검색하기</Text>
+                    <View style={styles.underline}></View>
+                </View>
+    
+                {/* 분석 */}
+                <View style={styles.selectSection}>
+                    <View style={styles.selectHeader}>
+                        <Text style={styles.selectSubtitle}>유사 판례 분석</Text>
+                        <TouchableOpacity style={styles.selectEtc} onPress={() => this.writePettition("손해배상(기)")}>
+                            <Text style={styles.selectEtcText}>기타 분야</Text>
                         </TouchableOpacity>
                     </View>
 
-
-                    {/* 게시판 */}
-                    <View style={styles.boardSection}>
-                        <View style={styles.boardHeader}>
-                            <Text style={styles.boardSubTitle}>법률 게시판</Text>
-                            <TouchableOpacity  onPress={() => this.props.navigation.navigate("Board", {BoardCategory:0})}>
-                                <Text style={styles.boardHeaderText}>전체 보기</Text>
+                    <View style={styles.selectContent}> 
+                        <View style={styles.fieldRow}>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(자)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/carAccident.png")} />
                             </TouchableOpacity>
-                            <Image style={styles.more} source={require("../assets/more.png")} />
-                            
-                        </View>
-                        <ScrollView style={styles.boardContents}>
-                            <View style={styles.boardContent}>
-                                <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:1})}}>
-                                    <Text style={styles.boardContentSubtitle}>어플 이용 후기 게시판</Text>
-                                </TouchableOpacity>
-                                { this.state.boardLoaded &&
-                                <View style={styles.boardContentRows}>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[0], 0)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[0].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[1], 1)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[1].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[2], 2)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[2].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                </View>
-                                }
-                                <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:2})}}>
-                                    <Text style={styles.boardContentSubtitle}>재판 후기 게시판</Text>
-                                </TouchableOpacity>
-                                { this.state.boardLoaded &&
-                                <View style={styles.boardContentRows}>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[0], 3)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[0].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[1], 4)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[1].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[2], 5)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[2].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                </View>
-                                }
-                                <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:3})}}>
-                                    <Text style={styles.boardContentSubtitle}>자유 게시판</Text>
-                                </TouchableOpacity>
-                                { this.state.boardLoaded &&
-                                <View style={styles.boardContentRows}>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[0], 6)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[0].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[1], 7)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[1].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[2], 8)}}>
-                                        <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[2].title}</Text></Unorderedlist>
-                                    </TouchableOpacity>
-                                </View>
-                                }
+                            <Text style={styles.fieldText}>자동차</Text>
                             </View>
-                        </ScrollView>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(산)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/industrialAccident.png")} />
+                            </TouchableOpacity>
+                            <Text style={styles.fieldText}>산업재해</Text>
+                            </View>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(환)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/environment.png")} />
+                            </TouchableOpacity>
+                            <Text style={styles.fieldText}>환경</Text>
+                            </View>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(언)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/press.png")} />
+                            </TouchableOpacity>
+                            <Text style={styles.fieldText}>언론보도</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.fieldRow}>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(지)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/intellectualProperty.png")} />
+                            </TouchableOpacity>
+                            <Text style={styles.fieldText}>지식재산권</Text>
+                            </View>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(의)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/medical.png")} />
+                            </TouchableOpacity>
+                            <Text style={styles.fieldText}>의료</Text>
+                            </View>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(건)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/construction.png")} />
+                            </TouchableOpacity>
+                            <Text style={styles.fieldText}>건설</Text>
+                            </View>
+                            <View style={styles.fieldButtonContainer}>
+                            <TouchableOpacity style={styles.fieldButton} onPress={() => {this.writePettition("손해배상(국)"); }}>
+                                <Image style={styles.fieldImage} source={require("../assets/government.png")} />
+                            </TouchableOpacity>
+                            <Text style={styles.fieldText}>국가</Text>
+                            </View>
+                        </View>
                     </View>
-                  </ScrollView>
+                </View>
+
+                {/* 법률문서해석 */}
+                <View style={styles.termSection}>
+                    <View style={styles.termHeader}>
+                        <Text style={styles.termSubtitle}>법률 문서 해석</Text>
+                    </View>
+                    <TouchableOpacity style={styles.termButton}  onPress={() => this.terminologyExplanation()}>
+                        <Text style={styles.termButtonText}>법률 문서 보면서 용어 및 법령 검색하기</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* 게시판 */}
+                <View style={styles.boardSection}>
+                    <View style={styles.boardHeader}>
+                        <Text style={styles.boardSubTitle}>법률 게시판</Text>
+                        <TouchableOpacity  onPress={() => this.props.navigation.navigate("Board", {BoardCategory:0})}>
+                            <Text style={styles.boardHeaderText}>전체 보기</Text>
+                        </TouchableOpacity>
+                        <Image style={styles.more} source={require("../assets/more.png")} />
+                        
+                    </View>
+                    <ScrollView style={styles.boardContents}>
+                        <View style={styles.boardContent}>
+                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:1})}}>
+                                <Text style={styles.boardContentSubtitle}>어플 이용 후기 게시판</Text>
+                            </TouchableOpacity>
+                            { this.state.boardLoaded &&
+                            <View style={styles.boardContentRows}>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[0])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[0].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[1])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[1].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[2])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[2].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                            </View>
+                            }
+                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:2})}}>
+                                <Text style={styles.boardContentSubtitle}>재판 후기 게시판</Text>
+                            </TouchableOpacity>
+                            { this.state.boardLoaded &&
+                            <View style={styles.boardContentRows}>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[0])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[0].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[1])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[1].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[2])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[2].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                            </View>
+                            }
+                            <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:3})}}>
+                                <Text style={styles.boardContentSubtitle}>자유 게시판</Text>
+                            </TouchableOpacity>
+                            { this.state.boardLoaded &&
+                            <View style={styles.boardContentRows}>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[0])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[0].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[1])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[1].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[2])}}>
+                                    <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[2].title}</Text></Unorderedlist>
+                                </TouchableOpacity>
+                            </View>
+                            }
+                        </View>
+                    </ScrollView>
+                </View>
+                </ScrollView>
             </View>
-          )
-    };
+        );
+    }
 }
 Home.contextType = MyContext;
 

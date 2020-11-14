@@ -27,7 +27,7 @@ export default class BoardDetail extends Component {
     state = {
         Content: {},
         replies: [], 
-        favCheck: false,
+        favSelected: false,
         search: "",
     };
 
@@ -46,9 +46,68 @@ export default class BoardDetail extends Component {
 
     isFocused = () => {
         this.setState({Content : this.props.route.params.post})
-        this.setState({favCheck : this.props.route.params.fav})
         this.setState({search: ""})
         this.getReplies();
+        this.checkFav();
+    }
+    async checkFav(){
+        const ctx = this.context;
+        let body = {};
+        body.Board_ID = this.props.route.params.post.ID;
+        await fetch(`${ctx.API_URL}/user/favpost/check`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "token": ctx.token
+            },
+            body: JSON.stringify(body)
+        }).then((res) => {
+            return res.json();
+        }).then((res) => {
+            this.setState({ favSelected: res.success });
+        });
+    }
+    favSelected() {
+        const ctx = this.context;
+        let body = {};
+        body.Board_ID = this.props.route.params.post.ID;
+
+        if(this.state.favSelected) {
+            fetch(`${ctx.API_URL}/user/favpost`,{
+                method: "DELETE",
+                headers: {
+                    "token": ctx.token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+            })
+            .then((res)=>{
+                return res.json();
+            })
+            .then((json)=>{
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        }else {
+            fetch(`${ctx.API_URL}/user/favpost`,{
+                method: "POST",
+                headers: {
+                    "token": ctx.token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+            })
+            .then((res)=>{
+                return res.json();
+            })
+            .then((json)=>{
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        }
+        this.setState({ favSelected: !this.state.favSelected });
     }
     
     async componentDidMount() {
@@ -77,51 +136,6 @@ export default class BoardDetail extends Component {
             this.setState({replies : res});
         });
     }
-
-    async onAddFav (boardID, idx) {
-        const ctx = this.context;
-        let data = {Board_ID: boardID};
-        
-        if (this.state.favCheck){
-            fetch(`${ctx.API_URL}/user/favpost`,{
-                method: "DELETE",
-                headers: {
-                    "token": ctx.token,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-            .then((res)=>{
-                return res.json();
-            })
-            .then((res)=>{
-                this.setState({favCheck: false}, () => ToastAndroid.show("즐겨찾기 취소했습니다.", ToastAndroid.SHORT));
-            })
-            .catch((error) => {
-                ToastAndroid.show("즐겨찾기 취소에 실패하였습니다...", ToastAndroid.SHORT);
-                console.error(error);
-            });
-        }else{
-            fetch(`${ctx.API_URL}/user/favpost`,{
-                method: "POST",
-                headers: {
-                    "token": ctx.token,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            })
-            .then((res)=>{
-                return res.json();
-            })
-            .then((res)=>{
-                this.setState({favCheck: true}, () => ToastAndroid.show("즐겨찾기에 등록했습니다.", ToastAndroid.SHORT))
-            }).catch((error) => {
-                ToastAndroid.show("즐겨찾기 등록에 실패하였습니다...", ToastAndroid.SHORT);
-                console.error(error);
-            });
-        }
-    }
-
 
     async writeReply() {
         const ctx = this.context;
@@ -186,17 +200,14 @@ export default class BoardDetail extends Component {
                                         <Text style={styles.replyNum}>댓글 {this.state.replies.length} </Text>
                                         <Text style={styles.views}>조회수 {this.state.Content.views}</Text>
                                     </View>
-                                    {
-                                        this.state.favCheck ? 
-                                        <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
-                                            <Image source={require("../assets/yellowStar.png")} style={styles.favImg} />
-                                            <Text style={styles.fav}>스크랩</Text>
-                                        </TouchableOpacity> :
-                                        <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.onAddFav(this.state.Content.ID, 0)}>
-                                            <Image source={require("../assets/graystar.png")} style={styles.favImg} />
-                                            <Text style={styles.fav}>스크랩</Text>
-                                        </TouchableOpacity>
-                                    }
+                                    <TouchableOpacity style={styles.rightContentInfo} onPress={()=>this.favSelected()}>
+                                        {
+                                        this.state.favSelected ?
+                                        <Image source={require("../assets/yellowStar.png")} style={styles.favImg} /> :
+                                        <Image source={require("../assets/graystar.png")} style={styles.favImg} />
+                                        }
+                                        <Text style={styles.fav}>스크랩</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
                             <View style={styles.underLine} />
@@ -221,19 +232,10 @@ export default class BoardDetail extends Component {
                                 placeholder="댓글"
                                 value={this.state.search}
                                 onChangeText={(search) => this.setState({ search })}
-                                // onSubmitEditing={() => {
-                                //     if (!this.state.postText.endsWith("\n")) {
-                                //     let postText = this.state.postText;
-                                //     postText = postText + "\n";
-                                //     this.setState({ postText: postText })
-                                //     }
-                                //     }}
-                                // onSubmitEditing={() => {this.writeReply()}}
                                 returnKeyType="search"
                                 multiline={true}
                             >
                             </TextInput>
-
                         </KeyboardAvoidingView>
                         <TouchableOpacity style={styles.button} onPress={()=>this.writeReply()} >                       
                             <Text style={styles.submitText}>댓글 달기</Text>
