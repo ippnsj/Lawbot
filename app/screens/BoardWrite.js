@@ -112,13 +112,15 @@ export default class BoardWrite extends Component {
                     <View style={{margin: "3%", flex: 3, height: 400}}>
                         <TextInput 
                             placeholder="내용을 입력해주세요"
+                            multiline = {true}
                             style={styles.content}
                             value={this.state.content}
                             onChangeText={(content)=>this.setState({content})}
                         />
                     </View>
                 </View>
-                <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
+            </KeyboardAvoidingView>
+            <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
                 <View>
                     <Picker
                         mode='dropdown'
@@ -130,11 +132,10 @@ export default class BoardWrite extends Component {
                         <Picker.Item label="자유 게시판" value={3} />
                     </Picker>
                 </View>
-                    <TouchableOpacity style={styles.Button}  onPress={this.createArticle}>
-                        <Text style={styles.ButtonText}>글 등록하기</Text>
-                    </TouchableOpacity>
-            </KeyboardAvoidingView>
-        </View>
+                <TouchableOpacity style={styles.Button}  onPress={this.createArticle}>
+                    <Text style={styles.ButtonText}>글 등록하기</Text>
+                </TouchableOpacity>
+            </View>
         )
     }
 }

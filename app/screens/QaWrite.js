@@ -136,13 +136,15 @@ export default class QaWrite extends Component {
                     <View style={{margin: "3%", flex: 3, height: 400}}>
                         <TextInput 
                             placeholder="무엇이 궁금한가요?"
+                            multiline={true}
                             style={styles.content}
                             value={this.state.content}
                             onChangeText={(content)=>this.setState({content})}
                         />
                     </View>
                 </View>
-                <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
+              </KeyboardAvoidingView>
+              <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
                 <View>
                     <TouchableOpacity onPress={() => this.setState({categoryVisible: true})}  >
                         <View style={{flexDirection: "row" }} >
@@ -160,10 +162,9 @@ export default class QaWrite extends Component {
                         </View>
                     </TouchableOpacity> */}
                 </View>
-                    <TouchableOpacity style={styles.Button}  onPress={() => this.createArticle()}>
-                            <Text style={styles.ButtonText}>질문 등록하기</Text>
-                        </TouchableOpacity>
-            </KeyboardAvoidingView>
+                <TouchableOpacity style={styles.Button}  onPress={() => this.createArticle()}>
+                    <Text style={styles.ButtonText}>질문 등록하기</Text>
+                </TouchableOpacity>
 
             <Modal visible={this.state.categoryVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
                 <View style={styles.fieldSelectModal}>
@@ -187,9 +188,9 @@ export default class QaWrite extends Component {
                         <Text style={styles.fieldSelectCancelText}>확인</Text>
                     </TouchableOpacity>
                 </View>
-        </Modal>
+            </Modal>
          
-    </View>
+          </View>
           )
     }
 }

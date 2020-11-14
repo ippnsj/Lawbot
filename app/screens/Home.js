@@ -30,6 +30,7 @@ export default class Home extends Component {
         boardBContents: [],
         boardCContents: [],
         boardLoaded: false,
+        favCheck: [],
     };
   
     async _loadFonts() {
@@ -120,7 +121,46 @@ export default class Home extends Component {
             this.setState({boardAContents: join1})
             this.setState({boardBContents: join2})
             this.setState({boardCContents: join3})
-        }).then(()=>this.setState({boardLoaded:true}))
+        }).then(()=>this.setState({boardLoaded:true}, this.getFavPost))
+    }
+
+    async getFavPost () {
+        const ctx = this.context;
+        
+        fetch(`${ctx.API_URL}/user/favpost`, {
+            method: "GET",
+            headers: {
+                "token": ctx.token
+            },
+        })
+        .then((res) => {
+            return res.json();
+        }).then((res) =>{
+            if (res.length == 0){
+                console.error("no favorite Post");
+                return;
+            }
+            let resList = [];
+            for (let i = 0 ; i < res.length; i++){
+                resList.push(res[i].Board_ID);
+            }
+            let checkList=[];
+            if (resList.includes(this.state.boardAContents[0].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardAContents[1].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardAContents[2].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardBContents[0].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardBContents[1].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardBContents[2].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardCContents[0].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardCContents[1].ID)){checkList.push(true)} else{checkList.push(false)}
+            if (resList.includes(this.state.boardCContents[2].ID)){checkList.push(true)} else{checkList.push(false)}
+            this.setState({favCheck:checkList})
+        })
+    }
+
+
+    async boardDetail(content, idx) {
+        this.props.navigation.navigate("BoardDetail", {post: content, fav:this.state.favCheck[idx]});
     }
 
     render() {
@@ -238,15 +278,15 @@ export default class Home extends Component {
                                 </TouchableOpacity>
                                 { this.state.boardLoaded &&
                                 <View style={styles.boardContentRows}>
-                                    <View style={styles.boardcontentRow}>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[0], 0)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[0].title}</Text></Unorderedlist>
-                                    </View>
-                                    <View style={styles.boardcontentRow}>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[1], 1)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[1].title}</Text></Unorderedlist>
-                                    </View>
-                                    <View style={styles.boardcontentRow}>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardAContents[2], 2)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardAContents[2].title}</Text></Unorderedlist>
-                                    </View>
+                                    </TouchableOpacity>
                                 </View>
                                 }
                                 <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:2})}}>
@@ -254,15 +294,15 @@ export default class Home extends Component {
                                 </TouchableOpacity>
                                 { this.state.boardLoaded &&
                                 <View style={styles.boardContentRows}>
-                                    <View style={styles.boardcontentRow}>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[0], 3)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[0].title}</Text></Unorderedlist>
-                                    </View>
-                                    <View style={styles.boardcontentRow}>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[1], 4)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[1].title}</Text></Unorderedlist>
-                                    </View>
-                                    <View style={styles.boardcontentRow}>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardBContents[2], 5)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardBContents[2].title}</Text></Unorderedlist>
-                                    </View>
+                                    </TouchableOpacity>
                                 </View>
                                 }
                                 <TouchableOpacity onPress={() => {this.props.navigation.navigate("Board", {BoardCategory:3})}}>
@@ -270,15 +310,15 @@ export default class Home extends Component {
                                 </TouchableOpacity>
                                 { this.state.boardLoaded &&
                                 <View style={styles.boardContentRows}>
-                                    <View style={styles.boardcontentRow}>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[0], 6)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[0].title}</Text></Unorderedlist>
-                                    </View>
-                                    <View style={styles.boardcontentRow}>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[1], 7)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[1].title}</Text></Unorderedlist>
-                                    </View>
-                                    <View style={styles.boardcontentRow}>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.boardcontentRow} onPress={()=>{this.boardDetail(this.state.boardCContents[2], 8)}}>
                                         <Unorderedlist><Text numberOfLines={1} style={styles.boardContentText}>{this.state.boardCContents[2].title}</Text></Unorderedlist>
-                                    </View>
+                                    </TouchableOpacity>
                                 </View>
                                 }
                             </View>

@@ -8,6 +8,7 @@ import {
   Alert,
   ScrollView,
   ToastAndroid,
+  BackHandler,
 } from "react-native";
 import * as Font from "expo-font";
 import { MyContext } from "../../context.js";
@@ -55,14 +56,20 @@ export default class Board extends Component {
         }
         this.getBoardContents();
     }
+
+    handleBackButton = () => {
+
+    }
         
     componentDidMount() {
        this._loadFonts();
+       BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
        this.props.navigation.addListener('focus', this.isFocused);
     }
-
+    
     componentWillUnmount() {
         this.props.navigation.removeListener('focus', this.isFocused);
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
     }
     componentDidUpdate() {
     }

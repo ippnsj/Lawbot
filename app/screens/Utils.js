@@ -23,7 +23,7 @@ import { render } from "react-dom";
 
 const utils = {
   dateAgo: function (targetDate) {
-    return moment(targetDate, "YYYY-MM-DD hh-mm-ss").startOf("minute").fromNow();
+    return moment(targetDate, "YYYY-MM-DD hh-mm-ss").utcOffset(9).startOf("minute").fromNow();
   },
   nameHide: function (ID) {
     var id = ID.substring(0,4);
