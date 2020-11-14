@@ -118,6 +118,25 @@ export default class WritePettition extends Component {
       this.setState({ cameraPermission: false });
       alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
     }
+    // const granted = await PermissionsAndroid.request(
+    //   PermissionsAndroid.PERMISSIONS.CAMERA,
+    //   {
+    //     title: "카메라 접근권한",
+    //     message:
+    //       "사진 업로드를 하려면 카메라 접근권한이 필요합니다. 접근권한을 주시겠습니까?",
+    //     buttonNegative: "아니요",
+    //     buttonPositive: "네"
+    //   }
+    // );
+
+    // console.log(granted);
+    // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+    //   this.setState({ cameraPermission: true });
+    //   this.getCameraRollPermission();
+    // } else {
+    //   this.setState({ cameraPermission: false });
+    //   alert("카메라 접근권한을 주어야 사진업로드가 가능합니다.");
+    // }
   }
 
   async fetchOCR() {
