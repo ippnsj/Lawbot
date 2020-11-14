@@ -262,7 +262,7 @@ export default class Lawyer extends Component {
                             {this.state.lawyer.LawyerFields.map((f, id)=>{
                                 return(
                                     <Text key = {id} style={styles.home_info_content}>{this.state.categories[f.Category_ID].name}</Text>
-                                )
+                            )
                             })}
                         </View>
                     </View>
@@ -381,7 +381,7 @@ export default class Lawyer extends Component {
                                     return(
                                         <View key = {id} style={{flexDirection:"row"}}>
                                             <Text style={styles.info_career_text1}>{c.startYear} ~ {c.endYear===null ? empty : c.endYear}</Text>
-                                            <Text  numberOfLines={1} style={styles.info_career_text2}>  -  {c.detail}</Text>   
+                                            <Text style={styles.info_career_text2}>-{c.detail}</Text>   
                                         </View>
                                     )
                                 }) : <Text style={styles.noneText}>경력사항 없음</Text>}
@@ -395,7 +395,7 @@ export default class Lawyer extends Component {
                                     return(
                                         <View key = {id} style={{flexDirection:"row"}}>
                                             <Text style={styles.info_career_text1}>{c.startYear} ~ {c.endYear===null ? empty : c.endYear}</Text>
-                                            <Text numberOfLines={1} style={styles.info_career_text2}>  -  {c.detail}</Text>   
+                                            <Text style={styles.info_career_text2}>-{c.detail}</Text>   
                                         </View>
                                     )
                                 }) : <Text style={styles.noneText}>자격사항 없음</Text>}
@@ -409,7 +409,7 @@ export default class Lawyer extends Component {
                                     return(
                                         <View key = {id} style={{flexDirection:"row"}}>
                                             <Text style={styles.info_career_text1}>{c.startYear} ~ {c.endYear===null ? empty : c.endYear}</Text>
-                                            <Text numberOfLines={1}  style={styles.info_career_text2}>  -  {c.detail}</Text>   
+                                            <Text style={styles.info_career_text2}>-{c.detail}</Text>   
                                         </View>
                                     )
                                 }) : <Text style={styles.noneText}>학력사항 없음</Text>}
@@ -427,10 +427,10 @@ export default class Lawyer extends Component {
                                 {this.state.lawyer.Activities && this.state.lawyer.Activities.length ? this.state.lawyer.Activities.map((c, idx)=>{
                                     return(
                                         <View style={{marginBottom:10}} key={idx}>
-                                            <Text numberOfLines={1} style={styles.activity_text1}>{c.detail}</Text>
+                                            <Text style={styles.activity_text1}>{c.detail}</Text>
                                             <View style={{flexDirection:"row"}}>
-                                            <Text numberOfLines={2} style={styles.activity_text2} onPress={() => Linking.openURL(c.url)}>   {c.url}</Text>
-                                        </View>
+                                                <Text style={styles.activity_text2} onPress={() => Linking.openURL(c.url)}>{c.url}</Text>
+                                            </View>
                                         </View>
                                     )
                                 }) : <View>
@@ -445,8 +445,6 @@ export default class Lawyer extends Component {
                 <View>
                     <Text style={styles.info_subtitle}>사무실 정보</Text>
                     <View style={{marginHorizontal:"5%"}}>
-
-
                             <Text style={styles.home_info_team}>{this.state.lawyer.companyName!=null?this.state.lawyer.companyName : "등록 된 소속 사무소가 없습니다." }</Text>
                             {/* <Text style={styles.home_info_address}>{lawyer.address}</Text> */}
                     <Text style={styles.home_info_address}>{this.state.lawyer.address1!=null ? this.state.lawyer.address1 : "등록 된 주소가 없습니다."}</Text>
@@ -617,7 +615,8 @@ const styles = StyleSheet.create({
     },
     home_info_name: {
         fontFamily: "KPBBold",
-        fontSize: 20
+        fontSize: 20,
+        marginBottom: "2%",
     },
     home_info_field: {
         fontFamily: "KPWDMedium",
@@ -629,6 +628,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontFamily: "KPBBold",
         fontSize: 16,
+        marginBottom: "2%", 
     },
     home_info_address: {
         fontFamily: "KPWDMedium",
@@ -718,14 +718,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#565252",
         marginVertical: 3,
-        width:"30%"
+        width:"30%",
+        marginRight:"5%",
     },
     info_career_text2: {
         fontFamily: "KPWDMedium",
         fontSize: 12,
         color: "#565252",
         marginVertical: 3,
-        width:"70%"
+        width: "100%"
     },
 
     activity_text1: {
@@ -733,14 +734,15 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: "black",
         marginVertical: 3,
-        width:"30%"
+        // width:"30%"
     },
     activity_text2: {
         fontFamily: "KPWDMedium",
         fontSize: 10,
-        color: "#565252",
+        color: "#2946d6",
         marginVertical: 3,
-        width:"92%"
+        width:"92%",
+        textDecorationLine:"underline",
     },
 
     // info_career_subtitle: {
