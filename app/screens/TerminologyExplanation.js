@@ -21,6 +21,7 @@ import { parse } from 'node-html-parser';
 import colors from "../config/colors";
 import Header from "./Header.js";
 import { color } from "react-native-reanimated";
+import { MyContext } from "../../context";
 
 export default class TerminologyExplanation extends Component {
   state = {
@@ -56,141 +57,93 @@ export default class TerminologyExplanation extends Component {
     Keyboard.dismiss();
     let data = encodeURIComponent(this.state.word);
     new Promise((resolve, reject)=> {
-        if(this.state.field=="법률용어"){
-          let url = "https://openapi.naver.com/v1/search/encyc?query=" + data +"&display=3&sort=count";
-        
-          fetch(url, {
-              method: "GET",
-              headers: {
-              "X-Naver-Client-Id" : "Akn5Y7uO9AQNtb21Xm6c",
-              "X-Naver-Client-Secret" : "JnMgYfLhJE"
-              }
-          })
-          .then(res=>{
-              if(res.status !== 200)
-                  return {};
-
-              return res.json();
-          }).then(json =>{
-              const DICTIONARIES = {
-                "법률용어사전": "cid=42131",
-                "두산백과": "cid=40942",
-              };
-              let idx = -1;
-              let dict = "";
-
-              for(let [key, val] of Object.entries(DICTIONARIES)) {
-                for(let i = 0; i < json.items.length; i++) {
-                  if(json.items[i].link.indexOf(val) != -1) {
-                    idx = i;
-                    dict = key;
-                    break;
-                  }
-                }
-                if(idx != -1)
-                    break;
-              }
-
-              if(idx == -1) {
-                  this.setState({explanation: "검색 결과가 없습니다."});
-                  return;
-                }
-
-              fetch(json.items[idx].link, {
-                  method: 'get',
-              }).then(res => {
-                return res.text();
-              }).then(res => {
-                  const root = parse(res);
-                  const summary = root.querySelector('.summary_area');
-                  const descriptions = root.querySelectorAll('.txt');
-                  let description = '';
-                  for(let k of descriptions) {
-                      description += k.text;
-                  }
-                  let ret = dict + '\n';
-                  if(summary) {
-                    ret += summary.text + '\n';
-                  }
-                  if(description) {
-                    ret += description;
-                  }
-                  this.setState({explanation: ret});
-              });
-            });
-          }
-          else if(this.state.field=="관련조항"){
-            let str = this.state.word;
-            let regex = /^[0-9]*$/gm;
-            if (regex.test(str)){
-              var main = {
-                'OC': 'ICTPoolC',
-                'target': 'law',
-                'MST': '188036',
-                'type': 'XML',
-                'JO': this.state.word
-              };
-  
-              if(this.state.word.length>=3){
-                main.JO = '0'+this.state.word.concat("00");
-              }
-              else if(this.state.word.length==2){
-                main.JO = '00'+this.state.word.concat("00");
-              }
-              else if(this.state.word.length==1){
-                main.JO = '000'+this.state.word.concat("00");
-              }
-  
-              var url = 'http://www.law.go.kr/DRF/lawService.do?OC='+ main.OC+'&target='
-              +main.target+'&type='+main.type+'&MST='+main.MST+'&JO='+main.JO;
-              
-              fetch(url, {
-                method: "GET",
-                headers: {
-                // "Content-Type": "application/json",
-                },
-              }).then(res => {
-                return res.text();
-              }).then(res => {
-              
-                //console.log(res);
-        
-                var st = res.indexOf("<조문내용>");
-                var mid = res.indexOf(")");
-                var end = res.indexOf("</조문내용>");
-                var tit = res.substring(st+15,mid+1);
-                //console.log(tit);
-                var sub = res.substring(mid+1,end-3);
-                
-  
-                if(sub.length==0){
-                  var cnt = 0;
-                  var ref = res;
-                  while(cnt<5){
-                      var h1 = ref.indexOf("<항내용>");
-                      var h2 = ref.indexOf("</항내용>");
-                      if(h1 != -1){
-                        sub += ref.substring(h1+15,h2-3)+"\n";
-                        ref = ref.substring(h2+3); 
-                        cnt = cnt + 1;  
-                      }
-                      else{
-                        break;
-                      }    
-                    }
-                }
-                //console.log(sub);
-  
-                this.setState({explanation: "민법 "+tit + "\n\n"+sub});
-              }).catch((error) => {
-                console.error(error);
-              });
-            }else{
-              this.setState({explanation: "유효한 검색어가 아닙니다. 숫자로만 검색이 가능합니다.\n예시) (민법 102조의 경우) 102"});
+      if(this.state.field=="법률용어"){
+        let url = "https://openapi.naver.com/v1/search/encyc?query=" + data +"&display=3&sort=count";
+      
+        fetch(url, {
+            method: "GET",
+            headers: {
+            "X-Naver-Client-Id" : "Akn5Y7uO9AQNtb21Xm6c",
+            "X-Naver-Client-Secret" : "JnMgYfLhJE"
             }
-            
-          }
         })
+        .then(res=>{
+            if(res.status !== 200)
+                return {};
+
+            return res.json();
+        }).then(json =>{
+            const DICTIONARIES = {
+              "법률용어사전": "cid=42131",
+              "두산백과": "cid=40942",
+            };
+            let idx = -1;
+            let dict = "";
+
+            for(let [key, val] of Object.entries(DICTIONARIES)) {
+              for(let i = 0; i < json.items.length; i++) {
+                if(json.items[i].link.indexOf(val) != -1) {
+                  idx = i;
+                  dict = key;
+                  break;
+                }
+              }
+              if(idx != -1)
+                  break;
+            }
+
+            if(idx == -1) {
+                this.setState({explanation: "검색 결과가 없습니다."});
+                return;
+              }
+
+            fetch(json.items[idx].link, {
+                method: 'get',
+            }).then(res => {
+              return res.text();
+            }).then(res => {
+                const root = parse(res);
+                const summary = root.querySelector('.summary_area');
+                const descriptions = root.querySelectorAll('.txt');
+                let description = '';
+                for(let k of descriptions) {
+                    description += k.text;
+                }
+                let ret = dict + '\n';
+                if(summary) {
+                  ret += summary.text + '\n';
+                }
+                if(description) {
+                  ret += description;
+                }
+                this.setState({explanation: ret});
+            });
+          });
+        }
+        else if(this.state.field=="관련조항"){
+          let str = this.state.word;
+          let regex = /^[0-9]*$/gm;
+          if (regex.test(str)){
+            const ctx = this.context;
+            let a = {};
+            a.word = this.state.word;
+            fetch(`${ctx.API_URL}/law`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "token": ctx.token
+              },
+              body: JSON.stringify(a)
+            }).then((res) => {
+              return res.json();
+            }).then((res) => {
+              this.setState({explanation: res.explanation});
+            });
+          }else{
+            this.setState({explanation: "유효한 검색어가 아닙니다. 숫자로만 검색이 가능합니다.\n예시) (민법 102조의 경우) 102"});
+          }
+        }
+      })
    }
 
   // async NaverAPI() {
@@ -313,6 +266,7 @@ export default class TerminologyExplanation extends Component {
     );
   }
 }
+TerminologyExplanation.contextType = MyContext;
 
 const styles = StyleSheet.create({
   body: {
