@@ -21,7 +21,7 @@
       "favicon": "./app/assets/favicon.png"
     },
     "android":{
-      "permissions":["READ_EXTERNAL_STORAGE", "INTERNET", "CAMERA", "CAMERA_ROLL" ],
+      "permissions":["READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE", "INTERNET", "CAMERA"],
       "versionCode": 1,
       "package": "lawbotc.kr",
       "icon": "./app/assets/logo4.png",
