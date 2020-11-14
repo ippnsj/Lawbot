@@ -175,60 +175,20 @@ export default class CaseView extends Component {
             let str = this.state.word;
             let regex = /^[0-9]*$/gm;
             if (regex.test(str)){
-              var main = {
-                'OC': 'ICTPoolC',
-                'target': 'law',
-                'MST': '188036',
-                'type': 'XML',
-                'JO': this.state.word
-              };
-  
-              if(this.state.word.length>=3){
-                main.JO = '0'+this.state.word.concat("00");
-              }
-              else if(this.state.word.length==2){
-                main.JO = '00'+this.state.word.concat("00");
-              }
-              else if(this.state.word.length==1){
-                main.JO = '000'+this.state.word.concat("00");
-              }
-  
-              var url = 'http://www.law.go.kr/DRF/lawService.do?OC='+ main.OC+'&target='
-              +main.target+'&type='+main.type+'&MST='+main.MST+'&JO='+main.JO;
-              
-              fetch(url, {
-                method: "GET",
+              const ctx = this.context;
+              let a = {};
+              a.word = this.state.word;
+              fetch(`${ctx.API_URL}/law`, {
+                method: "POST",
                 headers: {
-                // "Content-Type": "application/json",
+                  "Content-Type": "application/json",
+                  "token": ctx.token
                 },
-              }).then(res => {
-                return res.text();
-              }).then(res => {        
-                var st = res.indexOf("<조문내용>");
-                var mid = res.indexOf(")");
-                var end = res.indexOf("</조문내용>");
-                var tit = res.substring(st+15,mid+1);
-                var sub = res.substring(mid+1,end-3);
-                
-                if(sub.length==0){
-                  var cnt = 0;
-                  var ref = res;
-                  while(cnt<5){
-                      var h1 = ref.indexOf("<항내용>");
-                      var h2 = ref.indexOf("</항내용>");
-                      if(h1 != -1){
-                        sub += ref.substring(h1+15,h2-3)+"\n";
-                        ref = ref.substring(h2+3); 
-                        cnt = cnt + 1;  
-                      }
-                      else{
-                        break;
-                      }    
-                    }
-                }
-                this.setState({explanation: "민법 "+tit + "\n\n"+sub});
-              }).catch((error) => {
-                console.error(error);
+                body: JSON.stringify(a)
+              }).then((res) => {
+                return res.json();
+              }).then((res) => {
+                this.setState({explanation: res.explanation});
               });
             }else{
               this.setState({explanation: "유효한 검색어가 아닙니다. 숫자로만 검색이 가능합니다.\n예시) (민법 102조의 경우) 102"});
