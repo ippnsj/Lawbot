@@ -17,10 +17,6 @@ import colors from "../config/colors";
 import Header from "./Header.js";
 import { MyContext } from "../../context";
 
-// const categories=[
-//   "자동차",  "산업재해",  "환경", "언론보도", "지식재산권", "의료", "건설", "국가", "기타", "가족/가정", "이혼", "폭행", "사기", "성범죄", "명예훼손", "모욕", "협박", "교통사고", "계약", "개인정보", "상속", "재산범죄", "매매", "노동", "채권추심", "회생/파산", "마약/대마", "소비자", "국방/병역", "학교", "주거침입", "도급/용역", "건설/부동산", "위증", "무고죄", "아동/청소년범죄", "임대차", "대여금", "온라인범죄","음주운전"   
-// ]
-
 export default class LawyerRecommendation extends Component {
   state = {
       fontsLoaded: false,
@@ -49,10 +45,18 @@ export default class LawyerRecommendation extends Component {
     this.setState({ fontsLoaded: true });
   }
 
+  isFocused = () => {
+    this.setState({list: this.props.route.params.list, categories: this.props.route.params.categories});
+  };
+
   componentDidMount() {
     this._loadFonts();
-    this.setState({list: this.props.route.params.list, categories: this.props.route.params.categories});
+    this.props.navigation.addListener('focus', this.isFocused);
   }
+
+  componentWillUnmount() {
+    this.props.navigation.removeListener('focus', this.isFocused);
+  };
 
   categorySelect(cat) {
     this.setState(prevState => ({

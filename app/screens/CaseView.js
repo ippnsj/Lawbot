@@ -45,7 +45,7 @@ export default class CaseView extends Component {
     const ctx = this.context;
     let body = {};
     body.Precedent_ID = this.props.route.params.caseID;
-    this.setState({ caseID: this.props.route.params.caseID });
+    this.setState({ caseID: this.props.route.params.caseID, word: "", explanation: `검색결과를 알려드립니다.`, field:"검색 조건을 선택해주세요." });
 
     fetch(`${ctx.API_URL}/user/judgement/check`, {
       method: "POST",

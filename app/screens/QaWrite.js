@@ -121,8 +121,8 @@ export default class QaWrite extends Component {
             <Header {...this.props}/>
 
             <KeyboardAvoidingView style={styles.body}>
-                <View style={{margin: "5%"}}>
-                    <View style={{margin: "3%", flex: 2}}>
+                <View style={{margin: "5%", flex: 1}}>
+                    <View style={{marginHorizontal: "3%", flex: 2, minHeight: 18}}>
                         <TextInput 
                             placeholder="제목을 입력하세요."
                             style={styles.title}
@@ -133,7 +133,7 @@ export default class QaWrite extends Component {
                     </View>
                     <View style={{height: 0.5, backgroundColor: "lightgray"}}></View>
 
-                    <View style={{margin: "3%", flex: 3, height: 400}}>
+                    <View style={{margin: "3%", flex: 40}}>
                         <TextInput 
                             placeholder="무엇이 궁금한가요?"
                             multiline={true}
@@ -144,10 +144,11 @@ export default class QaWrite extends Component {
                     </View>
                 </View>
               </KeyboardAvoidingView>
-              <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
+              <View style={{ flex: 2 }}>
+                <View style={{height: 1, backgroundColor: "gray", marginHorizontal: "-10%"}}></View>
                 <View>
                     <TouchableOpacity onPress={() => this.setState({categoryVisible: true})}  >
-                        <View style={{flexDirection: "row" }} >
+                        <View style={{flexDirection: "row", marginLeft:10 }} >
                             <Image style={styles.icon} source={require("../assets/categoryIcon.png")} />
                             <Text style={styles.category}>분야설정</Text>
                         </View>
@@ -165,6 +166,7 @@ export default class QaWrite extends Component {
                 <TouchableOpacity style={styles.Button}  onPress={() => this.createArticle()}>
                     <Text style={styles.ButtonText}>질문 등록하기</Text>
                 </TouchableOpacity>
+              </View>
 
             <Modal visible={this.state.categoryVisible} onRequestClose={() => this.overlayClose()} transparent={true} animationType={"fade"}>
                 <View style={styles.fieldSelectModal}>
@@ -198,7 +200,7 @@ QaWrite.contextType = MyContext;
 
 const styles=StyleSheet.create({
     body: {
-        flex: 1,
+        flex: 8,
         overflow: "scroll",
         paddingLeft:"5%",
         paddingRight:"5%"
@@ -217,7 +219,9 @@ const styles=StyleSheet.create({
     content: {
         fontSize: 20,
         fontFamily: "KPWDLight",
-        color: "black"
+        color: "black",
+        minHeight: "90%",
+        textAlignVertical: "top"
     },
     category: {
         fontSize: 16,

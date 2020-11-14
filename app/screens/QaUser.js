@@ -198,7 +198,8 @@ export default class QaUser extends Component {
                     }
                 });
             
-                this.setState({ userInt });
+                this.setState({ userInt, qna: "", qnaKind: "키워드" });
+                this.handleEveryButtons();
             }
         }
       }

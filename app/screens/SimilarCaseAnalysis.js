@@ -98,7 +98,6 @@ export default class SimilarCaseAnalysis extends Component {
     ).then((res) => {
       return res.json();
     }).then((res) => {
-      console.log(res);
       this.props.navigation.navigate('LawyerRecommendation', { list: res, categories: this.state.categories })
     });
   }

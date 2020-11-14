@@ -330,7 +330,6 @@ export default class Home extends Component {
     };
 }
 Home.contextType = MyContext;
-// export default withNavigationFocus(Home);
 
 const styles=StyleSheet.create({
     body: {
@@ -338,7 +337,6 @@ const styles=StyleSheet.create({
         overflow: "scroll",
         paddingLeft:"5%",
         paddingRight:"5%",
-        marginBottom:"5%",
       },
     container: {
         flex: 1,
@@ -515,10 +513,11 @@ const styles=StyleSheet.create({
     },
     boardContentRows: {
         marginLeft: "15%",
-        marginTop: 4
+        marginTop: 4,
+        marginBottom: 10,
     },
-    boardContentRow: {
-        flexDirection:"row",
+    boardcontentRow: {
+        marginBottom: 5,
     },
     boardContentBullet: {
         fontSize: 6,
