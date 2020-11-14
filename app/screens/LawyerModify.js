@@ -112,7 +112,7 @@ export default class LawyerModify extends Component {
   };
 
   overlayClose() {
-      this.setState({introModify:false, companyModify:false, qualificationAdd:false, addressModify:false, careerAdd: false, eduAdd:false, addField: false})
+      this.setState({introModify:false, companyModify:false, qualificationAdd:false, addressModify:false, careerAdd: false, eduAdd:false, activityAdd:false, addField: false})
   };
 
     async handleTabs(which) {
@@ -595,7 +595,8 @@ export default class LawyerModify extends Component {
                     <Text style={styles.info_subtitle}>주요분야</Text>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{flexDirection: "row"}}>
                         {this.state.lawyer.LawyerFields && this.state.lawyer.LawyerFields.length ? 
-                        this.state.lawyer.LawyerFields.map((f, idx)=> {
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        {this.state.lawyer.LawyerFields.map((f, idx)=> {
                             return(
                                 <View style={{alignItems: 'center', marginRight:40, marginTop: 10}} key={idx}>
                                     <Image style={styles.info_field_img} source={catImgList[f.Category_ID]}/>
@@ -604,25 +605,32 @@ export default class LawyerModify extends Component {
                                         <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:11}} >삭제</Text>
                                     </TouchableOpacity>
                                 </View>
-                            )
-                        })
-                    : 
-                        <View>
-                            <Text>전문 분야가 없습니다.</Text>
-                            {/* <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
+                                )
+                            })}
+                            <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
                                 <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
                                     <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
                                     <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:14}}>추가</Text>
                                 </View>
-                            </TouchableOpacity> */}
+                            </TouchableOpacity>
+                        </View>
+                    : 
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            <Text style={styles.noneText}>전문 분야가 없습니다.</Text>
+                            <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
+                                <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
+                                    <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
+                                    <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:14}}>추가</Text>
+                                </View>
+                            </TouchableOpacity>
                         </View>
                         }
-                        <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
+                        {/* <TouchableOpacity onPress={()=>this.setState({ addField: true })}>
                             <View style={{alignItems: 'center', marginRight:40, marginTop: 10}}>
                                 <Image style={styles.info_field_img} source={require("../assets/more.png")}/>
                                 <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center",fontSize:14}}>추가</Text>
                             </View>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </ScrollView>
                 </View>
 
@@ -650,7 +658,7 @@ export default class LawyerModify extends Component {
                                 }) : 
 
                                 <View>
-                                    <Text>경력사항 없음</Text>
+                                    <Text style={styles.noneText}>경력사항 없음</Text>
                                     {/* <TouchableOpacity onPress={()=>this.setState({careerAdd:true})}>
                                         <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center", fontSize:11}}>추가</Text>
                                     </TouchableOpacity> */}
@@ -683,7 +691,7 @@ export default class LawyerModify extends Component {
                                         </View>
                                     )
                                 }) : <View>
-                                <Text>자격사항 없음</Text>
+                                <Text style={styles.noneText}>자격사항 없음</Text>
                                 {/* <TouchableOpacity onPress={()=>this.setState({qualificationAdd:true})}>
                                     <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center", fontSize:11}}>추가</Text>
                                 </TouchableOpacity> */}
@@ -710,7 +718,7 @@ export default class LawyerModify extends Component {
                                         </View>
                                     )
                                 }) : <View>
-                                <Text>학력사항 없음</Text>
+                                <Text style={styles.noneText}>학력사항 없음</Text>
                                 {/* <TouchableOpacity onPress={()=>this.setState({eduAdd:true})}>
                                     <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"center", fontSize:11}}>추가</Text>
                                 </TouchableOpacity> */}
@@ -746,13 +754,18 @@ export default class LawyerModify extends Component {
                                     )
                                 }) : <View>
                                 
-                                <Text>활동사항 없음</Text>
+                                <Text style={styles.noneText}>활동사항 없음</Text>
                                 {/* <TouchableOpacity onPress={()=>this.setState({activityAdd:true})}>
                                     <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"flex-start", fontSize:11}}>추가</Text>
                                 </TouchableOpacity> */}
                             </View>}
                         </View>
-                            
+                        <View style={{flexDirection:'row'}}>
+                            <Text style={{width:"92%"}}> </Text>
+                            <TouchableOpacity onPress={()=>this.setState({activityAdd:true})}>
+                                <Text style={{color:colors.primary, fontFamily:"KPWDBold", alignSelf:"flex-start", fontSize:11}}>추가</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
                 <View style={styles.thinUnderline}/>
@@ -1066,15 +1079,15 @@ export default class LawyerModify extends Component {
                                         maxLength={45}
                                     />
                         </View>
-                        <View style={{flexDirection:"row"}}>
-                        <Text style={styles.textInputSubtitle}>URL</Text>
-                            <TextInput
-                                placeholder="url을 입력하세요."
-                                style={styles.textInputForId}
-                                onChangeText={(url) => { const {activity} =this.state; activity.url=url; this.setState({activity}); }}
-                                value={this.state.activity.url}
-                                maxLength={45}
-                            />
+                        <View style={{flexDirection:"row", marginTop: 15}}>
+                            <Text style={styles.textInputSubtitle}>URL</Text>
+                                <TextInput
+                                    placeholder="url을 입력하세요."
+                                    style={styles.textInputForId}
+                                    onChangeText={(url) => { const {activity} =this.state; activity.url=url; this.setState({activity}); }}
+                                    value={this.state.activity.url}
+                                    maxLength={45}
+                                />
                         </View>
                             <View style={{flexDirection:"row", marginTop:"10%", justifyContent:"space-between"}}>
                                 <View  style={styles.modalButton}>
@@ -1398,6 +1411,11 @@ const styles = StyleSheet.create({
           fontFamily:"KPWDBold",
           color:"white",
         alignSelf:"center"
-      }
+      },
 
+      noneText: {
+        fontFamily: "KPWDMedium",
+        fontSize: 12,
+        color: "#565252",
+      }
 });

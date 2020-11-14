@@ -384,7 +384,7 @@ export default class Lawyer extends Component {
                                             <Text  numberOfLines={1} style={styles.info_career_text2}>  -  {c.detail}</Text>   
                                         </View>
                                     )
-                                }) : <Text>경력사항 없음</Text>}
+                                }) : <Text style={styles.noneText}>경력사항 없음</Text>}
                         </View>
                     </View>
 
@@ -398,7 +398,7 @@ export default class Lawyer extends Component {
                                             <Text numberOfLines={1} style={styles.info_career_text2}>  -  {c.detail}</Text>   
                                         </View>
                                     )
-                                }) : <Text>자격사항 없음</Text>}
+                                }) : <Text style={styles.noneText}>자격사항 없음</Text>}
                     
                         </View>
                     </View>
@@ -412,7 +412,7 @@ export default class Lawyer extends Component {
                                             <Text numberOfLines={1}  style={styles.info_career_text2}>  -  {c.detail}</Text>   
                                         </View>
                                     )
-                                }) : <Text>학력사항 없음</Text>}
+                                }) : <Text style={styles.noneText}>학력사항 없음</Text>}
                         </View>
                     </View>
                     
@@ -435,7 +435,7 @@ export default class Lawyer extends Component {
                                     )
                                 }) : <View>
                                 
-                                <Text>활동사항 없음</Text>
+                                <Text style={styles.noneText}>활동사항 없음</Text>
                                
                             </View>}
                         </View>
@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
         fontFamily: "KPBRegular",
         color:"#888282",
         fontSize: 13,
-
+        marginRight: 2,
     },
     moreButton: {
         backgroundColor: "#f8f8f8",
@@ -781,4 +781,10 @@ const styles = StyleSheet.create({
         width: 20,
         height: 20,
     },
+
+    noneText: {
+        fontFamily: "KPWDMedium",
+        fontSize: 12,
+        color: "#565252",
+    }
 });
