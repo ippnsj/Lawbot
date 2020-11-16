@@ -125,7 +125,7 @@ export default class BoardWrite extends Component {
                     <Picker
                         mode='dropdown'
                         selectedValue={this.state.BoardCategory}
-                        style={{ width: 150 }}
+                        style={{ width: 150, marginLeft: 10 }}
                         onValueChange={(itemValue, itemIndex) => this.setState({BoardCategory: itemValue})}>
                         <Picker.Item label="앱 이용 후기" value={1} />
                         <Picker.Item label="재판 후기" value={2} />
@@ -189,7 +189,8 @@ const styles=StyleSheet.create({
         borderWidth: 2,
         paddingVertical: 3,
         paddingHorizontal: 60,
-        alignSelf: "center"
+        alignSelf: "center",
+        marginBottom: 20,
     },
     ButtonText: {
         color: colors.primary,
