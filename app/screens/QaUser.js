@@ -87,6 +87,8 @@ export default class QaUser extends Component {
     }
 
     isFocused = () => {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+
         if(this.state.needToReset) {
             this.handleEveryButtons();
         }else {
@@ -105,6 +107,10 @@ export default class QaUser extends Component {
         }
     }
 
+    isBlurred = () => {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
     handleBackButton = () => {
         if(this.props.navigation.isFocused()) {
             this.props.navigation.navigate("Home");
@@ -118,7 +124,7 @@ export default class QaUser extends Component {
     async componentDidMount() {
         this._loadFonts();
         this.props.navigation.addListener('focus', this.isFocused);
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+        this.props.navigation.addListener('blur', this.isBlurred);
 
         const ctx = this.context;
         const { userInt } = this.state;
@@ -206,7 +212,7 @@ export default class QaUser extends Component {
 
     componentWillUnmount() {
         this.props.navigation.removeListener('focus', this.isFocused);
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+        this.props.navigation.removeListener('blur', this.isBlurred);
     }
 
     async handleEveryButtons() {

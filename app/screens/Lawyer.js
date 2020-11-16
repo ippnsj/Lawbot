@@ -428,9 +428,12 @@ export default class Lawyer extends Component {
                                     return(
                                         <View style={{marginBottom:10}} key={idx}>
                                             <Text style={styles.activity_text1}>{c.detail}</Text>
+                                            {c.url === null ? 
+                                            null :
                                             <View style={{flexDirection:"row"}}>
                                                 <Text style={styles.activity_text2} onPress={() => Linking.openURL(c.url)}>{c.url}</Text>
                                             </View>
+                                            }
                                         </View>
                                     )
                                 }) : <View>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { AsyncStorage, View } from 'react-native';
+import { AsyncStorage, processColor, View } from 'react-native';
 import WelcomeScreen from "./app/screens/WelcomeScreen";
 import Home from "./app/screens/Home"
 import Enrollment from "./app/screens/Enrollment";

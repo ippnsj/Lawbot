@@ -4,7 +4,6 @@ import {
     View,
     StyleSheet,
     Image,
-    KeyboardAvoidingView,
     TouchableOpacity,
     BackHandler,
     Alert
@@ -12,13 +11,12 @@ import {
 import * as Font from "expo-font";
 import Constants from "expo-constants";
 import * as DocumentPicker from 'expo-document-picker';
-import { MyContext } from '../../context.js'; 
+import { MyContext } from '../../context.js';
 
 import colors from "../config/colors";
 import Header from "./Header.js";
 import { ScrollView } from 'react-native-gesture-handler';
 import Unorderedlist from 'react-native-unordered-list';
-
 
 export default class Home extends Component {
     state = {
@@ -64,18 +62,23 @@ export default class Home extends Component {
   
     componentDidMount() {
         this._loadFonts();
-        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.props.navigation.addListener('focus', this.isFocused);
+        this.props.navigation.addListener('blur', this.isBlurred);
     }
     
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
         this.props.navigation.removeListener('focus', this.isFocused);
+        this.props.navigation.removeListener('blur', this.isBlurred);
     }
 
     isFocused = () => {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.getBoardContents();
     }
+
+    isBlurred = () => {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    } 
 
     async terminologyExplanation() {
         let result = await DocumentPicker.getDocumentAsync({ type: "application/pdf" });

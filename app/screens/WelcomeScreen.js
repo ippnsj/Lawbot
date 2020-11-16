@@ -56,13 +56,23 @@ export default class WelcomeScreen extends Component {
     }
   }
 
-  componentDidMount() {
-    this._loadFonts();
+  isFocused = () => {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
   }
 
-  componentWillUnmount() {
+  isBlurred = () => {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  componentDidMount() {
+    this._loadFonts();
+    this.props.navigation.addListener('focus', this.isFocused);
+    this.props.navigation.addListener('blur', this.isBlurred);
+  }
+
+  componentWillUnmount() {
+    this.props.navigation.removeListener('focus', this.isFocused);
+    this.props.navigation.removeListener('blur', this.isBlurred);
   }
 
   loginEvent() {

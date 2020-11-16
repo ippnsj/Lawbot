@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+require('events').EventEmitter.defaultMaxListeners = 100;
+
 ReactDOM.render(<App />,
   document.getElementById('root')
 );

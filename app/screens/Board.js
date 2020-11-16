@@ -44,6 +44,8 @@ export default class Board extends Component {
     }
 
     isFocused = () => {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+
         this.setState({ category: this.props.route.params.BoardCategory });
         if (this.props.route.params.BoardCategory == 0){
             this.setState({BoardName: "전체 게시판"});
@@ -57,20 +59,31 @@ export default class Board extends Component {
         this.getBoardContents();
     }
 
-    handleBackButton = () => {
+    isBlurred = () => {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
 
+    handleBackButton = () => {
+        if(this.props.navigation.isFocused()) {
+            this.props.navigation.navigate("Home");
+
+            return true;
+        }else {
+            return false;
+        }
     }
         
     componentDidMount() {
        this._loadFonts();
-       BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
        this.props.navigation.addListener('focus', this.isFocused);
+       this.props.navigation.addListener('blur', this.isBlurred);
     }
     
     componentWillUnmount() {
         this.props.navigation.removeListener('focus', this.isFocused);
-        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+        this.props.navigation.removeListener('blur', this.isBlurred);
     }
+
     componentDidUpdate() {
     }
 
@@ -115,7 +128,7 @@ export default class Board extends Component {
             return res.json();
         }).then((res) =>{
             if (res.length == 0){
-                console.error("no favorite Post");
+                console.log("no favorite Post");
                 return;
             }
             let check = true;

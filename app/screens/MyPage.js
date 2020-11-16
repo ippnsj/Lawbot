@@ -46,7 +46,6 @@ export default class MyPage extends Component {
   }
 
   isFocused = () => {
-    // this.scroll.scrollTo({x: 0, y: 0, animated: true});
     const ctx = this.context;
     this.setState({ introModVisible: false });
 
